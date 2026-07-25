@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-body text-ink bg-white antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+  /* Visible keyboard focus for accessibility (WCAG) */
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+    @apply outline-none ring-2 ring-solar-orange ring-offset-2;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-solar-gradient text-navy-dark font-display font-semibold px-6 py-3 rounded-full shadow-premium hover:scale-[1.03] transition-transform duration-300;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 border-2 border-white text-white font-display font-semibold px-6 py-3 rounded-full hover:bg-white hover:text-navy transition-colors duration-300;
+  }
+  .btn-navy {
+    @apply inline-flex items-center justify-center gap-2 bg-navy text-white font-display font-semibold px-6 py-3 rounded-full shadow-premium hover:bg-navy-light transition-colors duration-300;
+  }
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 rounded-2xl shadow-glass;
+  }
+  .section-eyebrow {
+    @apply uppercase tracking-widest text-xs font-semibold text-solar-orange mb-3;
+  }
+  .section-heading {
+    @apply text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-navy leading-tight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
