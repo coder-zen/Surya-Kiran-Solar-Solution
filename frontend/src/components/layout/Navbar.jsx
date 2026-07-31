@@ -20,9 +20,8 @@ const Navbar = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-          scrolled ? "bg-white/90 backdrop-blur-md shadow-md py-2" : "bg-transparent py-4"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled ? "bg-white/90 backdrop-blur-md shadow-md py-2" : "bg-transparent py-4"
+          }`}
       >
         <nav className="container-custom flex items-center justify-between">
           <NavLink to="/" className="flex items-center gap-2">
@@ -30,10 +29,10 @@ const Navbar = () => {
             <img
               src={scrolled ? Assets.companyLogo : Assets.companyLogoLight}
               alt={COMPANY.name}
-              className="h-10 w-auto"
+              className="h-14 w-14 object-contain rounded-xl shadow-sm shrink-0"
               onError={(e) => (e.target.style.display = "none")}
             />
-            <span className={`font-display font-bold text-lg ${scrolled ? "text-navy" : "text-white"}`}>
+            <span className={`font-display font-bold text-lg leading-tight ${scrolled ? "text-navy" : "text-white"}`}>
               {COMPANY.name}
             </span>
           </NavLink>
@@ -44,8 +43,7 @@ const Navbar = () => {
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `text-sm font-medium transition-colors ${
-                    scrolled ? "text-ink" : "text-white"
+                  `text-sm font-medium transition-colors ${scrolled ? "text-ink" : "text-white"
                   } ${isActive ? "text-solar-orange" : "hover:text-solar-orange"}`
                 }
               >
