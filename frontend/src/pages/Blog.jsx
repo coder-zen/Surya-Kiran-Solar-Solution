@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Helmet } from "react-helmet-async";
+import SeoHead from "../components/common/SeoHead";
 import { Link } from "react-router-dom";
 import api from "../config/api";
 
@@ -15,7 +15,7 @@ const Blog = () => {
 
   return (
     <>
-      <Helmet><title>Blog | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead title="Blog" path="/blog" description="Solar energy tips, subsidy updates and installation guides from SK Solar Solutions, Pune." />
       <section className="pt-32 pb-12 bg-navy-gradient text-white text-center">
         <div className="container-custom">
           <h1 className="text-4xl lg:text-5xl font-display font-bold">Solar Insights & News</h1>

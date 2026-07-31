@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SeoHead from "../components/common/SeoHead";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaMapMarkerAlt, FaBriefcase } from "react-icons/fa";
@@ -23,7 +23,7 @@ const Career = () => {
 
   return (
     <>
-      <Helmet><title>Careers | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead title="Careers" path="/career" description="Join the SK Solar Solutions team — careers in solar installation, engineering and sales in Pune, Maharashtra." />
       <section className="pt-32 pb-12 bg-navy-gradient text-white text-center">
         <div className="container-custom">
           <h1 className="text-4xl lg:text-5xl font-display font-bold">Careers</h1>

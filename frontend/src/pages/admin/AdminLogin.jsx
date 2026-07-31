@@ -23,7 +23,7 @@ const AdminLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-navy-gradient px-4">
       <div className="glass-card !bg-white/95 p-8 w-full max-w-sm">
         <h1 className="font-display font-bold text-2xl text-navy text-center mb-1">Admin Login</h1>
-        <p className="text-sm text-gray-500 text-center mb-6">Surya Kiran Solar Solution</p>
+        <p className="text-sm text-gray-500 text-center mb-6">SK Solar Solutions</p>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <input {...register("email", { required: true })} type="email" placeholder="Email" className="w-full rounded-lg border border-gray-200 px-4 py-3" />
           <input {...register("password", { required: true })} type="password" placeholder="Password" className="w-full rounded-lg border border-gray-200 px-4 py-3" />
@@ -32,7 +32,7 @@ const AdminLogin = () => {
           </button>
         </form>
         <p className="text-xs text-gray-400 text-center mt-6">
-          Default seeded admin: admin@suryakiransolar.com / ChangeMe@123 (change immediately)
+          Default seeded admin: admin@sksolarsolutions.com / ChangeMe@123 (change immediately)
         </p>
       </div>
     </div>

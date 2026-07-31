@@ -103,7 +103,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(clientBuildPath));
   app.get("*", (req, res) => res.sendFile(path.join(clientBuildPath, "index.html")));
 } else {
-  app.get("/", (req, res) => res.send("Surya Kiran Solar Solution API is running..."));
+  app.get("/", (req, res) => res.send("SK Solar Solutions API is running..."));
 }
 
 app.use(notFound);

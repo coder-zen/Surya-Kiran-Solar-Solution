@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import SeoHead from "../components/common/SeoHead";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import EnquiryModal from "../components/common/EnquiryModal";
@@ -13,7 +13,7 @@ const AMCPlans = () => {
   const [quoteOpen, setQuoteOpen] = useState(false);
   return (
     <>
-      <Helmet><title>AMC Plans | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead title="AMC Plans" path="/amc-plans" description="Annual maintenance plans for your rooftop solar system — panel cleaning, health checks and priority support in Pune, Solapur and Kolhapur." />
       <section className="pt-32 pb-16 bg-navy-gradient text-white text-center">
         <div className="container-custom">
           <h1 className="text-4xl lg:text-5xl font-display font-bold">AMC Plans</h1>
@@ -33,7 +33,7 @@ const AMCPlans = () => {
               <p className="text-3xl font-display font-bold text-navy mt-3">{plan.price}</p>
               <ul className="mt-6 space-y-3">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
+                  <li key={f} className="flex items-start gap-2 text-base sm:text-sm text-gray-600">
                     <FaCheck className="text-solar-orange mt-1 shrink-0" /> {f}
                   </li>
                 ))}
@@ -44,6 +44,11 @@ const AMCPlans = () => {
             </div>
           ))}
         </div>
+        <p className="text-center text-xs text-gray-400 mt-8 max-w-xl mx-auto">
+          Prices shown are indicative starting rates for residential systems — your exact AMC cost
+          depends on system capacity and site access. Our team confirms the final rate on a free
+          inspection.
+        </p>
       </section>
 
       <EnquiryModal isOpen={quoteOpen} onClose={() => setQuoteOpen(false)} source="amc" />

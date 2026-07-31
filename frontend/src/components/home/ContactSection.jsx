@@ -79,7 +79,7 @@ const ContactSection = () => {
               </button>
             </form>
 
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-base sm:text-sm">
               <a href={`tel:${COMPANY.phoneRaw}`} className="flex items-center gap-2 text-navy font-medium">
                 <FaPhoneAlt className="text-solar-orange" /> {COMPANY.phone}
               </a>
@@ -94,7 +94,7 @@ const ContactSection = () => {
                 <FaWhatsapp className="text-[#25D366]" /> WhatsApp Us
               </a>
             </div>
-            <p className="flex items-start gap-2 text-sm text-gray-500 mt-4">
+            <p className="flex items-start gap-2 text-base sm:text-sm text-gray-500 mt-4">
               <FaMapMarkerAlt className="text-solar-orange mt-0.5 shrink-0" /> {COMPANY.address}
             </p>
           </div>

@@ -1,9 +1,9 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Helmet } from "react-helmet-async";
 import { FaCheckCircle } from "react-icons/fa";
 import api from "../config/api";
 import EnquiryModal from "../components/common/EnquiryModal";
+import SeoHead from "../components/common/SeoHead";
 import { useState } from "react";
 
 const fetchService = async (slug) => {
@@ -36,7 +36,11 @@ const ServiceDetail = () => {
 
   return (
     <>
-      <Helmet><title>{service.title} | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead
+        title={service.title}
+        path={`/services/${slug}`}
+        description={service.shortDescription}
+      />
 
       <section className="pt-32 pb-16 bg-navy-gradient text-white text-center">
         <div className="container-custom">

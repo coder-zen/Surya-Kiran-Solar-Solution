@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SeoHead from "../components/common/SeoHead";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
@@ -172,7 +172,7 @@ const Calculators = () => {
 
   return (
     <>
-      <Helmet><title>Solar & EMI Calculators | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead title="Solar & EMI Calculators" path="/calculators" description="Estimate your solar savings and EMI with SK Solar Solutions' free online calculators." />
       <section className="pt-32 pb-12 bg-navy-gradient text-white text-center">
         <div className="container-custom">
           <h1 className="text-4xl lg:text-5xl font-display font-bold">Solar Savings & EMI Calculators</h1>

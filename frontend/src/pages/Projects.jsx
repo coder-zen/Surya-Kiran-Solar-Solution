@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Helmet } from "react-helmet-async";
+import SeoHead from "../components/common/SeoHead";
 import { Link } from "react-router-dom";
 import api from "../config/api";
 import { Assets } from "../config/images";
@@ -22,7 +22,7 @@ const Projects = () => {
 
   return (
     <>
-      <Helmet><title>Projects | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead title="Projects" path="/projects" description="Explore SK Solar Solutions' on-grid rooftop solar installations across Pune, Solapur and Kolhapur, Maharashtra." />
 
       <section className="pt-32 pb-12 bg-navy-gradient text-white text-center">
         <div className="container-custom">

@@ -37,13 +37,13 @@ const Navbar = () => {
             </span>
           </NavLink>
 
-          <div className="hidden lg:flex items-center gap-7">
-            {NAV_LINKS.slice(0, 8).map((link) => (
+          <div className="hidden xl:flex items-center gap-5 2xl:gap-7">
+            {NAV_LINKS.slice(0, 9).map((link) => (
               <NavLink
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `text-sm font-medium transition-colors ${scrolled ? "text-ink" : "text-white"
+                  `shrink-0 whitespace-nowrap text-sm font-medium transition-colors ${scrolled ? "text-ink" : "text-white"
                   } ${isActive ? "text-solar-orange" : "hover:text-solar-orange"}`
                 }
               >
@@ -52,20 +52,20 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden xl:flex items-center gap-4 shrink-0">
             <a
               href={`tel:${COMPANY.phoneRaw}`}
-              className={`flex items-center gap-2 text-sm font-semibold ${scrolled ? "text-navy" : "text-white"}`}
+              className={`flex items-center gap-2 whitespace-nowrap text-sm font-semibold ${scrolled ? "text-navy" : "text-white"}`}
             >
               <FaPhoneAlt /> {COMPANY.phone}
             </a>
-            <button onClick={() => setQuoteOpen(true)} className="btn-primary !py-2.5 !px-5 text-sm">
+            <button onClick={() => setQuoteOpen(true)} className="btn-primary !py-2.5 !px-5 text-sm whitespace-nowrap">
               Get Free Quote
             </button>
           </div>
 
           <button
-            className={`lg:hidden text-2xl ${scrolled ? "text-navy" : "text-white"}`}
+            className={`xl:hidden text-2xl ${scrolled ? "text-navy" : "text-white"}`}
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
           >
@@ -77,7 +77,7 @@ const Navbar = () => {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            className="fixed inset-0 z-50 bg-navy-dark/95 backdrop-blur-md text-white p-6 lg:hidden"
+            className="fixed inset-0 z-50 bg-navy-dark/95 backdrop-blur-md text-white p-6 xl:hidden"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}

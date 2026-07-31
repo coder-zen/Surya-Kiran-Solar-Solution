@@ -102,7 +102,7 @@ export const Assets = {
   brandLogos: [
     { name: "Waaree", src: "/assets/images/brands/waaree.svg" },
     { name: "Adani Solar", src: "/assets/images/brands/adani.svg" },
-    { name: "Luminous", src: "/assets/images/brands/luminous.svg" },
+    { name: "Havells", src: "/assets/images/brands/havells.svg" },
     { name: "Growatt", src: "/assets/images/brands/growatt.svg" },
     { name: "UTL Solar", src: "/assets/images/brands/utl.svg" },
     { name: "Australian Premium Solar", src: "/assets/images/brands/aps.svg" },

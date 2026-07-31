@@ -42,7 +42,18 @@ const pinIcon = new L.DivIcon({
   iconAnchor: [8, 16],
 });
 
-const MAHARASHTRA_CENTER = [18.9, 76.5];
+const MAHARASHTRA_CENTER = [18.2, 75.2];
+
+// Shown if the live API is unreachable (e.g. backend not deployed yet) so the
+// map never renders empty/broken — reflects SK Solar Solutions' real service
+// area: mainly Pune, with coverage in Solapur and Kolhapur.
+const FALLBACK_PROJECTS = [
+  { _id: "fallback-pune-1", title: "Rooftop Solar Installation", district: "Pune", category: "Residential", capacityKW: 15, location: { coordinates: [73.8567, 18.5204] } },
+  { _id: "fallback-pune-2", title: "Rooftop Solar Installation", district: "Pune", category: "Residential", capacityKW: 5, location: { coordinates: [73.9367, 18.5704] } },
+  { _id: "fallback-pune-3", title: "Rooftop Solar Installation", district: "Pune", category: "Commercial", capacityKW: 20, location: { coordinates: [73.7567, 18.4804] } },
+  { _id: "fallback-solapur-1", title: "Rooftop Solar Installation", district: "Solapur", category: "Residential", capacityKW: 4, location: { coordinates: [75.9064, 17.6599] } },
+  { _id: "fallback-kolhapur-1", title: "Rooftop Solar Installation", district: "Kolhapur", category: "Residential", capacityKW: 6, location: { coordinates: [74.2433, 16.705] } },
+];
 
 const fetchMapProjects = async () => {
   const { data } = await api.get("/projects/map");
@@ -53,7 +64,10 @@ const ProjectMap = () => {
   const { data: projects, isLoading, isError } = useQuery({
     queryKey: ["projects-map"],
     queryFn: fetchMapProjects,
+    retry: false,
   });
+
+  const pins = isError || !projects?.length ? FALLBACK_PROJECTS : projects;
 
   return (
     <section className="py-24 bg-white">
@@ -61,20 +75,13 @@ const ProjectMap = () => {
         <SectionHeading
           eyebrow="Our Reach"
           title="Explore Our Projects Across Maharashtra"
-          subtitle="Every pin is a real installation. Zoom in and click a marker to see project details."
+          subtitle="Serving Pune, Solapur and Kolhapur — zoom in and click a marker to see project details."
         />
 
         <div className="mt-14 rounded-3xl overflow-hidden shadow-premium border border-gray-100 h-[550px] relative">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
               <p className="text-gray-400">Loading project map…</p>
-            </div>
-          )}
-          {isError && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
-              <p className="text-gray-400">
-                Map data unavailable — start the backend API to see live project pins.
-              </p>
             </div>
           )}
 
@@ -84,7 +91,7 @@ const ProjectMap = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <MarkerClusterGroup chunkedLoading>
-              {(projects || []).map((project) => (
+              {pins.map((project) => (
                 <Marker
                   key={project._id}
                   position={[project.location.coordinates[1], project.location.coordinates[0]]}
@@ -104,12 +111,14 @@ const ProjectMap = () => {
                         {project.district}, Maharashtra · {project.capacityKW} kW
                       </p>
                       <p className="text-xs text-gray-500">{project.category}</p>
-                      <Link
-                        to={`/projects/${project.slug}`}
-                        className="inline-block mt-2 text-xs font-semibold text-solar-orange hover:underline"
-                      >
-                        View Full Project →
-                      </Link>
+                      {project.slug && (
+                        <Link
+                          to={`/projects/${project.slug}`}
+                          className="inline-block mt-2 text-xs font-semibold text-solar-orange hover:underline"
+                        >
+                          View Full Project →
+                        </Link>
+                      )}
                     </div>
                   </Popup>
                 </Marker>

@@ -3,11 +3,11 @@ import { FaSolarPanel, FaBolt, FaSmile, FaCalendarAlt, FaMapMarkedAlt } from "re
 import CountUp from "../ui/CountUp";
 
 const stats = [
-  { icon: FaSolarPanel, value: 850, suffix: "+", label: "Projects Completed" },
-  { icon: FaBolt, value: 12500, suffix: "+", label: "KW Installed" },
-  { icon: FaSmile, value: 780, suffix: "+", label: "Happy Customers" },
-  { icon: FaCalendarAlt, value: 12, suffix: "+", label: "Years Experience" },
-  { icon: FaMapMarkedAlt, value: 6, suffix: "", label: "Districts Covered" },
+  { icon: FaSolarPanel, value: 25, suffix: "", label: "Year Panel Warranty" },
+  { icon: FaBolt, value: 98, suffix: "%", label: "Inverter Efficiency" },
+  { icon: FaSmile, value: 70, suffix: "+", label: "Homes Solarized Pan-India" },
+  { icon: FaCalendarAlt, value: 22, suffix: "+", label: "Year System Life" },
+  { icon: FaMapMarkedAlt, value: 6, suffix: "", label: "Districts We Serve" },
 ];
 
 const StatsSection = () => (

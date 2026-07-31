@@ -4,14 +4,16 @@
  * from this single file.
  */
 export const COMPANY = {
-  name: "Surya Kiran Solar Solution",
-  tagline: "Powering India With Smart Solar Energy",
-  phone: "+91 98765 43210", // TODO: replace with real number
-  phoneRaw: "+919876543210",
-  whatsapp: "+919876543210", // TODO: replace with real WhatsApp Business number
-  email: "info@suryakiransolar.com", // TODO: replace with real email
-  address: "Shivaji Nagar, Pune, Maharashtra, India", // TODO: replace with real office address
-  officeCoordinates: { lat: 18.5204, lng: 73.8567 },
+  name: "SK Solar Solutions",
+  legalName: "Surya Kiran Solar Solutions",
+  tagline: "Solar Experts By Surya Kiran Solar Solutions",
+  director: "Suraj Dhotre",
+  phone: "+91 90678 56576",
+  phoneRaw: "+919067856576",
+  whatsapp: "+919067856576",
+  email: "sksolarsolutions.electrical@gmail.com",
+  address: "Near Akshay Garden Hotel, Belekar Wasti, Manjari Budruk, Pune, Maharashtra 412307, India",
+  officeCoordinates: { lat: 18.5124, lng: 73.9718 },
   social: {
     facebook: "https://facebook.com/",
     instagram: "https://instagram.com/",
@@ -24,6 +26,7 @@ export const NAV_LINKS = [
   { label: "Home", path: "/" },
   { label: "About Us", path: "/about" },
   { label: "Services", path: "/services" },
+  { label: "Pricing", path: "/pricing" },
   { label: "Projects", path: "/projects" },
   { label: "Gallery", path: "/gallery" },
   { label: "Products", path: "/products" },

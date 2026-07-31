@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import SeoHead from "../components/common/SeoHead";
 import { useQuery } from "@tanstack/react-query";
 import { FaDownload } from "react-icons/fa";
 import api from "../config/api";
@@ -13,7 +13,7 @@ const Products = () => {
 
   return (
     <>
-      <Helmet><title>Products | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead title="Products" path="/products" description="Solar panels, inverters and mounting structures from trusted brands — Waaree, Adani Solar, Growatt, UTL Solar and more." />
       <section className="pt-32 pb-12 bg-navy-gradient text-white text-center">
         <div className="container-custom">
           <h1 className="text-4xl lg:text-5xl font-display font-bold">Products</h1>

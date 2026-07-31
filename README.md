@@ -1,4 +1,4 @@
-# Surya Kiran Solar Solution — MERN Web Platform
+# SK Solar Solutions — MERN Web Platform
 
 A lead-generation website + admin platform for a Solar EPC company, built on
 MongoDB, Express, React (Vite), and Node.js.
@@ -122,7 +122,7 @@ npm install
 npm run seed                # inserts sample projects/services/testimonials/FAQs + a default admin
 npm run dev                 # starts on http://localhost:5000
 ```
-Default seeded admin login: `admin@suryakiransolar.com` / `ChangeMe@123` — **change this
+Default seeded admin login: `admin@sksolarsolutions.com` / `ChangeMe@123` — **change this
 immediately** after first login (or better, change the password in `seed/seed.js` before
 running it).
 

@@ -1,9 +1,9 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Helmet } from "react-helmet-async";
 import { FaMapMarkerAlt, FaBolt, FaCalendarAlt, FaStar } from "react-icons/fa";
 import api from "../config/api";
 import { Assets } from "../config/images";
+import SeoHead from "../components/common/SeoHead";
 
 const fetchProject = async (slug) => {
   const { data } = await api.get(`/projects/${slug}`);
@@ -31,7 +31,12 @@ const ProjectDetail = () => {
 
   return (
     <>
-      <Helmet><title>{project.title} | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead
+        title={project.title}
+        path={`/projects/${slug}`}
+        description={project.description || `${project.title} — a ${project.capacityKW}kW on-grid rooftop solar installation in ${project.district}, Maharashtra by SK Solar Solutions.`}
+        image={project.coverImage || undefined}
+      />
 
       <section className="pt-32 pb-16 bg-navy-gradient text-white">
         <div className="container-custom">

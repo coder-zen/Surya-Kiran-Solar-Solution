@@ -45,20 +45,70 @@ const services = [
   { title: "MSEDCL Liaison Work", shortDescription: "Complete handling of net-metering and MSEDCL paperwork on your behalf.", order: 14 },
 ];
 
+// SK Solar Solutions' real service area is concentrated in Pune, with
+// additional coverage in Solapur and Kolhapur. Only the first entry below is
+// a specific completed project (from a current quotation, see customerName
+// note); the rest are undated service-area markers for the homepage map —
+// no fabricated customer names/addresses are attached to them.
+// customerName is stored for internal records only — the Project model notes
+// it should be shown publicly on the site only with the customer's consent,
+// and FeaturedProjects.jsx does not render this field.
 const projects = [
-  { title: "Riverside Bungalow Rooftop Plant", category: "Residential", capacityKW: 5, district: "Pune", location: { coordinates: districtCoords.Pune }, isFeatured: true },
-  { title: "Solapur Textile Mill Industrial Plant", category: "Industrial", capacityKW: 500, district: "Solapur", location: { coordinates: districtCoords.Solapur }, isFeatured: true },
-  { title: "Satara School Campus Solar", category: "Government", capacityKW: 40, district: "Satara", location: { coordinates: districtCoords.Satara } },
-  { title: "Kolhapur Sugar Factory Ground Mount", category: "Ground Mounted", capacityKW: 1000, district: "Kolhapur", location: { coordinates: districtCoords.Kolhapur }, isFeatured: true },
-  { title: "Sangli Showroom Commercial Rooftop", category: "Commercial", capacityKW: 25, district: "Sangli", location: { coordinates: districtCoords.Sangli } },
-  { title: "Ahmednagar Farmhouse Water Pump Plant", category: "Residential", capacityKW: 3, district: "Ahmednagar", location: { coordinates: districtCoords.Ahmednagar } },
+  {
+    title: "15kW On-Grid Rooftop Solar Installation",
+    customerName: "Sachin Shinde",
+    category: "Residential",
+    capacityKW: 15,
+    district: "Pune",
+    address: "Loni Kalbhor, Pune, Maharashtra 412201",
+    location: { coordinates: districtCoords.Pune },
+    technologiesUsed: ["Monocrystalline TOPCon Panels", "On-Grid String Inverter", "Net Metering", "Apollo GI Elevated Structure"],
+    description: "On-grid rooftop solar power plant with complete design, supply, installation, testing, commissioning and MSEDCL net-metering coordination.",
+    isFeatured: true,
+  },
+  {
+    title: "Residential Rooftop Solar Installation",
+    category: "Residential",
+    capacityKW: 5,
+    district: "Pune",
+    location: { coordinates: [districtCoords.Pune[0] + 0.08, districtCoords.Pune[1] + 0.05] },
+    technologiesUsed: ["Monocrystalline Panels", "On-Grid Inverter", "Net Metering"],
+    description: "On-grid rooftop solar installation for a residential customer in the Pune service area.",
+  },
+  {
+    title: "Commercial Rooftop Solar Installation",
+    category: "Commercial",
+    capacityKW: 20,
+    district: "Pune",
+    location: { coordinates: [districtCoords.Pune[0] - 0.1, districtCoords.Pune[1] - 0.04] },
+    technologiesUsed: ["Monocrystalline Panels", "On-Grid Inverter", "Net Metering"],
+    description: "On-grid rooftop solar installation for a commercial establishment in the Pune service area.",
+  },
+  {
+    title: "Residential Rooftop Solar Installation",
+    category: "Residential",
+    capacityKW: 4,
+    district: "Solapur",
+    location: { coordinates: districtCoords.Solapur },
+    technologiesUsed: ["Monocrystalline Panels", "On-Grid Inverter", "Net Metering"],
+    description: "On-grid rooftop solar installation for a residential customer in the Solapur service area.",
+  },
+  {
+    title: "Residential Rooftop Solar Installation",
+    category: "Residential",
+    capacityKW: 6,
+    district: "Kolhapur",
+    location: { coordinates: districtCoords.Kolhapur },
+    technologiesUsed: ["Monocrystalline Panels", "On-Grid Inverter", "Net Metering"],
+    description: "On-grid rooftop solar installation for a residential customer in the Kolhapur service area.",
+  },
 ];
 
-const testimonials = [
-  { customerName: "Rohit Deshmukh", location: "Pune", rating: 5, message: "Excellent installation quality and the team handled all MSEDCL paperwork for us. Highly recommended.", isVerified: true },
-  { customerName: "Sanjay Patil", location: "Kolhapur", rating: 5, message: "Our factory's power bill dropped dramatically within the first month. Professional crew, clean work.", isVerified: true },
-  { customerName: "Anita Kulkarni", location: "Satara", rating: 4, message: "Smooth process from site visit to commissioning. Would use them again for our next branch.", isVerified: true },
-];
+// No real customer testimonials are available yet — left empty so the
+// Testimonials section stays hidden until genuine reviews are added via
+// the admin panel (see components/home/Testimonials.jsx: it only renders
+// when the API returns at least one testimonial).
+const testimonials = [];
 
 const faqs = [
   { question: "How much subsidy is available for residential solar in Maharashtra?", answer: "Central government subsidy under the PM Surya Ghar scheme is available for residential rooftop systems up to 3kW, with tiered support up to 10kW. Exact amounts are updated regularly on our Government Subsidy page.", category: "Subsidy", order: 1 },
@@ -82,15 +132,15 @@ const importData = async () => {
     await Testimonial.insertMany(testimonials);
     await FAQ.insertMany(faqs);
 
-    const adminExists = await User.findOne({ email: "admin@suryakiransolar.com" });
+    const adminExists = await User.findOne({ email: "admin@sksolarsolutions.com" });
     if (!adminExists) {
       await User.create({
         name: "Super Admin",
-        email: "admin@suryakiransolar.com",
+        email: "admin@sksolarsolutions.com",
         password: "ChangeMe@123", // change immediately after first login
         role: "super_admin",
       });
-      console.log("[Seed] Default admin created — admin@suryakiransolar.com / ChangeMe@123 (change this password!)");
+      console.log("[Seed] Default admin created — admin@sksolarsolutions.com / ChangeMe@123 (change this password!)");
     }
 
     console.log("[Seed] Sample data imported successfully.");

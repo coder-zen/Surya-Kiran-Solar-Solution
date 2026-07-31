@@ -48,7 +48,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen flex bg-gray-50">
       <aside className="w-64 bg-navy-dark text-white p-6 hidden md:block">
-        <h2 className="font-display font-bold text-lg mb-8">Surya Kiran Admin</h2>
+        <h2 className="font-display font-bold text-lg mb-8">SK Solar Admin</h2>
         <nav className="space-y-1">
           {navItems.map((item) => (
             <NavLink

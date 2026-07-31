@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
+import SeoHead from "../components/common/SeoHead";
 import { FaSolarPanel } from "react-icons/fa";
 
 const NotFound = () => (
   <>
-    <Helmet><title>Page Not Found | Surya Kiran Solar Solution</title></Helmet>
+    <SeoHead title="Page Not Found" path="/404" />
     <section className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-gray-50">
       {/* TODO: replace icon with a branded 404 illustration — Assets.notFoundIllustration */}
       <FaSolarPanel className="text-6xl text-solar-orange mb-6" />

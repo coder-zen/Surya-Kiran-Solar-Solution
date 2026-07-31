@@ -22,7 +22,7 @@ const getProjects = asyncHandler(async (req, res) => {
 // @access  Public
 const getProjectsForMap = asyncHandler(async (req, res) => {
   const projects = await Project.find({ isPublished: true }).select(
-    "title district capacityKW location coverImage category installationDate"
+    "title slug district capacityKW location coverImage category installationDate"
   );
   res.json({ success: true, count: projects.length, data: projects });
 });

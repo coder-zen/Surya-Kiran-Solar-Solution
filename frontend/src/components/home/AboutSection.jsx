@@ -5,10 +5,10 @@ import { Assets } from "../../config/images";
 import SectionHeading from "../common/SectionHeading";
 
 const points = [
-  "12+ years of solar EPC experience across Maharashtra",
-  "MNRE-certified installation standards on every project",
+  "MNRE & IEC-certified installation standards on every project",
   "In-house engineering, fabrication & commissioning teams",
-  "End-to-end handling of subsidy and net-metering paperwork",
+  "Complete MSEDCL net-metering and subsidy paperwork, handled for you",
+  "25-year panel performance warranty and up to 10-year inverter warranty",
 ];
 
 const AboutSection = () => (
@@ -24,27 +24,28 @@ const AboutSection = () => (
         {/* TODO: Replace with real team/office photograph — see config/images.js -> aboutImage */}
         <img
           src={Assets.aboutImage}
-          alt="Surya Kiran Solar Solution team"
+          alt="SK Solar Solutions installation team"
           className="rounded-3xl shadow-premium w-full h-[420px] object-cover"
           onError={(e) => (e.target.style.background = "linear-gradient(135deg,#19376D,#0B2447)")}
         />
         <div className="absolute -bottom-8 -right-6 glass-card p-6 hidden sm:block">
-          <p className="text-3xl font-display font-bold text-navy">12+</p>
-          <p className="text-sm text-gray-500">Years of Excellence</p>
+          <p className="text-3xl font-display font-bold text-navy">70+</p>
+          <p className="text-sm text-gray-500">Homes Solarized</p>
         </div>
       </motion.div>
 
       <div>
         <SectionHeading
           align="left"
-          eyebrow="About Surya Kiran Solar Solution"
+          eyebrow="About SK Solar Solutions"
           title="Engineering A Cleaner, More Independent Future"
         />
         <p className="mt-6 text-gray-600 leading-relaxed">
-          What began as a small team of engineers passionate about renewable energy has grown into
-          one of Maharashtra&apos;s most trusted solar EPC partners. We&apos;ve helped homeowners,
-          factories, schools and government bodies cut their electricity costs dramatically —
-          without ever compromising on installation quality or after-sales support.
+          SK Solar Solutions (Surya Kiran Solar Solutions), led by Director Suraj Dhotre, plans and
+          delivers rooftop and ground-mounted solar power plants end-to-end — site survey, system
+          design, module &amp; BOS selection, erection, commissioning and MSEDCL liaisoning. Our
+          residential solar solutions have helped solarize 70+ homes across India, using
+          high-efficiency Monocrystalline panels backed by a 25-year performance warranty.
         </p>
 
         <ul className="mt-8 space-y-3">

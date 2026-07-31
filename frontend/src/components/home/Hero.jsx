@@ -1,21 +1,40 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
+import { FaPhoneAlt, FaWhatsapp, FaPlay } from "react-icons/fa";
 import CountUp from "../ui/CountUp";
 import { Assets } from "../../config/images";
 import { COMPANY } from "../../config/constants";
 import EnquiryModal from "../common/EnquiryModal";
 
 const stats = [
-  { label: "Projects Completed", value: 850, suffix: "+" },
-  { label: "KW Installed", value: 12500, suffix: "+" },
-  { label: "Happy Customers", value: 780, suffix: "+" },
-  { label: "Years Experience", value: 12, suffix: "+" },
+  { label: "Year Panel Warranty", value: 25, suffix: "" },
+  { label: "Inverter Efficiency", value: 98, suffix: "%" },
+  { label: "Homes Solarized Pan-India", value: 70, suffix: "+" },
+  { label: "Year System Life", value: 22, suffix: "+" },
 ];
 
 const Hero = () => {
   const [quoteOpen, setQuoteOpen] = useState(false);
+  const [videoPaused, setVideoPaused] = useState(false);
+  const videoRef = useRef(null);
   const whatsappLink = `https://wa.me/${COMPANY.whatsapp.replace(/[^\d]/g, "")}`;
+
+  useEffect(() => {
+    // Some mobile browsers (Data Saver mode, in-app webviews) silently block
+    // autoplay even when muted+playsInline — fall back to a tappable play
+    // button sized for the viewport instead of leaving a frozen poster.
+    const video = videoRef.current;
+    if (!video) return;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => setVideoPaused(true));
+    }
+  }, []);
+
+  const handlePlayClick = () => {
+    videoRef.current?.play();
+    setVideoPaused(false);
+  };
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -25,17 +44,32 @@ const Hero = () => {
           Recommended: 1920x1080, H.264 mp4, muted/looping, under 8MB
       ================================================================= */}
       <video
+        ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
         poster={Assets.heroFallbackImage}
         className="absolute inset-0 h-full w-full object-cover"
+        onPlay={() => setVideoPaused(false)}
+        onPause={() => setVideoPaused(true)}
         onError={(e) => (e.target.style.display = "none")}
       >
         <source src={Assets.heroVideo} type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-gradient-to-b from-navy-dark/80 via-navy-dark/70 to-navy-dark/90" />
+
+      {videoPaused && (
+        <button
+          onClick={handlePlayClick}
+          aria-label="Play background video"
+          className="absolute inset-0 z-[5] flex items-center justify-center"
+        >
+          <span className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/40 text-white text-lg sm:text-xl">
+            <FaPlay className="ml-0.5" />
+          </span>
+        </button>
+      )}
 
       <div className="container-custom relative z-10 pt-28 pb-16">
         <motion.p
@@ -44,7 +78,7 @@ const Hero = () => {
           transition={{ duration: 0.6 }}
           className="section-eyebrow !text-solar-yellow"
         >
-          Maharashtra&apos;s Trusted Solar EPC Partner
+          Pune&apos;s Trusted On-Grid Rooftop Solar EPC Partner
         </motion.p>
 
         <motion.h1
@@ -53,7 +87,7 @@ const Hero = () => {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white max-w-3xl leading-tight"
         >
-          Powering India With Smart Solar Energy
+          Powering Homes &amp; Businesses With Smart Solar Energy
         </motion.h1>
 
         <motion.p
@@ -62,8 +96,9 @@ const Hero = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="mt-6 text-lg text-gray-200 max-w-xl"
         >
-          Trusted Solar EPC solutions for residential, commercial and industrial projects —
-          engineered for maximum savings and built to last for decades.
+          MNRE &amp; IEC-certified on-grid solar rooftop systems for homes, businesses and
+          institutions — complete design, supply, installation, testing, commissioning and
+          MSEDCL net-metering coordination, handled end-to-end.
         </motion.p>
 
         <motion.div
@@ -96,7 +131,7 @@ const Hero = () => {
                 <CountUp end={stat.value} />
                 {stat.suffix}
               </p>
-              <p className="text-xs text-gray-200 mt-1">{stat.label}</p>
+              <p className="text-sm sm:text-xs text-gray-200 mt-1">{stat.label}</p>
             </div>
           ))}
         </motion.div>

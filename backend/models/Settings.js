@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
  */
 const settingsSchema = new mongoose.Schema(
   {
-    companyName: { type: String, default: "Surya Kiran Solar Solution" },
+    companyName: { type: String, default: "SK Solar Solutions" },
     phone: { type: String },
     whatsapp: { type: String },
     email: { type: String },

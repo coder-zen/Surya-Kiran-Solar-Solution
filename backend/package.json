@@ -1,7 +1,7 @@
 {
   "name": "surya-kiran-solar-backend",
   "version": "1.0.0",
-  "description": "Backend REST API for Surya Kiran Solar Solution — MERN Solar EPC lead generation platform",
+  "description": "Backend REST API for SK Solar Solutions — MERN Solar EPC lead generation platform",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {

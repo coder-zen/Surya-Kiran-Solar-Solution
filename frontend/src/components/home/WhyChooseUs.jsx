@@ -3,12 +3,12 @@ import { FaUserTie, FaCertificate, FaAward, FaHeadset, FaBolt, FaCoins } from "r
 import SectionHeading from "../common/SectionHeading";
 
 const reasons = [
-  { icon: FaUserTie, title: "Experienced Engineers", desc: "A dedicated in-house team with 12+ years of hands-on solar expertise." },
-  { icon: FaCertificate, title: "MNRE Standards", desc: "Every installation follows MNRE guidelines and national safety codes." },
-  { icon: FaAward, title: "Certified Installation", desc: "Certified installers and premium-grade components, every time." },
-  { icon: FaBolt, title: "Fast Installation", desc: "Streamlined project execution — from survey to commissioning." },
-  { icon: FaCoins, title: "Transparent Pricing", desc: "No hidden costs. Clear, itemized quotes before you commit." },
-  { icon: FaHeadset, title: "After-Sales Support", desc: "Responsive AMC and monitoring support long after installation." },
+  { icon: FaUserTie, title: "In-House Engineering Team", desc: "Dedicated survey, design, fabrication and commissioning teams — no subcontracted guesswork." },
+  { icon: FaCertificate, title: "MNRE & IEC Standards", desc: "Every installation uses MNRE & IEC-certified components and follows national safety codes." },
+  { icon: FaAward, title: "25-Year Panel Warranty", desc: "Monocrystalline panels rated for minimum 90% output at 10 years, 84% at 25 years." },
+  { icon: FaBolt, title: "Fast Installation", desc: "Installation & commissioning typically completed within 2–3 weeks of material delivery." },
+  { icon: FaCoins, title: "Transparent Pricing", desc: "Clear, itemized quotes with no hidden costs before you commit." },
+  { icon: FaHeadset, title: "MSEDCL Liaisoning Included", desc: "We handle net-metering, bill updates and system initialization paperwork for you." },
 ];
 
 const WhyChooseUs = () => (
@@ -32,7 +32,7 @@ const WhyChooseUs = () => (
           >
             <reason.icon className="text-solar-yellow text-3xl mb-4" />
             <h3 className="font-display font-semibold text-lg text-white">{reason.title}</h3>
-            <p className="text-sm text-gray-300 mt-2 leading-relaxed">{reason.desc}</p>
+            <p className="text-base sm:text-sm text-gray-300 mt-2 leading-relaxed">{reason.desc}</p>
           </motion.div>
         ))}
       </div>

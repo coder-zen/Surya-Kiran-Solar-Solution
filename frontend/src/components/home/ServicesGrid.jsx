@@ -48,7 +48,7 @@ const ServicesGrid = () => (
               <service.icon />
             </div>
             <h3 className="font-display font-semibold text-lg text-navy">{service.title}</h3>
-            <p className="text-sm text-gray-500 mt-2 leading-relaxed">{service.desc}</p>
+            <p className="text-base sm:text-sm text-gray-500 mt-2 leading-relaxed">{service.desc}</p>
             <Link to={`/services/${service.slug}`} className="inline-block mt-4 text-sm font-semibold text-solar-orange hover:underline">
               Learn More →
             </Link>

@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import SeoHead from "../components/common/SeoHead";
 import { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import EnquiryModal from "../components/common/EnquiryModal";
@@ -15,7 +15,7 @@ const GovernmentSubsidy = () => {
   const [quoteOpen, setQuoteOpen] = useState(false);
   return (
     <>
-      <Helmet><title>Government Subsidy | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead title="Government Subsidy" path="/government-subsidy" description="Check your eligibility for India's PM Surya Ghar rooftop solar subsidy scheme with SK Solar Solutions, Pune." />
       <section className="pt-32 pb-16 bg-navy-gradient text-white text-center">
         <div className="container-custom">
           <h1 className="text-4xl lg:text-5xl font-display font-bold">Government Solar Subsidy</h1>

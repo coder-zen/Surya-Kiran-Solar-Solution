@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Helmet } from "react-helmet-async";
+import SeoHead from "../components/common/SeoHead";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 import api from "../config/api";
@@ -24,7 +24,7 @@ const Gallery = () => {
 
   return (
     <>
-      <Helmet><title>Gallery | Surya Kiran Solar Solution</title></Helmet>
+      <SeoHead title="Gallery" path="/gallery" description="Photos from SK Solar Solutions' rooftop solar installations across Pune, Solapur and Kolhapur." />
 
       <section className="pt-32 pb-12 bg-navy-gradient text-white text-center">
         <div className="container-custom">
