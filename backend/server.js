@@ -41,9 +41,23 @@ const app = express();
 // Security & core middleware
 // ------------------------------------------------------------------
 app.use(helmet());
+// CLIENT_URL can be a single origin or a comma-separated list (e.g. while
+// transitioning between a .vercel.app preview URL and a final custom domain,
+// or to allow both "yourdomain.com" and "www.yourdomain.com" at once).
+const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim());
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. curl, server-to-server health checks)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
     credentials: true,
   })
 );
