@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
@@ -31,8 +30,8 @@ const AdminLogin = () => {
             {isSubmitting ? "Logging in..." : "Login"}
           </button>
         </form>
-        <p className="text-xs text-gray-400 text-center mt-6">
-          Default seeded admin: admin@sksolarsolutions.com / ChangeMe@123 (change immediately)
+        <p className="text-sm text-center mt-6">
+          <Link to="/admin/forgot-password" className="text-solar-orange font-semibold">Forgot password?</Link>
         </p>
       </div>
     </div>

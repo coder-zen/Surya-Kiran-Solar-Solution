@@ -54,24 +54,24 @@ const SolarSavingsCalculator = () => {
     <div className="grid lg:grid-cols-2 gap-10">
       <form onSubmit={handleSubmit(onCalculate)} className="glass-card !bg-gray-50 p-8 space-y-5">
         <div>
-          <label className="text-sm font-medium text-navy">Monthly Electricity Bill (₹)</label>
+          <label className="section-label">Monthly Electricity Bill (₹)</label>
           <input
             type="number"
             {...register("electricityBill", { required: true, min: 100 })}
-            className="w-full mt-1 rounded-lg border border-gray-200 px-4 py-3"
+            className="input-field mt-1"
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-navy">Available Roof Area (sq. ft.)</label>
+          <label className="section-label">Available Roof Area (sq. ft.)</label>
           <input
             type="number"
             {...register("roofArea")}
-            className="w-full mt-1 rounded-lg border border-gray-200 px-4 py-3"
+            className="input-field mt-1"
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-navy">City / Location</label>
-          <input {...register("location")} placeholder="e.g. Pune" className="w-full mt-1 rounded-lg border border-gray-200 px-4 py-3" />
+          <label className="section-label">City / Location</label>
+          <input {...register("location")} placeholder="e.g. Pune" className="input-field mt-1" />
         </div>
         <button type="submit" className="btn-primary w-full">Calculate Savings</button>
       </form>
@@ -134,15 +134,15 @@ const EMICalculator = () => {
     <div className="grid lg:grid-cols-2 gap-10">
       <div className="glass-card !bg-gray-50 p-8 space-y-6">
         <div>
-          <label className="text-sm font-medium text-navy">Loan Amount (₹): {loan.toLocaleString()}</label>
+          <label className="section-label">Loan Amount (₹): {loan.toLocaleString()}</label>
           <input type="range" min="50000" max="2000000" step="10000" value={loan} onChange={(e) => setLoan(Number(e.target.value))} className="w-full mt-2" />
         </div>
         <div>
-          <label className="text-sm font-medium text-navy">Interest Rate (%): {rate}</label>
+          <label className="section-label">Interest Rate (%): {rate}</label>
           <input type="range" min="5" max="18" step="0.5" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="w-full mt-2" />
         </div>
         <div>
-          <label className="text-sm font-medium text-navy">Tenure (Years): {tenure}</label>
+          <label className="section-label">Tenure (Years): {tenure}</label>
           <input type="range" min="1" max="15" value={tenure} onChange={(e) => setTenure(Number(e.target.value))} className="w-full mt-2" />
         </div>
       </div>
@@ -183,11 +183,11 @@ const Calculators = () => {
       <section className="py-16 bg-white">
         <div className="container-custom">
           <div className="flex justify-center gap-2 mb-10">
-            <button onClick={() => setTab("savings")} className={`px-6 py-2 rounded-full text-sm font-semibold ${tab === "savings" ? "bg-navy text-white" : "bg-gray-100 text-gray-600"}`}>Solar Savings</button>
-            <button onClick={() => setTab("emi")} className={`px-6 py-2 rounded-full text-sm font-semibold ${tab === "emi" ? "bg-navy text-white" : "bg-gray-100 text-gray-600"}`}>EMI Calculator</button>
+            <button onClick={() => setTab("savings")} className={`option-btn ${tab === "savings" ? "bg-navy text-white" : "bg-gray-100 text-gray-600"}`}>Solar Savings</button>
+            <button onClick={() => setTab("emi")} className={`option-btn ${tab === "emi" ? "bg-navy text-white" : "bg-gray-100 text-gray-600"}`}>EMI Calculator</button>
           </div>
           {tab === "savings" ? <SolarSavingsCalculator /> : <EMICalculator />}
-          <p className="text-xs text-gray-400 text-center mt-8 max-w-xl mx-auto">
+          <p className="terms-text text-center mt-8 max-w-xl mx-auto">
             Figures shown are indicative estimates for planning purposes only and do not constitute a
             binding quote. Actual system sizing, cost, and savings depend on a physical site survey.
           </p>

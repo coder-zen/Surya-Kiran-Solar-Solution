@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import ReactMarkdown from "react-markdown";
 import api from "../config/api";
 import SeoHead from "../components/common/SeoHead";
 
@@ -38,7 +39,11 @@ const BlogDetail = () => {
           <h1 className="section-heading mt-2">{blog.title}</h1>
           <p className="text-gray-400 text-sm mt-3">By {blog.author?.name || "SK Solar Team"}</p>
           {blog.coverImage && <img src={blog.coverImage} alt={blog.title} className="w-full h-80 object-cover rounded-2xl my-8" />}
-          <div className="prose max-w-none text-gray-600 leading-relaxed whitespace-pre-line">{blog.contentMarkdown}</div>
+          {/* Markdown, not HTML — react-markdown does not render raw HTML by
+              default, so admin-authored content can't inject scripts. */}
+          <div className="prose prose-headings:font-display prose-headings:text-navy prose-a:text-solar-orange max-w-none text-gray-600 leading-relaxed">
+            <ReactMarkdown>{blog.contentMarkdown}</ReactMarkdown>
+          </div>
         </div>
       </article>
     </>

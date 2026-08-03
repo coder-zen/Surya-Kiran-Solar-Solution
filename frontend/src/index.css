@@ -40,6 +40,46 @@
   .section-heading {
     @apply text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-navy leading-tight;
   }
+  .subtitle-text {
+    @apply mt-4 text-gray-600 text-lg;
+  }
+  .input-field {
+    @apply w-full rounded-lg border border-gray-200 px-4 py-3 focus:border-solar-orange;
+  }
+  .section-label {
+    @apply text-sm font-medium text-navy;
+  }
+  .option-btn {
+    @apply px-6 py-2 rounded-full text-sm font-semibold transition-colors;
+  }
+  .terms-text {
+    @apply text-xs text-gray-400 leading-relaxed;
+  }
+  .badge-text {
+    @apply text-xs font-semibold uppercase tracking-widest;
+  }
+}
+
+/*
+ * Mobile typography scale (≤640px only) — see MASTER PROMPT "Mobile Typography Scale".
+ * Scoped to this single media query so desktop/tablet sizing (set above via @apply,
+ * including the sm:/lg: variants already baked into .section-heading) is untouched.
+ * Each rule maps 1:1 to a reusable class — add these class names to new components
+ * to inherit the scale automatically instead of inlining a mobile font-size.
+ */
+@media (max-width: 640px) {
+  .section-heading { font-size: 26px !important; }
+  .subtitle-text { font-size: 16px !important; }
+  .section-label { font-size: 16px !important; }
+  .option-btn { font-size: 15px !important; }
+  .terms-text { font-size: 13px !important; }
+  .badge-text { font-size: 12px !important; }
+  .btn-primary, .btn-outline, .btn-navy { font-size: 18px !important; }
+
+  /* 16px is the iOS Safari auto-zoom threshold — every native form control must
+     meet it, not just ones opted into .input-field, so this targets the elements
+     directly rather than relying on every form having adopted the shared class. */
+  input, select, textarea { font-size: 16px !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {

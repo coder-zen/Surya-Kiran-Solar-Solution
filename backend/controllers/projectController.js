@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Project = require("../models/Project");
+const { pointForDistrict } = require("../config/districts");
 
 // @desc    Get all published projects (supports ?category= &district= &featured=true)
 // @route   GET /api/projects
@@ -43,7 +44,13 @@ const getProjectBySlug = asyncHandler(async (req, res) => {
 // @route   POST /api/projects
 // @access  Private (admin)
 const createProject = asyncHandler(async (req, res) => {
-  const project = await Project.create(req.body);
+  const payload = { ...req.body };
+  if (!payload.location?.coordinates) {
+    const point = pointForDistrict(payload.district);
+    if (point) payload.location = point;
+  }
+
+  const project = await Project.create(payload);
   res.status(201).json({ success: true, data: project });
 });
 

@@ -9,7 +9,7 @@ const Footer = () => (
         <h3 className="font-display font-bold text-xl mb-4">{COMPANY.name}</h3>
         <p className="text-gray-300 text-base sm:text-sm leading-relaxed">
           MNRE &amp; IEC-certified on-grid rooftop solar solutions for homes, businesses and
-          institutions across Pune and Maharashtra — engineered for maximum savings and
+          institutions across all districts of Maharashtra — engineered for maximum savings and
           long-term reliability.
         </p>
         <div className="flex gap-3 mt-5">

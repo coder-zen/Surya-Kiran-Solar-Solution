@@ -12,8 +12,11 @@ const generateToken = (res, userId) => {
 
   res.cookie("token", token, {
     httpOnly: true,
+    // Frontend (Vercel) and backend (Render) are different sites, so the
+    // cookie must be SameSite=None to be sent cross-site — this requires
+    // Secure to always be true in production (browsers reject None without it).
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: (Number(process.env.JWT_COOKIE_EXPIRES_DAYS) || 7) * 24 * 60 * 60 * 1000,
   });
 

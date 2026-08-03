@@ -13,7 +13,7 @@ const AMCPlans = () => {
   const [quoteOpen, setQuoteOpen] = useState(false);
   return (
     <>
-      <SeoHead title="AMC Plans" path="/amc-plans" description="Annual maintenance plans for your rooftop solar system — panel cleaning, health checks and priority support in Pune, Solapur and Kolhapur." />
+      <SeoHead title="AMC Plans" path="/amc-plans" description="Annual maintenance plans for your rooftop solar system — panel cleaning, health checks and priority support across all districts of Maharashtra." />
       <section className="pt-32 pb-16 bg-navy-gradient text-white text-center">
         <div className="container-custom">
           <h1 className="text-4xl lg:text-5xl font-display font-bold">AMC Plans</h1>
@@ -28,7 +28,7 @@ const AMCPlans = () => {
               key={plan.name}
               className={`rounded-2xl p-8 border ${plan.popular ? "border-solar-orange shadow-premium scale-105" : "border-gray-100 shadow-sm"}`}
             >
-              {plan.popular && <span className="text-xs font-semibold text-solar-orange uppercase">Most Popular</span>}
+              {plan.popular && <span className="badge-text text-solar-orange">Most Popular</span>}
               <h3 className="font-display font-bold text-2xl text-navy mt-2">{plan.name}</h3>
               <p className="text-3xl font-display font-bold text-navy mt-3">{plan.price}</p>
               <ul className="mt-6 space-y-3">
@@ -44,7 +44,7 @@ const AMCPlans = () => {
             </div>
           ))}
         </div>
-        <p className="text-center text-xs text-gray-400 mt-8 max-w-xl mx-auto">
+        <p className="terms-text text-center mt-8 max-w-xl mx-auto">
           Prices shown are indicative starting rates for residential systems — your exact AMC cost
           depends on system capacity and site access. Our team confirms the final rate on a free
           inspection.

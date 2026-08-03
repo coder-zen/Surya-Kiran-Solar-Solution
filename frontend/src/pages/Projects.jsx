@@ -22,7 +22,7 @@ const Projects = () => {
 
   return (
     <>
-      <SeoHead title="Projects" path="/projects" description="Explore SK Solar Solutions' on-grid rooftop solar installations across Pune, Solapur and Kolhapur, Maharashtra." />
+      <SeoHead title="Projects" path="/projects" description="Explore SK Solar Solutions' on-grid rooftop solar installations across all districts of Maharashtra." />
 
       <section className="pt-32 pb-12 bg-navy-gradient text-white text-center">
         <div className="container-custom">

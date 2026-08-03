@@ -49,7 +49,7 @@ const ContactSection = () => {
                   <input
                     {...register("name", { required: "Name is required" })}
                     placeholder="Full Name"
-                    className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:border-solar-orange"
+                    className="input-field"
                   />
                   {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>}
                 </div>
@@ -57,7 +57,7 @@ const ContactSection = () => {
                   <input
                     {...register("phone", { required: "Phone is required" })}
                     placeholder="Phone Number"
-                    className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:border-solar-orange"
+                    className="input-field"
                   />
                   {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone.message}</p>}
                 </div>
@@ -66,32 +66,32 @@ const ContactSection = () => {
                 {...register("email")}
                 type="email"
                 placeholder="Email Address"
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:border-solar-orange"
+                className="input-field"
               />
               <textarea
                 {...register("message")}
                 rows={4}
                 placeholder="Tell us about your requirement..."
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:border-solar-orange"
+                className="input-field"
               />
               <button type="submit" disabled={isSubmitting} className="btn-primary w-full">
                 {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
 
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-base sm:text-sm">
-              <a href={`tel:${COMPANY.phoneRaw}`} className="flex items-center gap-2 text-navy font-medium">
-                <FaPhoneAlt className="text-solar-orange" /> {COMPANY.phone}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-base sm:text-sm">
+              <a href={`tel:${COMPANY.phoneRaw}`} className="flex items-center gap-2 min-w-0 text-navy font-medium">
+                <FaPhoneAlt className="text-solar-orange shrink-0" /> <span className="truncate">{COMPANY.phone}</span>
               </a>
-              <a href={`mailto:${COMPANY.email}`} className="flex items-center gap-2 text-navy font-medium">
-                <FaEnvelope className="text-solar-orange" /> {COMPANY.email}
+              <a href={`mailto:${COMPANY.email}`} className="flex items-center gap-2 min-w-0 text-navy font-medium">
+                <FaEnvelope className="text-solar-orange shrink-0" /> <span className="truncate">{COMPANY.email}</span>
               </a>
               <a
                 href={`https://wa.me/${COMPANY.whatsapp.replace(/[^\d]/g, "")}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 text-navy font-medium"
+                className="flex items-center gap-2 min-w-0 text-navy font-medium"
               >
-                <FaWhatsapp className="text-[#25D366]" /> WhatsApp Us
+                <FaWhatsapp className="text-[#25D366] shrink-0" /> <span className="truncate">WhatsApp Us</span>
               </a>
             </div>
             <p className="flex items-start gap-2 text-base sm:text-sm text-gray-500 mt-4">

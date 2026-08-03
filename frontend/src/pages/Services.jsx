@@ -3,7 +3,7 @@ import ServicesGrid from "../components/home/ServicesGrid";
 
 const Services = () => (
   <>
-    <SeoHead title="Our Services" path="/services" description="Residential, commercial and industrial on-grid rooftop solar EPC services in Pune, Solapur and Kolhapur — design, supply, installation, net-metering and AMC." />
+    <SeoHead title="Our Services" path="/services" description="Residential, commercial and industrial on-grid rooftop solar EPC services across all districts of Maharashtra — design, supply, installation, net-metering and AMC." />
     <section className="pt-32 pb-12 bg-navy-gradient text-white text-center">
       <div className="container-custom">
         <h1 className="text-4xl lg:text-5xl font-display font-bold">Our Services</h1>

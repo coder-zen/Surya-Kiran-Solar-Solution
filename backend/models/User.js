@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 /**
  * Single User collection used for both admin & staff accounts (role-based access).
@@ -28,6 +29,10 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String, default: "" },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date },
+    // Only the SHA-256 hash of the reset token is stored — the raw token exists
+    // solely in the emailed link, so a leaked DB dump can't be used to reset.
+    resetPasswordToken: { type: String, select: false },
+    resetPasswordExpires: { type: Date, select: false },
   },
   { timestamps: true }
 );
@@ -43,4 +48,23 @@ userSchema.methods.matchPassword = function (enteredPassword) {
   return bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model("User", userSchema);
+/** Roles that count against ADMIN_SEAT_LIMIT and can reach the /admin panel. */
+const ADMIN_ROLES = ["super_admin", "admin", "editor", "employee"];
+const ADMIN_SEAT_LIMIT = 5;
+
+/**
+ * Generates a reset token, stores only its hash + expiry on the document, and
+ * returns the RAW token for emailing. Caller must save() afterwards.
+ */
+userSchema.methods.createPasswordResetToken = function () {
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  this.resetPasswordToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+  this.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 60 minutes
+  return rawToken;
+};
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
+module.exports.ADMIN_ROLES = ADMIN_ROLES;
+module.exports.ADMIN_SEAT_LIMIT = ADMIN_SEAT_LIMIT;

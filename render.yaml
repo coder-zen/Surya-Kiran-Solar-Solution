@@ -1,0 +1,59 @@
+# Render Blueprint for the SK Solar Solutions backend API.
+#
+# In Render: New + → Blueprint → connect this repo → it reads this file.
+#
+# Every secret below is marked `sync: false`, which means Render prompts for it
+# in the dashboard instead of reading it from this file — secrets must never be
+# committed to the repository. Copy the values from your local backend/.env.
+services:
+  - type: web
+    name: sk-solar-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      # Must be "production": generateToken.js keys the auth cookie's
+      # Secure/SameSite=None flags off this, which the browser requires when the
+      # frontend (Vercel) and API (Render) are on different domains.
+      - key: NODE_ENV
+        value: production
+
+      # Comma-separated list of allowed browser origins. Set this to your
+      # deployed frontend URL(s) — e.g.
+      #   https://your-site.vercel.app,https://www.yourdomain.com
+      # Requests from any other origin are rejected by CORS.
+      - key: CLIENT_URL
+        sync: false
+
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: JWT_COOKIE_EXPIRES_DAYS
+        value: "7"
+
+      # Image uploads (admin panel)
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+      # Lead-alert emails. If these are omitted the API still runs and still
+      # saves leads — it just logs a warning and skips the notification.
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: NOTIFY_EMAIL_TO
+        sync: false

@@ -1,8 +1,17 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+import api from "../config/api";
 import EnquiryModal from "../components/common/EnquiryModal";
 import SeoHead from "../components/common/SeoHead";
 
+const fetchPricing = async () => (await api.get("/pricing")).data.data;
+
+/*
+ * The arrays below are the fallback used while /api/pricing is loading or if it
+ * is unreachable, so the page never renders empty. The database is the source
+ * of truth once it responds — this content is editable at /admin/pricing.
+ */
 const specs = [
   { label: "Solar PV Modules", value: "IEC & MNRE approved, IP65 rated, Monocrystalline TOPCon, 535–630 Wp" },
   { label: "Panel Make", value: "Waaree / Adani / Australian Premium Solar / UTL / Novasys" },
@@ -46,8 +55,26 @@ const terms = [
   "Quotation is based on current market rates — significant increases in raw material, transport or tax costs after the quotation date may revise the final project cost.",
 ];
 
+const FALLBACK = {
+  eyebrow: "Sample Project Pricing",
+  headline: "15kW On-Grid Rooftop Solar Package",
+  intro:
+    "A real component specification and price breakdown from one of our recent on-grid rooftop installations — base rate ₹60,000 per kW. Every site is different, so we always confirm final pricing after a free site survey.",
+  specs,
+  costBreakdown,
+  paymentSchedule,
+  terms,
+  priceNote:
+    "The source quotation lists two different final totals for this 15kW package (₹9,00,000 in the pricing table vs. ₹5,10,000 in the ROI table). This needs to be confirmed before publishing a final number — contact our team for the verified current price for your exact requirement.",
+  disclaimer:
+    "Pricing shown is a real sample from a completed project quotation and is indicative only. Your final quote depends on roof type, sanctioned load, site accessibility and current market rates for panels, inverters and steel — request a free site survey for an exact price.",
+};
+
 const Pricing = () => {
   const [quoteOpen, setQuoteOpen] = useState(false);
+  const { data } = useQuery({ queryKey: ["pricing"], queryFn: fetchPricing, retry: false });
+
+  const content = data || FALLBACK;
 
   return (
     <>
@@ -59,13 +86,9 @@ const Pricing = () => {
 
       <section className="pt-32 pb-16 bg-navy-gradient text-white text-center">
         <div className="container-custom">
-          <p className="section-eyebrow !text-solar-yellow">Sample Project Pricing</p>
-          <h1 className="text-4xl lg:text-5xl font-display font-bold">15kW On-Grid Rooftop Solar Package</h1>
-          <p className="mt-4 text-gray-300 max-w-2xl mx-auto">
-            A real component specification and price breakdown from one of our recent on-grid rooftop
-            installations — base rate ₹60,000 per kW. Every site is different, so we always confirm
-            final pricing after a free site survey.
-          </p>
+          <p className="section-eyebrow !text-solar-yellow">{content.eyebrow}</p>
+          <h1 className="text-4xl lg:text-5xl font-display font-bold">{content.headline}</h1>
+          <p className="mt-4 text-gray-300 max-w-2xl mx-auto">{content.intro}</p>
         </div>
       </section>
 
@@ -77,7 +100,7 @@ const Pricing = () => {
             <div className="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
               <table className="w-full text-base sm:text-sm">
                 <tbody>
-                  {specs.map((row, i) => (
+                  {content.specs.map((row, i) => (
                     <tr key={row.label} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                       <td className="px-5 py-4 font-semibold text-navy align-top w-2/5">{row.label}</td>
                       <td className="px-5 py-4 text-gray-600 align-top">{row.value}</td>
@@ -93,7 +116,7 @@ const Pricing = () => {
             <div className="glass-card !bg-gray-50 p-7">
               <h3 className="font-display font-semibold text-xl text-navy mb-4">Cost Breakdown</h3>
               <ul className="space-y-3">
-                {costBreakdown.map((row) => (
+                {content.costBreakdown.map((row) => (
                   <li key={row.label} className="flex justify-between gap-4 text-base sm:text-sm border-b border-gray-200 pb-3">
                     <span className="text-gray-500">{row.label}</span>
                     <span className="font-semibold text-navy text-right">{row.value}</span>
@@ -101,15 +124,12 @@ const Pricing = () => {
                 ))}
               </ul>
 
-              <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 p-4 flex gap-3">
-                <FaExclamationTriangle className="text-amber-500 mt-0.5 shrink-0" />
-                <p className="text-xs text-amber-800 leading-relaxed">
-                  The source quotation lists two different final totals for this 15kW package
-                  (₹9,00,000 in the pricing table vs. ₹5,10,000 in the ROI table). This needs to be
-                  confirmed before publishing a final number — contact our team for the verified
-                  current price for your exact requirement.
-                </p>
-              </div>
+              {content.priceNote && (
+                <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 p-4 flex gap-3">
+                  <FaExclamationTriangle className="text-amber-500 mt-0.5 shrink-0" />
+                  <p className="text-xs text-amber-800 leading-relaxed">{content.priceNote}</p>
+                </div>
+              )}
 
               <button onClick={() => setQuoteOpen(true)} className="btn-primary w-full mt-6">
                 Get My Exact Quote
@@ -119,7 +139,7 @@ const Pricing = () => {
             <div className="glass-card !bg-gray-50 p-7">
               <h3 className="font-display font-semibold text-xl text-navy mb-4">Payment Schedule</h3>
               <ul className="space-y-3">
-                {paymentSchedule.map((row) => (
+                {content.paymentSchedule.map((row) => (
                   <li key={row.stage} className="flex items-start gap-3 text-base sm:text-sm">
                     <FaCheckCircle className="text-solar-orange mt-1 shrink-0" />
                     <span className="text-gray-600 flex-1">{row.stage}</span>
@@ -136,17 +156,13 @@ const Pricing = () => {
         <div className="container-custom max-w-3xl">
           <h2 className="section-heading !text-2xl mb-6">Terms & Conditions</h2>
           <ul className="space-y-3">
-            {terms.map((t) => (
-              <li key={t} className="flex items-start gap-3 text-base sm:text-sm text-gray-600">
+            {content.terms.map((t) => (
+              <li key={t} className="flex items-start gap-3 terms-text text-gray-600">
                 <FaCheckCircle className="text-solar-orange mt-1 shrink-0" /> {t}
               </li>
             ))}
           </ul>
-          <p className="text-xs text-gray-400 mt-6">
-            Pricing shown is a real sample from a completed project quotation and is indicative only.
-            Your final quote depends on roof type, sanctioned load, site accessibility and current
-            market rates for panels, inverters and steel — request a free site survey for an exact price.
-          </p>
+          <p className="terms-text mt-6">{content.disclaimer}</p>
         </div>
       </section>
 

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.51.1",
+    "@uiw/react-md-editor": "^4.1.1",
     "axios": "^1.7.2",
     "framer-motion": "^11.2.12",
     "leaflet": "^1.9.4",
@@ -21,6 +22,7 @@
     "react-icons": "^5.2.1",
     "react-leaflet": "^4.2.1",
     "react-leaflet-cluster": "^2.1.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^6.24.0",
     "recharts": "^2.12.7",
     "swiper": "^11.1.4"

@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaBars, FaTimes, FaPhoneAlt } from "react-icons/fa";
-import { NAV_LINKS, COMPANY } from "../../config/constants";
+import { NAVBAR_GROUPS, COMPANY } from "../../config/constants";
 import { Assets } from "../../config/images";
 import EnquiryModal from "../common/EnquiryModal";
+import NavDropdown from "./NavDropdown";
+import MobileNavAccordion from "./MobileNavAccordion";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -38,18 +40,22 @@ const Navbar = () => {
           </NavLink>
 
           <div className="hidden xl:flex items-center gap-5 2xl:gap-7">
-            {NAV_LINKS.slice(0, 9).map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                className={({ isActive }) =>
-                  `shrink-0 whitespace-nowrap text-sm font-medium transition-colors ${scrolled ? "text-ink" : "text-white"
-                  } ${isActive ? "text-solar-orange" : "hover:text-solar-orange"}`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
+            {NAVBAR_GROUPS.map((entry) =>
+              entry.type === "dropdown" ? (
+                <NavDropdown key={entry.key} label={entry.label} items={entry.items} scrolled={scrolled} />
+              ) : (
+                <NavLink
+                  key={entry.path}
+                  to={entry.path}
+                  className={({ isActive }) =>
+                    `shrink-0 whitespace-nowrap text-sm font-medium transition-colors ${scrolled ? "text-ink" : "text-white"
+                    } ${isActive ? "text-solar-orange" : "hover:text-solar-orange"}`
+                  }
+                >
+                  {entry.label}
+                </NavLink>
+              )
+            )}
           </div>
 
           <div className="hidden xl:flex items-center gap-4 shrink-0">
@@ -89,16 +95,25 @@ const Navbar = () => {
               </button>
             </div>
             <div className="flex flex-col gap-6 mt-10">
-              {NAV_LINKS.map((link) => (
-                <NavLink
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setMobileOpen(false)}
-                  className="text-xl font-display font-semibold"
-                >
-                  {link.label}
-                </NavLink>
-              ))}
+              {NAVBAR_GROUPS.map((entry) =>
+                entry.type === "dropdown" ? (
+                  <MobileNavAccordion
+                    key={entry.key}
+                    label={entry.label}
+                    items={entry.items}
+                    onNavigate={() => setMobileOpen(false)}
+                  />
+                ) : (
+                  <NavLink
+                    key={entry.path}
+                    to={entry.path}
+                    onClick={() => setMobileOpen(false)}
+                    className="text-xl font-display font-semibold"
+                  >
+                    {entry.label}
+                  </NavLink>
+                )
+              )}
               <button
                 onClick={() => {
                   setMobileOpen(false);

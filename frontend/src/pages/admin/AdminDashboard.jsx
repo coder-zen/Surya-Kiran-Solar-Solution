@@ -1,12 +1,111 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { NavLink, useNavigate } from "react-router-dom";
-import {
-  FaTachometerAlt, FaSolarPanel, FaTools, FaImages, FaBlog, FaEnvelope,
-  FaSignOutAlt, FaUsers, FaBriefcase,
-} from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../config/api";
+import AdminSidebar from "../../components/admin/AdminSidebar";
+
+const ChangePasswordForm = ({ onDone }) => {
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
+
+  const onSubmit = async ({ currentPassword, newPassword }) => {
+    try {
+      await api.put("/auth/change-password", { currentPassword, newPassword });
+      toast.success("Password updated");
+      reset();
+      onDone();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Could not update password");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="grid sm:grid-cols-3 gap-4 mt-4">
+      <div>
+        <label className="section-label">Current Password</label>
+        <input type="password" {...register("currentPassword", { required: "Required" })} className="input-field mt-1" />
+        {errors.currentPassword && <p className="text-sm text-red-500 mt-1">{errors.currentPassword.message}</p>}
+      </div>
+      <div>
+        <label className="section-label">New Password</label>
+        <input type="password" {...register("newPassword", { required: "Required", minLength: { value: 8, message: "At least 8 characters" } })} className="input-field mt-1" />
+        {errors.newPassword && <p className="text-sm text-red-500 mt-1">{errors.newPassword.message}</p>}
+      </div>
+      <div className="flex items-end">
+        <button type="submit" disabled={isSubmitting} className="btn-primary w-full">
+          {isSubmitting ? "Saving..." : "Update Password"}
+        </button>
+      </div>
+    </form>
+  );
+};
+
+const ChangeEmailForm = ({ onDone }) => {
+  const { refreshUser } = useAuth();
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
+
+  const onSubmit = async ({ currentPassword, newEmail }) => {
+    try {
+      const { data } = await api.put("/auth/change-email", { currentPassword, newEmail });
+      toast.success(data.message);
+      reset();
+      await refreshUser(); // so the header/user context shows the new address
+      onDone();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Could not update email");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="grid sm:grid-cols-3 gap-4 mt-4">
+      <div>
+        <label className="section-label">Current Password</label>
+        <input type="password" {...register("currentPassword", { required: "Required" })} className="input-field mt-1" />
+        {errors.currentPassword && <p className="text-sm text-red-500 mt-1">{errors.currentPassword.message}</p>}
+      </div>
+      <div>
+        <label className="section-label">New Email</label>
+        <input type="email" {...register("newEmail", { required: "Required" })} className="input-field mt-1" />
+        {errors.newEmail && <p className="text-sm text-red-500 mt-1">{errors.newEmail.message}</p>}
+      </div>
+      <div className="flex items-end">
+        <button type="submit" disabled={isSubmitting} className="btn-primary w-full">
+          {isSubmitting ? "Saving..." : "Update Email"}
+        </button>
+      </div>
+    </form>
+  );
+};
+
+const AccountSecurityCard = () => {
+  const [panel, setPanel] = useState(null); // null | "password" | "email"
+  const { user } = useAuth();
+
+  const toggle = (name) => setPanel((prev) => (prev === name ? null : name));
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm mb-10">
+      <div className="flex flex-wrap justify-between items-center gap-3">
+        <div>
+          <h3 className="font-display font-semibold text-navy">Account Security</h3>
+          <p className="text-xs text-gray-400 mt-0.5">Signed in as {user?.email}</p>
+        </div>
+        <div className="flex gap-4">
+          <button onClick={() => toggle("email")} className="text-sm text-solar-orange font-semibold">
+            {panel === "email" ? "Cancel" : "Change Email"}
+          </button>
+          <button onClick={() => toggle("password")} className="text-sm text-solar-orange font-semibold">
+            {panel === "password" ? "Cancel" : "Change Password"}
+          </button>
+        </div>
+      </div>
+      {panel === "password" && <ChangePasswordForm onDone={() => setPanel(null)} />}
+      {panel === "email" && <ChangeEmailForm onDone={() => setPanel(null)} />}
+    </div>
+  );
+};
 
 /**
  * Admin dashboard shell. This is a functional starting point wired to real
@@ -14,63 +113,34 @@ import api from "../../config/api";
  * per module (Projects, Services, Gallery, Blogs, etc.) as separate routes
  * under /admin/* following the same pattern as AdminLogin/AdminDashboard.
  */
-const navItems = [
-  { icon: FaTachometerAlt, label: "Dashboard", path: "/admin/dashboard" },
-  { icon: FaSolarPanel, label: "Projects", path: "/admin/projects" },
-  { icon: FaTools, label: "Services", path: "/admin/services" },
-  { icon: FaImages, label: "Gallery", path: "/admin/gallery" },
-  { icon: FaBlog, label: "Blog", path: "/admin/blog" },
-  { icon: FaEnvelope, label: "Leads / Enquiries", path: "/admin/leads" },
-  { icon: FaBriefcase, label: "Careers", path: "/admin/careers" },
-  { icon: FaUsers, label: "Users", path: "/admin/users" },
-];
-
 const fetchLeads = async () => (await api.get("/enquiries")).data.data;
 const fetchProjects = async () => (await api.get("/projects")).data.data;
 
 const AdminDashboard = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { data: leads } = useQuery({ queryKey: ["admin-leads"], queryFn: fetchLeads, retry: false });
   const { data: projects } = useQuery({ queryKey: ["admin-projects"], queryFn: fetchProjects, retry: false });
 
-  const leadsByStatus = ["New", "Contacted", "Qualified", "Converted", "Lost"].map((status) => ({
-    status,
-    count: leads?.filter((l) => l.status === status).length || 0,
-  }));
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/admin/login");
-  };
+  // Mirrors LEAD_STAGES in backend/models/Enquiry.js — the API normalizes any
+  // legacy pre-pipeline values before they reach here.
+  const leadsByStatus = ["Enquiry Received", "Pending", "Converted", "Project In Progress", "Completed", "Rejected"].map(
+    (status) => ({
+      status,
+      count: leads?.filter((l) => l.status === status).length || 0,
+    })
+  );
 
   return (
     <div className="min-h-screen flex bg-gray-50">
-      <aside className="w-64 bg-navy-dark text-white p-6 hidden md:block">
-        <h2 className="font-display font-bold text-lg mb-8">SK Solar Admin</h2>
-        <nav className="space-y-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm ${isActive ? "bg-white/10 text-solar-yellow" : "text-gray-300 hover:bg-white/5"}`
-              }
-            >
-              <item.icon /> {item.label}
-            </NavLink>
-          ))}
-        </nav>
-        <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 mt-8 text-sm text-gray-300 hover:text-red-400">
-          <FaSignOutAlt /> Logout
-        </button>
-      </aside>
+      <AdminSidebar />
 
       <main className="flex-1 p-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="font-display font-bold text-2xl text-navy">Welcome, {user?.name || "Admin"}</h1>
         </div>
+
+        <AccountSecurityCard />
 
         <div className="grid sm:grid-cols-3 gap-6 mb-10">
           <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -82,7 +152,9 @@ const AdminDashboard = () => {
             <p className="text-sm text-gray-500 mt-1">Total Projects</p>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-3xl font-display font-bold text-navy">{leads?.filter((l) => l.status === "New").length ?? "—"}</p>
+            <p className="text-3xl font-display font-bold text-navy">
+              {leads?.filter((l) => l.status === "Enquiry Received").length ?? "—"}
+            </p>
             <p className="text-sm text-gray-500 mt-1">New Leads (Unactioned)</p>
           </div>
         </div>

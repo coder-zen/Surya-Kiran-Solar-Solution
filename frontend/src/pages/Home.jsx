@@ -17,7 +17,7 @@ const Home = () => (
     <SeoHead
       title="On-Grid Solar Rooftop EPC Company in Pune"
       path="/"
-      description="SK Solar Solutions designs, supplies, installs and commissions on-grid rooftop solar power plants for homes, businesses and institutions across Pune, Solapur and Kolhapur. Get a free solar quote today."
+      description="SK Solar Solutions designs, supplies, installs and commissions on-grid rooftop solar power plants for homes, businesses and institutions across all districts of Maharashtra. Get a free solar quote today."
     />
 
     <Hero />

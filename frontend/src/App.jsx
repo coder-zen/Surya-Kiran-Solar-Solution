@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/layout/Layout";
@@ -23,14 +24,29 @@ import LegalNotice from "./pages/LegalNotice";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
-// Admin pages
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
+// Admin pages — lazy-loaded so the admin-only bundle (rich text editor, charts)
+// is never downloaded by public visitors, who are the vast majority of traffic.
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
+const AdminProjects = lazy(() => import("./pages/admin/AdminProjects"));
+const AdminGallery = lazy(() => import("./pages/admin/AdminGallery"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminLeads = lazy(() => import("./pages/admin/AdminLeads"));
+const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
+const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
+const AdminPricing = lazy(() => import("./pages/admin/AdminPricing"));
+const ForgotPassword = lazy(() => import("./pages/admin/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
+
 import ProtectedRoute from "./pages/admin/ProtectedRoute";
 
 function App() {
   return (
     <AuthProvider>
+      <Suspense
+        fallback={<div className="min-h-screen grid place-items-center text-gray-400">Loading…</div>}
+      >
       <Routes>
         {/* Public site — shares Navbar/Footer/floating CTAs via Layout */}
         <Route element={<Layout />}>
@@ -57,6 +73,8 @@ function App() {
 
         {/* Admin panel — no public Navbar/Footer */}
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+        <Route path="/admin/reset-password/:token" element={<ResetPassword />} />
         <Route
           path="/admin/dashboard"
           element={
@@ -65,10 +83,74 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* TODO: add /admin/projects, /admin/services, /admin/gallery, /admin/blog,
-            /admin/leads, /admin/careers, /admin/users — each following the
-            AdminDashboard pattern with its own CRUD table + modal form */}
+        <Route
+          path="/admin/testimonials"
+          element={
+            <ProtectedRoute>
+              <AdminTestimonials />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/projects"
+          element={
+            <ProtectedRoute>
+              <AdminProjects />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/gallery"
+          element={
+            <ProtectedRoute>
+              <AdminGallery />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute>
+              <AdminUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/leads"
+          element={
+            <ProtectedRoute>
+              <AdminLeads />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/services"
+          element={
+            <ProtectedRoute>
+              <AdminServices />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/blog"
+          element={
+            <ProtectedRoute>
+              <AdminBlog />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/pricing"
+          element={
+            <ProtectedRoute>
+              <AdminPricing />
+            </ProtectedRoute>
+          }
+        />
+        {/* TODO: add /admin/careers — following the AdminDashboard pattern
+            with its own CRUD table + modal form */}
       </Routes>
+      </Suspense>
     </AuthProvider>
   );
 }

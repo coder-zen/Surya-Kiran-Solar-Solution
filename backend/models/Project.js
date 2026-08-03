@@ -44,6 +44,13 @@ const projectSchema = new mongoose.Schema(
       rating: { type: Number, min: 1, max: 5 },
     },
     description: { type: String },
+    // Execution status — the Leads pipeline reads this so admins don't have to
+    // update delivery progress in two places (see controllers/enquiryController.js).
+    status: {
+      type: String,
+      enum: ["In Progress", "Completed", "On Hold"],
+      default: "In Progress",
+    },
     isFeatured: { type: Boolean, default: false },
     isPublished: { type: Boolean, default: true },
   },

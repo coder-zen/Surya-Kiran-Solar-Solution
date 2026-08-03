@@ -14,7 +14,7 @@ const SectionHeading = ({ eyebrow, title, subtitle, align = "center" }) => (
   >
     {eyebrow && <p className="section-eyebrow">{eyebrow}</p>}
     <h2 className="section-heading">{title}</h2>
-    {subtitle && <p className="mt-4 text-gray-600 text-lg">{subtitle}</p>}
+    {subtitle && <p className="subtitle-text">{subtitle}</p>}
   </motion.div>
 );
 

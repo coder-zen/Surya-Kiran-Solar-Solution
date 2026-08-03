@@ -45,8 +45,8 @@ const pinIcon = new L.DivIcon({
 const MAHARASHTRA_CENTER = [18.2, 75.2];
 
 // Shown if the live API is unreachable (e.g. backend not deployed yet) so the
-// map never renders empty/broken — reflects SK Solar Solutions' real service
-// area: mainly Pune, with coverage in Solapur and Kolhapur.
+// map never renders empty/broken. SK Solar Solutions serves all of Maharashtra;
+// these sample pins just cover a few districts so the map isn't blank.
 const FALLBACK_PROJECTS = [
   { _id: "fallback-pune-1", title: "Rooftop Solar Installation", district: "Pune", category: "Residential", capacityKW: 15, location: { coordinates: [73.8567, 18.5204] } },
   { _id: "fallback-pune-2", title: "Rooftop Solar Installation", district: "Pune", category: "Residential", capacityKW: 5, location: { coordinates: [73.9367, 18.5704] } },
@@ -75,7 +75,7 @@ const ProjectMap = () => {
         <SectionHeading
           eyebrow="Our Reach"
           title="Explore Our Projects Across Maharashtra"
-          subtitle="Serving Pune, Solapur and Kolhapur — zoom in and click a marker to see project details."
+          subtitle="Serving all 36 districts of Maharashtra — zoom in and click a marker to see project details."
         />
 
         <div className="mt-14 rounded-3xl overflow-hidden shadow-premium border border-gray-100 h-[550px] relative">

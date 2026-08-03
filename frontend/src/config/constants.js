@@ -37,6 +37,50 @@ export const NAV_LINKS = [
   { label: "Contact", path: "/contact" },
 ];
 
+/**
+ * Grouped structure for the header navbar (dropdowns to shorten the bar).
+ * "Home", "Blog", "Career" and "Contact" are intentionally left out here —
+ * they remain reachable via the footer, which still renders the full
+ * NAV_LINKS list above.
+ */
+export const NAVBAR_GROUPS = [
+  {
+    type: "dropdown",
+    key: "about-services",
+    label: "About/Services",
+    items: [
+      { label: "About Us", path: "/about" },
+      { label: "Services", path: "/services" },
+    ],
+  },
+  {
+    type: "dropdown",
+    key: "projects-gallery",
+    label: "Projects/Gallery",
+    items: [
+      { label: "Projects", path: "/projects" },
+      { label: "Gallery", path: "/gallery" },
+    ],
+  },
+  { type: "link", label: "Pricing", path: "/pricing" },
+  { type: "link", label: "AMC Plan", path: "/amc-plans" },
+  { type: "link", label: "Govt. Subsidy", path: "/government-subsidy" },
+];
+
 export const PROJECT_CATEGORIES = ["Residential", "Commercial", "Industrial", "Ground Mounted", "Government"];
 
-export const MAHARASHTRA_DISTRICTS = ["Pune", "Solapur", "Satara", "Kolhapur", "Sangli", "Ahmednagar"];
+/**
+ * All 36 districts of Maharashtra — the company serves the whole state.
+ * Mirrors DISTRICT_COORDS in backend/config/districts.js, which holds the
+ * matching map coordinates. Frontend and backend are separate packages with
+ * no shared module, so these two lists must be kept in sync by hand.
+ */
+export const MAHARASHTRA_DISTRICTS = [
+  "Ahmednagar", "Akola", "Amravati", "Beed", "Bhandara", "Buldhana",
+  "Chandrapur", "Chhatrapati Sambhajinagar", "Dharashiv", "Dhule",
+  "Gadchiroli", "Gondia", "Hingoli", "Jalgaon", "Jalna", "Kolhapur",
+  "Latur", "Mumbai City", "Mumbai Suburban", "Nagpur", "Nanded",
+  "Nandurbar", "Nashik", "Palghar", "Parbhani", "Pune", "Raigad",
+  "Ratnagiri", "Sangli", "Satara", "Sindhudurg", "Solapur", "Thane",
+  "Wardha", "Washim", "Yavatmal",
+];

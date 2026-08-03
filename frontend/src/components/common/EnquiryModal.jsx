@@ -54,15 +54,15 @@ const EnquiryModal = ({ isOpen, onClose, source = "other" }) => {
               <FaTimes size={18} />
             </button>
 
-            <h3 className="section-heading text-2xl mb-1">Get Your Free Solar Quote</h3>
-            <p className="text-gray-500 mb-6">Fill in your details — our solar expert will call you within 24 hours.</p>
+            <h3 className="section-heading !text-2xl mb-1">Get Your Free Solar Quote</h3>
+            <p className="subtitle-text !mt-0 !text-base mb-6">Fill in your details — our solar expert will call you within 24 hours.</p>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <input
                   {...register("name", { required: "Name is required" })}
                   placeholder="Full Name"
-                  className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:border-solar-orange"
+                  className="input-field"
                 />
                 {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>}
               </div>
@@ -74,7 +74,7 @@ const EnquiryModal = ({ isOpen, onClose, source = "other" }) => {
                     pattern: { value: /^[0-9+\s-]{10,15}$/, message: "Enter a valid phone number" },
                   })}
                   placeholder="Phone Number"
-                  className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:border-solar-orange"
+                  className="input-field"
                 />
                 {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone.message}</p>}
               </div>
@@ -82,13 +82,13 @@ const EnquiryModal = ({ isOpen, onClose, source = "other" }) => {
               <input
                 {...register("city")}
                 placeholder="City"
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:border-solar-orange"
+                className="input-field"
               />
 
               <select
                 {...register("propertyType")}
                 defaultValue=""
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-600 focus:border-solar-orange"
+                className="input-field text-gray-600"
               >
                 <option value="" disabled>Property Type</option>
                 <option value="Residential">Residential</option>

@@ -24,7 +24,7 @@ const Gallery = () => {
 
   return (
     <>
-      <SeoHead title="Gallery" path="/gallery" description="Photos from SK Solar Solutions' rooftop solar installations across Pune, Solapur and Kolhapur." />
+      <SeoHead title="Gallery" path="/gallery" description="Photos from SK Solar Solutions' rooftop solar installations across Maharashtra." />
 
       <section className="pt-32 pb-12 bg-navy-gradient text-white text-center">
         <div className="container-custom">

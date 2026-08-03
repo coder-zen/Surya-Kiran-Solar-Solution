@@ -18,15 +18,9 @@ const Service = require("../models/Service");
 const Testimonial = require("../models/Testimonial");
 const FAQ = require("../models/FAQ");
 
-// Approx district-center coordinates [lng, lat] — replace with exact site coordinates per project in the admin panel
-const districtCoords = {
-  Pune: [73.8567, 18.5204],
-  Solapur: [75.9064, 17.6599],
-  Satara: [74.0183, 17.6805],
-  Kolhapur: [74.2433, 16.705],
-  Sangli: [74.5815, 16.8524],
-  Ahmednagar: [74.7480, 19.0952],
-};
+// Single source of truth for all 36 Maharashtra districts — replace with exact
+// site coordinates per project in the admin panel.
+const { DISTRICT_COORDS: districtCoords } = require("../config/districts");
 
 const services = [
   { title: "Residential Solar", shortDescription: "Rooftop solar systems for homes — cut your electricity bill by up to 90%.", order: 1 },
@@ -169,8 +163,15 @@ const destroyData = async () => {
   }
 };
 
-if (process.argv.includes("--destroy")) {
-  destroyData();
+// Only run when invoked directly (`npm run seed`), never on require().
+// importData() deletes and replaces the Service/Project/Testimonial/FAQ
+// collections, so merely importing this file must not be able to trigger it.
+if (require.main === module) {
+  if (process.argv.includes("--destroy")) {
+    destroyData();
+  } else {
+    importData();
+  }
 } else {
-  importData();
+  module.exports = { importData, destroyData };
 }

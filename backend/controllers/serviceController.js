@@ -6,6 +6,14 @@ const getServices = asyncHandler(async (req, res) => {
   res.json({ success: true, count: services.length, data: services });
 });
 
+// @desc    List every service including unpublished drafts (admin editor view)
+// @route   GET /api/services/all
+// @access  Private (admin/editor)
+const getAllServices = asyncHandler(async (req, res) => {
+  const services = await Service.find().sort({ order: 1 });
+  res.json({ success: true, count: services.length, data: services });
+});
+
 const getServiceBySlug = asyncHandler(async (req, res) => {
   const service = await Service.findOne({ slug: req.params.slug, isPublished: true });
   if (!service) {
@@ -41,4 +49,4 @@ const deleteService = asyncHandler(async (req, res) => {
   res.json({ success: true, message: "Service deleted" });
 });
 
-module.exports = { getServices, getServiceBySlug, createService, updateService, deleteService };
+module.exports = { getServices, getAllServices, getServiceBySlug, createService, updateService, deleteService };

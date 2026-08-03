@@ -2,7 +2,9 @@ const asyncHandler = require("express-async-handler");
 const Testimonial = require("../models/Testimonial");
 
 const getTestimonials = asyncHandler(async (req, res) => {
-  const testimonials = await Testimonial.find({ isPublished: true }).sort({ createdAt: -1 });
+  const testimonials = await Testimonial.find({ isPublished: true })
+    .sort({ createdAt: -1 })
+    .populate("relatedProject", "title district");
   res.json({ success: true, count: testimonials.length, data: testimonials });
 });
 
