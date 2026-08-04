@@ -58,6 +58,29 @@ const ServiceDetail = () => {
               {service.fullDescription || service.shortDescription}
             </p>
 
+            {/* Ordered by the `step` field the admin form assigns on save, not by
+                array position, so reordering in the admin panel is respected. */}
+            {service.process?.length > 0 && (
+              <>
+                <h2 className="section-heading !text-2xl mt-10 mb-4">How It Works</h2>
+                <ol className="space-y-5">
+                  {[...service.process]
+                    .sort((a, b) => (a.step ?? 0) - (b.step ?? 0))
+                    .map((p, i) => (
+                      <li key={p.title || i} className="flex gap-4">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-white text-sm font-display font-bold">
+                          {p.step ?? i + 1}
+                        </span>
+                        <div>
+                          <p className="font-semibold text-navy">{p.title}</p>
+                          {p.description && <p className="text-gray-500 text-sm mt-1">{p.description}</p>}
+                        </div>
+                      </li>
+                    ))}
+                </ol>
+              </>
+            )}
+
             {service.benefits?.length > 0 && (
               <>
                 <h2 className="section-heading !text-2xl mt-10 mb-4">Benefits</h2>
@@ -68,6 +91,24 @@ const ServiceDetail = () => {
                     </li>
                   ))}
                 </ul>
+              </>
+            )}
+
+            {service.images?.length > 0 && (
+              <>
+                <h2 className="section-heading !text-2xl mt-10 mb-4">Gallery</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {service.images.map((url) => (
+                    <img
+                      key={url}
+                      src={url}
+                      alt={`${service.title} installation`}
+                      loading="lazy"
+                      className="w-full h-40 object-cover rounded-xl bg-gray-100"
+                      onError={(e) => (e.target.style.display = "none")}
+                    />
+                  ))}
+                </div>
               </>
             )}
 

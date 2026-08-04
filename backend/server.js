@@ -65,8 +65,25 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
+// 1mb is generous for the largest JSON this API takes (a blog post body).
+// File uploads don't pass through here — they go through multer as multipart,
+// which enforces its own 5mb cap in middleware/upload.js. A high limit on a
+// public endpoint like POST /api/enquiries is just free memory to burn.
+app.use(express.json({ limit: "1mb" }));
+
+/*
+ * express.urlencoded is deliberately NOT enabled — it was the app's main CSRF
+ * vector. The auth cookie is SameSite=None (required: the frontend and this API
+ * are on different domains), so the browser attaches it to cross-site requests.
+ * A JSON request is protected by the CORS preflight, which this server fails for
+ * unknown origins. But an HTML form POST is a "simple request": no preflight, so
+ * a malicious page could silently fire a state-changing request with the admin's
+ * cookie riding along. Without a urlencoded parser that body arrives unparsed,
+ * req.body stays empty, and the request fails validation.
+ *
+ * If a form-encoded endpoint is ever genuinely needed, add real CSRF tokens
+ * (the `csrf-csrf` package — `csurf` is deprecated) before re-enabling this.
+ */
 app.use(cookieParser());
 app.use(mongoSanitize()); // strips $ / . operators from req.body, req.query, req.params
 app.use(xss()); // sanitizes user input from malicious HTML/JS

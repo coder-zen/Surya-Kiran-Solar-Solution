@@ -8,7 +8,7 @@
  * (a Vite SPA can't generate them per-request), so when SITE_URL changes,
  * also update the URLs inside those two files to match.
  */
-export const SITE_URL = "https://surya-kiran-solar-solutions.vercel.app";
+export const SITE_URL = "https://www.sksolarsolution.com";
 
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/assets/logo/company-logo.jpeg`;
 

@@ -1,4 +1,5 @@
 const sendEmail = require("./sendEmail");
+const sendSms = require("./sendSms");
 
 const SOURCE_LABELS = {
   hero_cta: "Hero \"Get Free Quote\" Button",
@@ -68,19 +69,30 @@ const buildLeadEmailHtml = (enquiry) => {
  * delay or fail the customer's form submission.
  */
 const notifyNewLead = (enquiry) => {
-  const to = process.env.NOTIFY_EMAIL_TO;
-  if (!to) return; // graceful no-op — see sendEmail.js's own SMTP-missing warning
-
   const sourceLabel = SOURCE_LABELS[enquiry.source] || enquiry.source || "Unknown";
-  sendEmail({
-    to,
-    subject: `New Lead: ${enquiry.name} (${sourceLabel})`,
-    html: buildLeadEmailHtml(enquiry),
-  }).catch((error) => {
-    // sendEmail() already catches internally and resolves — this is a last-resort
-    // safety net so a truly unexpected throw can never bubble into the request cycle.
-    console.error("[notifyNewLead] Unexpected failure:", error.message);
-  });
+
+  // Last-resort net: both senders already catch internally and resolve, so this
+  // only fires on a truly unexpected throw. Nothing here may reach the request.
+  const swallow = (channel) => (error) =>
+    console.error(`[notifyNewLead] Unexpected ${channel} failure:`, error.message);
+
+  const emailTo = process.env.NOTIFY_EMAIL_TO;
+  if (emailTo) {
+    sendEmail({
+      to: emailTo,
+      subject: `New Lead: ${enquiry.name} (${sourceLabel})`,
+      html: buildLeadEmailHtml(enquiry),
+    }).catch(swallow("email"));
+  }
+
+  // Independent of email: if SMTP is down or unset, the SMS still goes out, and
+  // vice versa. sendSms no-ops silently when no provider is configured.
+  sendSms({
+    to: process.env.SMS_ALERT_TO,
+    message:
+      `New SK Solar lead: ${enquiry.name}, ${enquiry.phone}` +
+      `${enquiry.city ? `, ${enquiry.city}` : ""} (via ${sourceLabel}).`,
+  }).catch(swallow("sms"));
 };
 
 module.exports = { notifyNewLead, buildLeadEmailHtml, buildWhatsAppLink };

@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://surya-kiran-solar-solutions.vercel.app/sitemap.xml
+Sitemap: https://www.sksolarsolution.com/sitemap.xml

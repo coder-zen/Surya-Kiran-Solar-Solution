@@ -24,8 +24,7 @@
     "react-leaflet-cluster": "^2.1.0",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^6.24.0",
-    "recharts": "^2.12.7",
-    "swiper": "^11.1.4"
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
