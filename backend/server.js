@@ -35,6 +35,7 @@ const blogRoutes = require("./routes/blogRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const galleryRoutes = require("./routes/galleryRoutes");
 const pricingRoutes = require("./routes/pricingRoutes");
+const settingsRoutes = require("./routes/settingsRoutes");
 
 connectDB();
 
@@ -98,6 +99,7 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/pricing", pricingRoutes);
+app.use("/api/settings", settingsRoutes);
 // TODO: mount remaining routers as they're built out — productRoutes, faqRoutes,
 // careerRoutes, amcRoutes, quoteRoutes, siteVisitRoutes, settingsRoutes
 

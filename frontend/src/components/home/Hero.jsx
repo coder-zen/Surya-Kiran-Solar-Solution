@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { FaPhoneAlt, FaWhatsapp, FaPlay } from "react-icons/fa";
 import CountUp from "../ui/CountUp";
+import api from "../../config/api";
 import { Assets } from "../../config/images";
 import { COMPANY } from "../../config/constants";
 import EnquiryModal from "../common/EnquiryModal";
@@ -13,11 +15,34 @@ const stats = [
   { label: "Year System Life", value: 22, suffix: "+" },
 ];
 
+const fetchSettings = async () => (await api.get("/settings")).data.data;
+
+/**
+ * Used while /api/settings is loading or if it's unreachable, so the hero is
+ * never blank on first paint. Editable at /admin/homepage once loaded.
+ */
+const FALLBACK = {
+  heroVideoUrl: "",
+  heroFallbackImageUrl: "",
+  heroEyebrow: "Pune's Trusted On-Grid Rooftop Solar EPC Partner",
+  heroHeadline: "Powering Homes & Businesses With Smart Solar Energy",
+  heroSubtext:
+    "MNRE & IEC-certified on-grid solar rooftop systems for homes, businesses and institutions — complete design, supply, installation, testing, commissioning and MSEDCL net-metering coordination, handled end-to-end.",
+};
+
 const Hero = () => {
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [videoPaused, setVideoPaused] = useState(false);
   const videoRef = useRef(null);
   const whatsappLink = `https://wa.me/${COMPANY.whatsapp.replace(/[^\d]/g, "")}`;
+
+  const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: fetchSettings, retry: false });
+  const content = { ...FALLBACK, ...(settings?.homepageContent || {}) };
+
+  // Admin-set URLs win; the bundled assets remain the default so an empty
+  // Settings document still renders the original hero rather than nothing.
+  const videoSrc = content.heroVideoUrl || Assets.heroVideo;
+  const posterSrc = content.heroFallbackImageUrl || Assets.heroFallbackImage;
 
   useEffect(() => {
     // Some mobile browsers (Data Saver mode, in-app webviews) silently block
@@ -49,13 +74,13 @@ const Hero = () => {
         muted
         loop
         playsInline
-        poster={Assets.heroFallbackImage}
+        poster={posterSrc}
         className="absolute inset-0 h-full w-full object-cover"
         onPlay={() => setVideoPaused(false)}
         onPause={() => setVideoPaused(true)}
         onError={(e) => (e.target.style.display = "none")}
       >
-        <source src={Assets.heroVideo} type="video/mp4" />
+        <source src={videoSrc} type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-gradient-to-b from-navy-dark/80 via-navy-dark/70 to-navy-dark/90" />
 
@@ -78,7 +103,7 @@ const Hero = () => {
           transition={{ duration: 0.6 }}
           className="section-eyebrow !text-solar-yellow"
         >
-          Pune&apos;s Trusted On-Grid Rooftop Solar EPC Partner
+          {content.heroEyebrow}
         </motion.p>
 
         <motion.h1
@@ -87,7 +112,7 @@ const Hero = () => {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white max-w-3xl leading-tight"
         >
-          Powering Homes &amp; Businesses With Smart Solar Energy
+          {content.heroHeadline}
         </motion.h1>
 
         <motion.p
@@ -96,9 +121,7 @@ const Hero = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="mt-6 text-lg text-gray-200 max-w-xl"
         >
-          MNRE &amp; IEC-certified on-grid solar rooftop systems for homes, businesses and
-          institutions — complete design, supply, installation, testing, commissioning and
-          MSEDCL net-metering coordination, handled end-to-end.
+          {content.heroSubtext}
         </motion.p>
 
         <motion.div

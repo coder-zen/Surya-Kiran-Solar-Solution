@@ -1,13 +1,14 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaTachometerAlt, FaSolarPanel, FaTools, FaImages, FaBlog, FaEnvelope,
-  FaSignOutAlt, FaUsers, FaBriefcase, FaCommentDots, FaTags,
+  FaSignOutAlt, FaUsers, FaBriefcase, FaCommentDots, FaTags, FaHome,
 } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 
 /** Shared admin nav shell — extracted from AdminDashboard so every /admin/* screen follows the same pattern. */
 const navItems = [
   { icon: FaTachometerAlt, label: "Dashboard", path: "/admin/dashboard" },
+  { icon: FaHome, label: "Homepage Content", path: "/admin/homepage" },
   { icon: FaSolarPanel, label: "Projects", path: "/admin/projects" },
   { icon: FaTools, label: "Services", path: "/admin/services" },
   { icon: FaImages, label: "Gallery", path: "/admin/gallery" },

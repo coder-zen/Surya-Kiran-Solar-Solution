@@ -36,6 +36,7 @@ const AdminLeads = lazy(() => import("./pages/admin/AdminLeads"));
 const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
 const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
 const AdminPricing = lazy(() => import("./pages/admin/AdminPricing"));
+const AdminHomepage = lazy(() => import("./pages/admin/AdminHomepage"));
 const ForgotPassword = lazy(() => import("./pages/admin/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
 
@@ -144,6 +145,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminPricing />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/homepage"
+          element={
+            <ProtectedRoute>
+              <AdminHomepage />
             </ProtectedRoute>
           }
         />

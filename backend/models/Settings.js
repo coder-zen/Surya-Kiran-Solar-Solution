@@ -26,8 +26,57 @@ const settingsSchema = new mongoose.Schema(
       metaTitle: String,
       metaDescription: String,
     },
+
+    /**
+     * Homepage hero + About section content, previously hardcoded in
+     * Hero.jsx / AboutSection.jsx. Defaults reproduce exactly what those
+     * components shipped with, so the singleton self-populates on first read
+     * and the admin form opens pre-filled rather than blank.
+     *
+     * heroVideoUrl is a URL rather than an upload: hero videos are far larger
+     * than the 5MB image cap on POST /api/upload, and streaming big files
+     * through the API risks request timeouts on hosted platforms. Point it at
+     * a Cloudinary/CDN URL, or leave it blank to show the fallback image only.
+     */
+    homepageContent: {
+      heroVideoUrl: { type: String, default: "" },
+      heroFallbackImageUrl: { type: String, default: "" },
+      heroEyebrow: { type: String, default: "Pune's Trusted On-Grid Rooftop Solar EPC Partner" },
+      heroHeadline: { type: String, default: "Powering Homes & Businesses With Smart Solar Energy" },
+      heroSubtext: {
+        type: String,
+        default:
+          "MNRE & IEC-certified on-grid solar rooftop systems for homes, businesses and institutions — complete design, supply, installation, testing, commissioning and MSEDCL net-metering coordination, handled end-to-end.",
+      },
+      aboutImageUrl: { type: String, default: "" },
+      aboutEyebrow: { type: String, default: "About SK Solar Solutions" },
+      aboutHeadline: { type: String, default: "Engineering A Cleaner, More Independent Future" },
+      aboutBodyText: {
+        type: String,
+        default:
+          "SK Solar Solutions (Surya Kiran Solar Solutions), led by Director Suraj Dhotre, plans and delivers rooftop and ground-mounted solar power plants end-to-end — site survey, system design, module & BOS selection, erection, commissioning and MSEDCL liaisoning. Our residential solar solutions have helped solarize 70+ homes across India, using high-efficiency Monocrystalline panels backed by a 25-year performance warranty.",
+      },
+      aboutBulletPoints: {
+        type: [String],
+        default: () => [
+          "MNRE & IEC-certified installation standards on every project",
+          "In-house engineering, fabrication & commissioning teams",
+          "Complete MSEDCL net-metering and subsidy paperwork, handled for you",
+          "25-year panel performance warranty and up to 10-year inverter warranty",
+        ],
+      },
+      aboutStatValue: { type: String, default: "70+" },
+      aboutStatLabel: { type: String, default: "Homes Solarized" },
+    },
   },
   { timestamps: true }
 );
+
+/** Site settings are a single document — created on first read so callers never see null. */
+settingsSchema.statics.getSingleton = async function () {
+  let doc = await this.findOne();
+  if (!doc) doc = await this.create({});
+  return doc;
+};
 
 module.exports = mongoose.model("Settings", settingsSchema);
