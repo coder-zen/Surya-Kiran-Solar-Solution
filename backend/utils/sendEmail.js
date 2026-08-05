@@ -29,10 +29,21 @@ const getTransporter = () => {
     port: Number(SMTP_PORT) || 587,
     secure: Number(SMTP_PORT) === 465,
     auth: { user: SMTP_USER, pass: SMTP_PASS },
+    /*
+     * Force IPv4. smtp.gmail.com resolves to both A and AAAA records, and Node
+     * prefers IPv6 — but Render's containers have no IPv6 route, so every send
+     * died with:
+     *   connect ENETUNREACH 2404:6800:4003:c1a::6c:587
+     * followed by a connection timeout. Identical credentials worked from a
+     * home network with IPv6, which is why this only ever failed in production.
+     * The dns.setServers() call at the top of server.js makes it more likely
+     * still, since Google's resolvers readily return AAAA records.
+     */
+    family: 4,
     // Without these, nodemailer's defaults let a stalled connection hang for
-    // minutes (socketTimeout defaults to 10 min). When Gmail throttles — which
-    // it does after a burst of sends — the socket just sits open, and any
-    // request that awaits the send hangs with it. Fail fast instead.
+    // minutes (socketTimeout defaults to 10 min). When a connection can't be
+    // established, the socket just sits open, and any request that awaits the
+    // send hangs with it. Fail fast instead.
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 20000,

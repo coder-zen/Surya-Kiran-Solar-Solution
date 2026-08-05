@@ -45,6 +45,18 @@ const app = express();
 // ------------------------------------------------------------------
 // Security & core middleware
 // ------------------------------------------------------------------
+/*
+ * Render (like most PaaS) puts a reverse proxy in front of the app, so the
+ * client's real IP arrives in X-Forwarded-For rather than the socket address.
+ * Without this, express-rate-limit throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+ * on every request and — worse — would key every visitor off the proxy's single
+ * IP, so one person hitting the login limit would lock out everyone.
+ *
+ * `1` trusts exactly one hop (Render's proxy). `true` would trust the whole
+ * chain and let a client spoof its own IP to dodge rate limiting entirely.
+ */
+app.set("trust proxy", 1);
+
 app.use(helmet());
 // CLIENT_URL can be a single origin or a comma-separated list (e.g. while
 // transitioning between a .vercel.app preview URL and a final custom domain,
