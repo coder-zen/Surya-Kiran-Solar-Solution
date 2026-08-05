@@ -203,7 +203,14 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const clientUrl = (process.env.CLIENT_URL || "http://localhost:5173").split(",")[0].trim();
   const resetUrl = `${clientUrl}/admin/reset-password/${rawToken}`;
 
-  const result = await sendEmail({
+  // Respond before the email is sent, not after. Awaiting the SMTP round-trip
+  // held the HTTP request open for as long as the handshake took — and when
+  // Gmail throttles, that stalled long enough for the browser to sit on
+  // "Sending…" indefinitely. The user's answer never depended on the result
+  // anyway: it's the same generic message either way.
+  res.json(genericResponse);
+
+  sendEmail({
     to: user.email,
     subject: "Reset your SK Solar admin password",
     html: `
@@ -228,18 +235,19 @@ const forgotPassword = asyncHandler(async (req, res) => {
         </div>
       </div>
     `,
-  });
-
-  // If the mail couldn't be sent, clear the token rather than leaving a live
-  // reset token stranded on the account with no way to deliver it.
-  if (!result.sent) {
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-    console.error("[forgotPassword] Reset email failed to send:", result.reason);
-  }
-
-  res.json(genericResponse);
+  })
+    .then(async (result) => {
+      // If the mail couldn't be sent, clear the token rather than leaving a live
+      // reset token stranded on the account with no way to deliver it. This now
+      // happens after the response, so a slow mail server costs the user nothing.
+      if (!result.sent) {
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+        console.error("[forgotPassword] Reset email failed to send:", result.reason);
+      }
+    })
+    .catch((error) => console.error("[forgotPassword] Unexpected failure:", error.message));
 });
 
 // @desc    Complete password recovery using the emailed token
