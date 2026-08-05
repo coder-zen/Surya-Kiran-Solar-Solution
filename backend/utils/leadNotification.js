@@ -63,6 +63,53 @@ const buildLeadEmailHtml = (enquiry) => {
 };
 
 /**
+ * Acknowledgement sent to the customer confirming we received their enquiry.
+ *
+ * Only sent when they actually gave an email — it's optional on the Enquiry
+ * model and plenty of leads arrive with a phone number only.
+ *
+ * Deliberately does NOT quote a price. Real solar pricing depends on a site
+ * survey (roof condition, shading, sanctioned load), so this sets the
+ * expectation of a callback instead of implying a binding quote.
+ */
+const buildCustomerAckHtml = (enquiry) => {
+  const phone = process.env.COMPANY_PHONE || "+91 90678 56576";
+  const whatsapp = (process.env.COMPANY_WHATSAPP || phone).replace(/[^\d]/g, "");
+
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">
+      <div style="background:linear-gradient(135deg,#0B2447,#19376D);padding:28px 24px;border-radius:12px 12px 0 0;">
+        <p style="margin:0;color:#FFC93C;font-size:12px;letter-spacing:1px;text-transform:uppercase;">SK Solar Solutions</p>
+        <h1 style="margin:8px 0 0;color:#fff;font-size:22px;">Thanks, ${escapeHtml(enquiry.name)} — we've got your enquiry</h1>
+      </div>
+      <div style="padding:24px;background:#fff;border:1px solid #E5E7EB;border-top:none;border-radius:0 0 12px 12px;">
+        <p style="color:#2B2D42;font-size:14px;line-height:1.6;margin-top:0;">
+          One of our solar experts will call you on
+          <strong>${escapeHtml(enquiry.phone)}</strong> within 24 hours to understand your
+          requirement and arrange a <strong>free site survey</strong>.
+        </p>
+        <p style="color:#2B2D42;font-size:14px;line-height:1.6;">
+          Your exact system size and price depend on your roof and current electricity usage,
+          so we confirm both after the survey — no obligation, and no cost for the visit.
+        </p>
+        <div style="margin:24px 0;padding:16px;background:#F9FAFB;border-radius:10px;">
+          <p style="margin:0 0 8px;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">Need us sooner?</p>
+          <p style="margin:0;color:#0B2447;font-size:14px;">
+            Call <a href="tel:${escapeHtml(phone)}" style="color:#0B2447;font-weight:bold;">${escapeHtml(phone)}</a>
+            &nbsp;·&nbsp;
+            <a href="https://wa.me/${whatsapp}" style="color:#25D366;font-weight:bold;">WhatsApp us</a>
+          </p>
+        </div>
+        <p style="color:#9CA3AF;font-size:11px;margin-bottom:0;">
+          You're receiving this because you submitted an enquiry on our website.
+          If that wasn't you, please ignore this email.
+        </p>
+      </div>
+    </div>
+  `;
+};
+
+/**
  * Best-effort side effect fired after an Enquiry is saved. Never throws —
  * sendEmail() already swallows its own errors, and this is called without
  * awaiting the caller's response, so a slow or down SMTP server can never
@@ -93,6 +140,16 @@ const notifyNewLead = (enquiry) => {
       `New SK Solar lead: ${enquiry.name}, ${enquiry.phone}` +
       `${enquiry.city ? `, ${enquiry.city}` : ""} (via ${sourceLabel}).`,
   }).catch(swallow("sms"));
+
+  // Acknowledgement to the customer. Skipped when no email was given — the
+  // field is optional and many leads arrive with only a phone number.
+  if (enquiry.email) {
+    sendEmail({
+      to: enquiry.email,
+      subject: "We've received your solar enquiry — SK Solar Solutions",
+      html: buildCustomerAckHtml(enquiry),
+    }).catch(swallow("customer acknowledgement"));
+  }
 };
 
 module.exports = { notifyNewLead, buildLeadEmailHtml, buildWhatsAppLink };
