@@ -78,4 +78,38 @@ const sendEmail = async ({ to, subject, html }) => {
   }
 };
 
+/**
+ * Printed once at boot so a misconfigured deployment is obvious in the logs
+ * instead of surfacing weeks later as "customers say they never got an email".
+ * Never prints the password — only whether one is present.
+ */
+const logEmailConfigStatus = () => {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, NOTIFY_EMAIL_TO } = process.env;
+  const missing = ["SMTP_HOST", "SMTP_USER", "SMTP_PASS"].filter((k) => !process.env[k]);
+
+  if (missing.length) {
+    console.warn(`[email] DISABLED — missing: ${missing.join(", ")}. Leads will still save; no mail will be sent.`);
+    return;
+  }
+
+  console.log(
+    `[email] Ready — ${SMTP_USER} via ${SMTP_HOST}:${SMTP_PORT || 587} (password set). ` +
+      `Lead alerts → ${NOTIFY_EMAIL_TO || "NOT SET — lead alerts disabled"}`
+  );
+
+  if (!NOTIFY_EMAIL_TO) {
+    console.warn("[email] NOTIFY_EMAIL_TO is not set — nobody will be alerted when a lead comes in.");
+  } else if (NOTIFY_EMAIL_TO.split(",").map((e) => e.trim()).includes(SMTP_USER)) {
+    // Gmail routinely hides a message you sent to yourself from your own Inbox
+    // (it lands in Sent/All Mail instead), which looks exactly like mail that
+    // was never delivered. Add a second, different recipient to avoid it.
+    console.warn(
+      `[email] NOTIFY_EMAIL_TO includes the sending account (${SMTP_USER}). ` +
+        "Gmail often keeps self-addressed mail out of the Inbox — add a second, different address " +
+        'e.g. NOTIFY_EMAIL_TO="you@gmail.com,someone-else@gmail.com"'
+    );
+  }
+};
+
 module.exports = sendEmail;
+module.exports.logEmailConfigStatus = logEmailConfigStatus;

@@ -23,6 +23,7 @@ const xss = require("xss-clean");
 dotenv.config();
 
 const connectDB = require("./config/db");
+const { logEmailConfigStatus } = require("./utils/sendEmail");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 
 // Route modules
@@ -137,4 +138,6 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`[Server] Running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+  // Surfaces a broken/absent mail setup at boot rather than silently at 3am.
+  logEmailConfigStatus();
 });
