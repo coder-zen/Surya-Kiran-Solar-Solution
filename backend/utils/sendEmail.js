@@ -1,5 +1,68 @@
 const nodemailer = require("nodemailer");
 
+/*
+ * Two ways to send, picked automatically:
+ *
+ *   1. An HTTP email API (Brevo or Resend) when its key is present.
+ *   2. Gmail/SMTP otherwise.
+ *
+ * The HTTP path exists because Render — like most free/shared hosting —
+ * blocks outbound SMTP ports (25/465/587) to curb spam. From Render, every
+ * Gmail send failed with "Connection timeout" no matter the credentials,
+ * while the identical config worked from a laptop. An email API talks HTTPS
+ * on 443, which is never blocked.
+ *
+ * SMTP is kept as the fallback so local development still works with nothing
+ * more than a Gmail app password, no third-party signup required.
+ */
+const FROM_NAME = "SK Solar Solutions";
+
+const getSenderAddress = () =>
+  process.env.MAIL_FROM || process.env.SMTP_USER || "no-reply@sksolarsolution.com";
+
+/** Brevo: 300 emails/day on the free tier. Sender address must be verified in their dashboard. */
+const sendViaBrevo = async ({ to, subject, html }) => {
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: { "api-key": process.env.BREVO_API_KEY, "content-type": "application/json" },
+    body: JSON.stringify({
+      sender: { email: getSenderAddress(), name: FROM_NAME },
+      to: to.split(",").map((email) => ({ email: email.trim() })),
+      subject,
+      htmlContent: html,
+    }),
+  });
+  if (!res.ok) throw new Error(`Brevo ${res.status}: ${await res.text()}`);
+  const body = await res.json().catch(() => ({}));
+  return { accepted: to.split(",").map((e) => e.trim()), messageId: body.messageId };
+};
+
+/** Resend: 3,000/month free. Needs a verified domain, or resend.dev while testing. */
+const sendViaResend = async ({ to, subject, html }) => {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      from: `${FROM_NAME} <${getSenderAddress()}>`,
+      to: to.split(",").map((e) => e.trim()),
+      subject,
+      html,
+    }),
+  });
+  if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
+  const body = await res.json().catch(() => ({}));
+  return { accepted: to.split(",").map((e) => e.trim()), messageId: body.id };
+};
+
+const getHttpProvider = () => {
+  if (process.env.BREVO_API_KEY) return { name: "brevo", send: sendViaBrevo };
+  if (process.env.RESEND_API_KEY) return { name: "resend", send: sendViaResend };
+  return null;
+};
+
 /**
  * Lazily-created singleton transporter. Returns null (not a thrown error) when
  * SMTP isn't configured, so every caller can treat "no transporter" as a normal,
@@ -58,6 +121,23 @@ const getTransporter = () => {
  * request that triggered the email.
  */
 const sendEmail = async ({ to, subject, html }) => {
+  // An HTTP provider wins when configured: it works from hosts that block
+  // outbound SMTP ports, which is most free/shared hosting including Render.
+  const httpProvider = getHttpProvider();
+  if (httpProvider) {
+    try {
+      const result = await httpProvider.send({ to, subject, html });
+      console.log(
+        `[sendEmail] "${subject}" via ${httpProvider.name} — accepted: [${result.accepted.join(", ")}]` +
+          ` id: ${result.messageId || "n/a"}`
+      );
+      return { sent: true, accepted: result.accepted, messageId: result.messageId };
+    } catch (error) {
+      console.error(`[sendEmail] ${httpProvider.name} send failed:`, error.message);
+      return { sent: false, reason: error.message };
+    }
+  }
+
   const client = getTransporter();
   if (!client) return { sent: false, reason: "smtp_not_configured" };
 
@@ -95,18 +175,38 @@ const sendEmail = async ({ to, subject, html }) => {
  * Never prints the password — only whether one is present.
  */
 const logEmailConfigStatus = () => {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, NOTIFY_EMAIL_TO } = process.env;
-  const missing = ["SMTP_HOST", "SMTP_USER", "SMTP_PASS"].filter((k) => !process.env[k]);
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, NOTIFY_EMAIL_TO } = process.env;
+  const httpProvider = getHttpProvider();
 
+  if (httpProvider) {
+    console.log(
+      `[email] Ready — ${httpProvider.name} HTTP API, sending as ${getSenderAddress()}. ` +
+        `Lead alerts → ${NOTIFY_EMAIL_TO || "NOT SET — lead alerts disabled"}`
+    );
+    if (!NOTIFY_EMAIL_TO) {
+      console.warn("[email] NOTIFY_EMAIL_TO is not set — nobody will be alerted when a lead comes in.");
+    }
+    return;
+  }
+
+  const missing = ["SMTP_HOST", "SMTP_USER", "SMTP_PASS"].filter((k) => !process.env[k]);
   if (missing.length) {
     console.warn(`[email] DISABLED — missing: ${missing.join(", ")}. Leads will still save; no mail will be sent.`);
     return;
   }
 
   console.log(
-    `[email] Ready — ${SMTP_USER} via ${SMTP_HOST}:${SMTP_PORT || 587} (password set). ` +
+    `[email] Ready — SMTP ${SMTP_USER} via ${SMTP_HOST}:${SMTP_PORT || 587} (password set). ` +
       `Lead alerts → ${NOTIFY_EMAIL_TO || "NOT SET — lead alerts disabled"}`
   );
+
+  if (process.env.NODE_ENV === "production") {
+    console.warn(
+      "[email] Using SMTP in production. Many hosts (Render's free tier included) block outbound " +
+        "ports 25/465/587, which shows up as 'Connection timeout'. If mail isn't arriving, set " +
+        "BREVO_API_KEY or RESEND_API_KEY to send over HTTPS instead."
+    );
+  }
 
   if (!NOTIFY_EMAIL_TO) {
     console.warn("[email] NOTIFY_EMAIL_TO is not set — nobody will be alerted when a lead comes in.");
