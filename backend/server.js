@@ -9,6 +9,17 @@
 // ---------------------------------------------------------------------------
 require("dns").setServers(["8.8.8.8", "8.8.4.4"]);
 
+// ---------------------------------------------------------------------------
+// Prefer IPv4 for every outbound lookup. Render's containers have no IPv6
+// route, but smtp.gmail.com publishes AAAA records and Node otherwise tries
+// those first — every email died with
+//   connect ENETUNREACH 2404:6800:4003:c1a::6c:587
+// then timed out. Set at the process level rather than per-connection so any
+// outbound host (SMTP, Cloudinary, Atlas) is covered, not just the one that
+// happened to break first.
+// ---------------------------------------------------------------------------
+require("dns").setDefaultResultOrder("ipv4first");
+
 const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
