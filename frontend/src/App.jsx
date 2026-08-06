@@ -37,6 +37,7 @@ const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
 const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
 const AdminPricing = lazy(() => import("./pages/admin/AdminPricing"));
 const AdminHomepage = lazy(() => import("./pages/admin/AdminHomepage"));
+const AdminCareers = lazy(() => import("./pages/admin/AdminCareers"));
 const ForgotPassword = lazy(() => import("./pages/admin/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
 
@@ -156,8 +157,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* TODO: add /admin/careers — following the AdminDashboard pattern
-            with its own CRUD table + modal form */}
+        <Route
+          path="/admin/careers"
+          element={
+            <ProtectedRoute>
+              <AdminCareers />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       </Suspense>
     </AuthProvider>

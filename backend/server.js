@@ -48,6 +48,7 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const galleryRoutes = require("./routes/galleryRoutes");
 const pricingRoutes = require("./routes/pricingRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
+const careerRoutes = require("./routes/careerRoutes");
 
 connectDB();
 
@@ -141,8 +142,9 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/pricing", pricingRoutes);
 app.use("/api/settings", settingsRoutes);
+app.use("/api/careers", careerRoutes);
 // TODO: mount remaining routers as they're built out — productRoutes, faqRoutes,
-// careerRoutes, amcRoutes, quoteRoutes, siteVisitRoutes, settingsRoutes
+// amcRoutes, quoteRoutes, siteVisitRoutes
 
 // ------------------------------------------------------------------
 // Serve frontend build in production (single-container deployment)
