@@ -3,27 +3,40 @@
   <url><loc>https://www.sksolarsolution.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://www.sksolarsolution.com/about</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.sksolarsolution.com/services</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/residential-solar</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/commercial-solar</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/industrial-solar</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/ground-mounted-solar</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/solar-car-parking</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/solar-fabrication</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/solar-amc</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/panel-cleaning</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/remote-monitoring</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/solar-water-pump</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/solar-insurance</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/testing-commissioning</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/earthing-solutions</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/services/msedcl-work</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.sksolarsolution.com/pricing</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.sksolarsolution.com/projects</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sksolarsolution.com/government-subsidy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sksolarsolution.com/contact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sksolarsolution.com/calculators</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sksolarsolution.com/amc-plans</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.sksolarsolution.com/gallery</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.sksolarsolution.com/products</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.sksolarsolution.com/amc-plans</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.sksolarsolution.com/government-subsidy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.sksolarsolution.com/blog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.sksolarsolution.com/career</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://www.sksolarsolution.com/contact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.sksolarsolution.com/privacy-policy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.sksolarsolution.com/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/residential-solar</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/industrial-solar</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/ground-mounted-solar</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/solar-car-parking</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/commercial-solar</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/solar-fabrication</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/solar-amc</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/panel-cleaning</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/remote-monitoring</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/solar-water-pump</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/solar-insurance</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/testing-and-commissioning</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/earthing-solutions</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/services/msedcl-liaison-work</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.sksolarsolution.com/projects/industrial-installation-mandeep-kumar-bhandara</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sksolarsolution.com/projects/residential-installation-mandep-kumar-kumar-latur</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sksolarsolution.com/projects/solar-installation-ram-mumbai-suburban</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sksolarsolution.com/projects/government-installation-mandep-kumar1-mumbai-suburban</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sksolarsolution.com/projects/residential-rooftop-solar-installation-kolhapur</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sksolarsolution.com/projects/commercial-rooftop-solar-installation-pune</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sksolarsolution.com/projects/residential-rooftop-solar-installation-pune</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sksolarsolution.com/projects/15kw-on-grid-rooftop-solar-installation-pune</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sksolarsolution.com/projects/residential-rooftop-solar-installation-solapur</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.sksolarsolution.com/blog/about-us</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>
