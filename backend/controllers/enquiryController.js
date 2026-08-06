@@ -9,7 +9,27 @@ const { notifyNewLead } = require("../utils/leadNotification");
 // @route   POST /api/enquiries
 // @access  Public
 const createEnquiry = asyncHandler(async (req, res) => {
-  const enquiry = await Enquiry.create(req.body);
+  /*
+   * Allowlist the fields a visitor may set. This endpoint is public, so passing
+   * req.body straight to create() let anyone set internal pipeline fields —
+   * verified by submitting status:"Completed" with a forged convertedProjectId
+   * and having it persist, which hides a lead from the sales queue and fakes a
+   * link to a real project. status/assignedTo/convertedProjectId/rejectionReason
+   * are staff-only and are set through the advance/reject endpoints, which are
+   * behind `protect`.
+   */
+  const { name, phone, email, city, propertyType, monthlyBill, message, source } = req.body;
+
+  const enquiry = await Enquiry.create({
+    name,
+    phone,
+    email,
+    city,
+    propertyType,
+    monthlyBill,
+    message,
+    source,
+  });
 
   // Best-effort, non-blocking — the lead is already saved above regardless of
   // whether this succeeds, fails, or SMTP isn't configured at all.

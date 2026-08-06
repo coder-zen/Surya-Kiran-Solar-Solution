@@ -9,9 +9,18 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = err.message;
 
-  if (err.name === "CastError" && err.kind === "ObjectId") {
-    statusCode = 404;
-    message = "Resource not found";
+  if (err.name === "CastError") {
+    if (err.kind === "ObjectId") {
+      statusCode = 404;
+      message = "Resource not found";
+    } else {
+      // Any other cast failure is malformed client input, not a server fault.
+      // Previously these fell through as unhandled 500s — e.g. a query param
+      // sent as an object (?category[$ne]=null) reaches Mongoose as {} after
+      // sanitization and fails to cast to String.
+      statusCode = 400;
+      message = `Invalid value for '${err.path}'`;
+    }
   }
 
   if (err.code === 11000) {

@@ -152,7 +152,17 @@ app.use("/api/careers", careerRoutes);
 if (process.env.NODE_ENV === "production") {
   const clientBuildPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(clientBuildPath));
-  app.get("*", (req, res) => res.sendFile(path.join(clientBuildPath, "index.html")));
+  /*
+   * The SPA fallback must not swallow /api/*. Without this guard the catch-all
+   * answered unmatched API routes with index.html and HTTP 200 — so a wrong or
+   * missing endpoint looked like a success to the caller and never reached the
+   * notFound handler below. GET /api/products returned an HTML page, and the
+   * frontend's `.catch()` never fired because nothing had failed.
+   */
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api/")) return next();
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
 } else {
   app.get("/", (req, res) => res.send("SK Solar Solutions API is running..."));
 }
