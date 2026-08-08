@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import WhatsAppButton from "../common/WhatsAppButton";
 import CallButton from "../common/CallButton";
-import { COMPANY } from "../../config/constants";
+import { COMPANY, MAHARASHTRA_DISTRICTS } from "../../config/constants";
 import { SITE_URL, DEFAULT_OG_IMAGE } from "../../config/seo";
 
 // Site-wide LocalBusiness structured data — helps Google show a rich local
@@ -34,7 +34,22 @@ const localBusinessSchema = {
     latitude: COMPANY.officeCoordinates.lat,
     longitude: COMPANY.officeCoordinates.lng,
   },
-  areaServed: ["Pune", "Solapur", "Kolhapur", "Maharashtra"],
+  /*
+   * Every district actually served, not just the three the business started in.
+   * areaServed is the field Google weighs for "solar installer near me" in a
+   * given city, so listing only Pune/Solapur/Kolhapur told it not to surface
+   * this business anywhere else in the state — including Nashik, Nagpur and
+   * Thane, which are among the largest solar markets in Maharashtra.
+   * Derived from MAHARASHTRA_DISTRICTS so it can't drift from the districts
+   * offered in the admin dropdowns.
+   */
+  areaServed: [
+    { "@type": "State", name: "Maharashtra" },
+    ...MAHARASHTRA_DISTRICTS.map((district) => ({
+      "@type": "AdministrativeArea",
+      name: `${district}, Maharashtra`,
+    })),
+  ],
   priceRange: "₹₹",
   // Only include real profile links — COMPANY.social currently holds bare
   // placeholder domains (no handle yet), which would be false structured

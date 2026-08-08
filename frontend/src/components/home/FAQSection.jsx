@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronDown } from "react-icons/fa";
 import api from "../../config/api";
 import SectionHeading from "../common/SectionHeading";
+import JsonLd from "../common/JsonLd";
 
 const fetchFAQs = async () => {
   const { data } = await api.get("/faqs").catch(() => ({ data: { data: [] } }));
@@ -22,8 +23,28 @@ const FAQSection = () => {
         { question: "Do you provide after-installation support?", answer: "Yes — our AMC plans cover cleaning, monitoring, and priority breakdown support." },
       ];
 
+  /*
+   * FAQPage markup makes Google eligible to render these questions as an
+   * expandable accordion directly in the search result, which takes up far more
+   * vertical space than a plain link. Built from `items`, so it always matches
+   * what is actually on the page — Google penalises FAQ markup describing
+   * content a visitor can't see.
+   */
+  const faqSchema = items.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: items.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
+      }
+    : null;
+
   return (
     <section className="py-24 bg-white">
+      <JsonLd id="faq-schema" data={faqSchema} />
       <div className="container-custom max-w-3xl">
         <SectionHeading eyebrow="Frequently Asked Questions" title="Have Questions? We've Got Answers" />
         <div className="mt-12 space-y-4">

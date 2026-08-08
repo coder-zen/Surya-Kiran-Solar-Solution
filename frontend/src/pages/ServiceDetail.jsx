@@ -4,6 +4,9 @@ import { FaCheckCircle } from "react-icons/fa";
 import api from "../config/api";
 import EnquiryModal from "../components/common/EnquiryModal";
 import SeoHead from "../components/common/SeoHead";
+import JsonLd from "../components/common/JsonLd";
+import { COMPANY } from "../config/constants";
+import { SITE_URL } from "../config/seo";
 import { useState } from "react";
 
 const fetchService = async (slug) => {
@@ -34,6 +37,55 @@ const ServiceDetail = () => {
     );
   }
 
+  /*
+   * Service + BreadcrumbList for each of the 14 service pages. Service tells
+   * Google what is offered and where, which is what qualifies these pages for
+   * the local service results rather than plain blue links. BreadcrumbList
+   * replaces the raw URL under the title with "Home › Services › <name>".
+   *
+   * FAQs are added as a separate FAQPage block only when the service actually
+   * has them — marking up questions that aren't on the page is a manual-action
+   * risk, not just a wasted opportunity.
+   */
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.title,
+    description: service.fullDescription || service.shortDescription,
+    serviceType: service.title,
+    url: `${SITE_URL}/services/${slug}`,
+    ...(service.images?.length ? { image: service.images } : {}),
+    provider: {
+      "@type": "RoofingContractor",
+      name: COMPANY.name,
+      telephone: COMPANY.phoneRaw,
+      url: SITE_URL,
+    },
+    areaServed: { "@type": "State", name: "Maharashtra" },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Services", item: `${SITE_URL}/services` },
+      { "@type": "ListItem", position: 3, name: service.title, item: `${SITE_URL}/services/${slug}` },
+    ],
+  };
+
+  const serviceFaqSchema = service.faqs?.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: service.faqs.map((f) => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      }
+    : null;
+
   return (
     <>
       <SeoHead
@@ -41,6 +93,9 @@ const ServiceDetail = () => {
         path={`/services/${slug}`}
         description={service.shortDescription}
       />
+      <JsonLd id="service-schema" data={serviceSchema} />
+      <JsonLd id="service-breadcrumb-schema" data={breadcrumbSchema} />
+      <JsonLd id="service-faq-schema" data={serviceFaqSchema} />
 
       <section className="pt-32 pb-16 bg-navy-gradient text-white text-center">
         <div className="container-custom">
