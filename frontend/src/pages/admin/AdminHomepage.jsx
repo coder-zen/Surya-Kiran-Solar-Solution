@@ -4,6 +4,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaTrash, FaExternalLinkAlt, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import api from "../../config/api";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 
 const fetchSettings = async () => (await api.get("/settings")).data.data;
@@ -36,7 +37,7 @@ const ImageField = ({ label, hint, value, onChange }) => {
       <label className="section-label">{label}</label>
       {hint && <p className="text-xs text-gray-400 mt-0.5">{hint}</p>}
       <div className="flex items-start gap-4 mt-2">
-        {value && <img src={value} alt="" className="h-24 w-36 rounded-lg object-cover bg-gray-100 shrink-0" />}
+        {value && <img src={cdnImage(value, IMG.thumb)} alt="" className="h-24 w-36 rounded-lg object-cover bg-gray-100 shrink-0" />}
         <div className="flex-1">
           <input
             type="file" accept="image/*" disabled={uploading}

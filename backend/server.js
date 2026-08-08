@@ -92,7 +92,7 @@ app.use(
 );
 // 1mb is generous for the largest JSON this API takes (a blog post body).
 // File uploads don't pass through here — they go through multer as multipart,
-// which enforces its own 5mb cap in middleware/upload.js. A high limit on a
+// which enforces its own 10mb cap in middleware/upload.js. A high limit on a
 // public endpoint like POST /api/enquiries is just free memory to burn.
 app.use(express.json({ limit: "1mb" }));
 

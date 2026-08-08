@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import api from "../../config/api";
 import { Assets } from "../../config/images";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import SectionHeading from "../common/SectionHeading";
 
 const fetchFeatured = async () => {
@@ -41,8 +42,9 @@ const FeaturedProjects = () => {
               >
                 {/* TODO: replace with real project photo — Assets.projectPlaceholders */}
                 <img
-                  src={project.coverImage || Assets.projectPlaceholders[i % Assets.projectPlaceholders.length]}
+                  src={cdnImage(project.coverImage || Assets.projectPlaceholders[i % Assets.projectPlaceholders.length], IMG.card)}
                   alt={project.title}
+                  loading="lazy"
                   className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                   onError={(e) => (e.target.style.background = "#0B2447")}
                 />

@@ -4,6 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaTrash, FaPlus, FaPen, FaTimes, FaExternalLinkAlt } from "react-icons/fa";
 import api from "../../config/api";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import RichTextEditor from "../../components/admin/RichTextEditor";
 
@@ -99,7 +100,7 @@ const BlogForm = ({ initial, onCancel, onSaved }) => {
       <div className="sm:col-span-2">
         <label className="section-label">Cover Image</label>
         <div className="flex items-center gap-4 mt-1">
-          {coverImage && <img src={coverImage} alt="" className="h-20 w-32 rounded-lg object-cover bg-gray-100 shrink-0" />}
+          {coverImage && <img src={cdnImage(coverImage, IMG.thumb)} alt="" className="h-20 w-32 rounded-lg object-cover bg-gray-100 shrink-0" />}
           <input
             type="file" accept="image/*" disabled={uploading}
             onChange={(e) => { handleCoverUpload(e.target.files?.[0]); e.target.value = ""; }}
@@ -232,7 +233,7 @@ const AdminBlog = () => {
             <div key={post._id} className="flex items-center justify-between gap-4 p-5 border-b border-gray-100 last:border-0">
               <div className="flex items-center gap-4 min-w-0">
                 {post.coverImage
-                  ? <img src={post.coverImage} alt="" className="h-12 w-16 rounded-lg object-cover bg-gray-100 shrink-0" />
+                  ? <img src={cdnImage(post.coverImage, IMG.thumb)} alt="" className="h-12 w-16 rounded-lg object-cover bg-gray-100 shrink-0" />
                   : <div className="h-12 w-16 rounded-lg bg-gray-100 shrink-0" />}
                 <div className="min-w-0">
                   <p className="font-semibold text-navy truncate">{post.title}</p>

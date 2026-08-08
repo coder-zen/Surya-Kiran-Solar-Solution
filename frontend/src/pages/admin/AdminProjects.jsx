@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaTrash, FaPlus, FaStar } from "react-icons/fa";
 import api from "../../config/api";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import { PROJECT_CATEGORIES, MAHARASHTRA_DISTRICTS } from "../../config/constants";
 
@@ -165,7 +166,7 @@ const AdminProjects = () => {
             <div key={p._id} className="flex items-center justify-between gap-4 p-5 border-b border-gray-100 last:border-0">
               <div className="flex items-center gap-4 min-w-0">
                 <img
-                  src={p.coverImage || "/assets/images/projects/placeholder.jpg"}
+                  src={cdnImage(p.coverImage || "/assets/images/projects/placeholder.jpg", IMG.thumb)}
                   alt={p.title}
                   className="h-14 w-14 rounded-lg object-cover bg-gray-100 shrink-0"
                   onError={(e) => (e.target.style.visibility = "hidden")}

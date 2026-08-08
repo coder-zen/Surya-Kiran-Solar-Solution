@@ -4,6 +4,7 @@ import SeoHead from "../components/common/SeoHead";
 import { Link } from "react-router-dom";
 import api from "../config/api";
 import { Assets } from "../config/images";
+import { cdnImage, IMG } from "../utils/cloudinaryImage";
 import { PROJECT_CATEGORIES } from "../config/constants";
 
 const fetchProjects = async (params) => {
@@ -71,8 +72,9 @@ const Projects = () => {
                   className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-premium h-72"
                 >
                   <img
-                    src={project.coverImage || Assets.projectPlaceholders[i % Assets.projectPlaceholders.length]}
+                    src={cdnImage(project.coverImage || Assets.projectPlaceholders[i % Assets.projectPlaceholders.length], IMG.card)}
                     alt={project.title}
+                    loading="lazy"
                     className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => (e.target.style.background = "#0B2447")}
                   />

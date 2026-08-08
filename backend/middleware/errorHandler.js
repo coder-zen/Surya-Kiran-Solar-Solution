@@ -1,3 +1,5 @@
+const { IMAGE_MAX_BYTES, DOCUMENT_MAX_BYTES, asMb } = require("../config/uploadLimits");
+
 const notFound = (req, res, next) => {
   const error = new Error(`Route not found — ${req.originalUrl}`);
   res.status(404);
@@ -27,6 +29,18 @@ const errorHandler = (err, req, res, next) => {
     statusCode = 400;
     const field = Object.keys(err.keyValue || {})[0];
     message = `Duplicate value for field: ${field}`;
+  }
+
+  // multer rejects an oversized file before the route runs, and its error
+  // carries no status — without this it surfaced as a 500 "File too large",
+  // which reads to an admin as "the site is broken" rather than "your photo
+  // is too big". err.field tells us which upload it was.
+  if (err.code === "LIMIT_FILE_SIZE") {
+    statusCode = 400;
+    message =
+      err.field === "resume"
+        ? `That file is too large — resumes can be up to ${asMb(DOCUMENT_MAX_BYTES)}.`
+        : `That image is too large — the limit is ${asMb(IMAGE_MAX_BYTES)}. Resize it and try again.`;
   }
 
   if (err.name === "ValidationError") {

@@ -1,4 +1,5 @@
 const multer = require("multer");
+const { DOCUMENT_MAX_BYTES } = require("../config/uploadLimits");
 
 /**
  * Separate multer instance from upload.js — that one is image-only (mimetype
@@ -10,7 +11,7 @@ const storage = multer.memoryStorage();
 
 const uploadDocument = multer({
   storage,
-  limits: { fileSize: 8 * 1024 * 1024 }, // 8MB — generous for a resume with a portfolio page or two
+  limits: { fileSize: DOCUMENT_MAX_BYTES }, // generous for a resume with a portfolio page or two
   fileFilter: (req, file, cb) => {
     const allowed = [
       "application/pdf",

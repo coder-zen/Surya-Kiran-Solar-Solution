@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FaMapMarkerAlt, FaBolt, FaCalendarAlt, FaStar } from "react-icons/fa";
 import api from "../config/api";
 import { Assets } from "../config/images";
+import { cdnImage, IMG } from "../utils/cloudinaryImage";
 import SeoHead from "../components/common/SeoHead";
 
 const fetchProject = async (slug) => {
@@ -35,7 +36,7 @@ const ProjectDetail = () => {
         title={project.title}
         path={`/projects/${slug}`}
         description={project.description || `${project.title} — a ${project.capacityKW}kW on-grid rooftop solar installation in ${project.district}, Maharashtra by SK Solar Solutions.`}
-        image={project.coverImage || undefined}
+        image={cdnImage(project.coverImage, IMG.hero) || undefined}
       />
 
       <section className="pt-32 pb-16 bg-navy-gradient text-white">
@@ -55,7 +56,7 @@ const ProjectDetail = () => {
         <div className="container-custom grid lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-6">
             <img
-              src={project.coverImage || Assets.projectPlaceholders[0]}
+              src={cdnImage(project.coverImage || Assets.projectPlaceholders[0], IMG.hero)}
               alt={project.title}
               className="rounded-2xl w-full h-96 object-cover"
               onError={(e) => (e.target.style.background = "#0B2447")}

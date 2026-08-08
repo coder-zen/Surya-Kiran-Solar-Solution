@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import SeoHead from "../components/common/SeoHead";
 import { Link } from "react-router-dom";
 import api from "../config/api";
+import { cdnImage, IMG } from "../utils/cloudinaryImage";
 
 const fetchBlogs = async (search) => {
   const { data } = await api.get("/blogs", { params: { search: search || undefined } }).catch(() => ({ data: { data: [] } }));
@@ -39,7 +40,7 @@ const Blog = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs?.map((post) => (
               <Link key={post._id} to={`/blog/${post.slug}`} className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-premium transition-shadow">
-                <img src={post.coverImage} alt={post.title} className="h-44 w-full object-cover bg-gray-100" onError={(e) => (e.target.style.background = "#f3f4f6")} />
+                <img src={cdnImage(post.coverImage, IMG.card)} alt={post.title} loading="lazy" className="h-44 w-full object-cover bg-gray-100" onError={(e) => (e.target.style.background = "#f3f4f6")} />
                 <div className="p-5">
                   <span className="text-xs uppercase text-solar-orange font-semibold">{post.category}</span>
                   <h3 className="font-display font-semibold text-lg text-navy mt-1">{post.title}</h3>

@@ -5,6 +5,7 @@ import L from "leaflet";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../config/api";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import SectionHeading from "../common/SectionHeading";
 
 /**
@@ -101,8 +102,9 @@ const ProjectMap = () => {
                     <div className="space-y-1">
                       {project.coverImage && (
                         <img
-                          src={project.coverImage}
+                          src={cdnImage(project.coverImage, IMG.thumb)}
                           alt={project.title}
+                          loading="lazy"
                           className="w-full h-24 object-cover rounded-md mb-2"
                         />
                       )}

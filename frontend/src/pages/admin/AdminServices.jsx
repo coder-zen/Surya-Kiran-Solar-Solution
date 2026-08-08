@@ -4,6 +4,7 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaTrash, FaPlus, FaPen, FaTimes, FaEyeSlash } from "react-icons/fa";
 import api from "../../config/api";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import RichTextEditor from "../../components/admin/RichTextEditor";
 import { SERVICE_ICONS, SERVICE_ICON_KEYS, getServiceIcon } from "../../config/serviceIcons";
@@ -199,7 +200,7 @@ const ServiceForm = ({ initial, onCancel, onSaved }) => {
         <div className="flex flex-wrap gap-3 mt-2">
           {images.map((url) => (
             <div key={url} className="relative h-20 w-20 rounded-lg overflow-hidden bg-gray-100">
-              <img src={url} alt="" className="h-full w-full object-cover" />
+              <img src={cdnImage(url, IMG.thumb)} alt="" className="h-full w-full object-cover" />
               <button
                 type="button"
                 onClick={() => setValue("images", images.filter((u) => u !== url))}

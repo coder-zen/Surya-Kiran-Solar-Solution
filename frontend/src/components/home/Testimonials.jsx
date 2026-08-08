@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { FaStar, FaCheckCircle, FaQuoteLeft } from "react-icons/fa";
 import api from "../../config/api";
 import { Assets } from "../../config/images";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import SectionHeading from "../common/SectionHeading";
 
 const fetchTestimonials = async () => {
@@ -57,7 +58,7 @@ const TestimonialCard = ({ t }) => (
     <div className="flex items-center gap-3 mt-6">
       {/* TODO: replace with real customer photo (consent required) */}
       <img
-        src={t.image || Assets.testimonialPlaceholder}
+        src={cdnImage(t.image || Assets.testimonialPlaceholder, IMG.avatar)}
         alt={t.customerName}
         className="h-11 w-11 rounded-full object-cover bg-gray-200"
         onError={(e) => (e.target.style.visibility = "hidden")}

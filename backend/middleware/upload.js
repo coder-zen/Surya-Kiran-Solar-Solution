@@ -1,4 +1,5 @@
 const multer = require("multer");
+const { IMAGE_MAX_BYTES } = require("../config/uploadLimits");
 
 /**
  * In-memory storage — the file buffer is streamed straight to Cloudinary in
@@ -9,7 +10,7 @@ const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: IMAGE_MAX_BYTES },
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith("image/")) {
       return cb(new Error("Only image files are allowed"));

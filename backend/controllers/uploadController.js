@@ -46,13 +46,31 @@ const uploadImage = asyncHandler(async (req, res) => {
     throw new Error("That file isn't a valid image. Upload a JPEG, PNG, GIF or WebP.");
   }
 
-  const result = await new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder: "sk-solar" },
-      (error, uploadResult) => (error ? reject(error) : resolve(uploadResult))
+  // The full-resolution original is stored as-is — no incoming transformation.
+  // That is deliberate: Cloudinary doubles as the client's archive of the
+  // original DSLR shot. Visitors never receive this file; the frontend appends
+  // delivery transformations (see frontend/src/utils/cloudinaryImage.js).
+  let result;
+  try {
+    result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "sk-solar" },
+        (error, uploadResult) => (error ? reject(error) : resolve(uploadResult))
+      );
+      stream.end(req.file.buffer);
+    });
+  } catch (err) {
+    // Cloudinary enforces its own per-image ceiling (10MB on the free plan) and
+    // its errors carry an http_code but no Express status, so they would
+    // otherwise land as an opaque 500.
+    const isClientFault = err.http_code >= 400 && err.http_code < 500;
+    res.status(isClientFault ? 400 : 502);
+    throw new Error(
+      isClientFault
+        ? `Cloudinary rejected this image: ${err.message}`
+        : "Could not reach the image host. Try again in a moment."
     );
-    stream.end(req.file.buffer);
-  });
+  }
 
   res.status(201).json({ success: true, url: result.secure_url });
 });

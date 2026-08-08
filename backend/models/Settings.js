@@ -34,7 +34,7 @@ const settingsSchema = new mongoose.Schema(
      * and the admin form opens pre-filled rather than blank.
      *
      * heroVideoUrl is a URL rather than an upload: hero videos are far larger
-     * than the 5MB image cap on POST /api/upload, and streaming big files
+     * than the 10MB image cap on POST /api/upload, and streaming big files
      * through the API risks request timeouts on hosted platforms. Point it at
      * a Cloudinary/CDN URL, or leave it blank to show the fallback image only.
      */

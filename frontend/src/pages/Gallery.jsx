@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 import api from "../config/api";
 import { Assets } from "../config/images";
+import { cdnImage, IMG } from "../utils/cloudinaryImage";
 
 const CATEGORIES = ["All", "Installation", "Team", "Events", "Projects", "Office"];
 
@@ -51,8 +52,9 @@ const Gallery = () => {
             {filtered.map((img) => (
               <motion.img
                 key={img._id}
-                src={img.image}
+                src={cdnImage(img.image, IMG.card)}
                 alt={img.title || "Gallery image"}
+                loading="lazy"
                 className="w-full mb-4 rounded-xl cursor-pointer break-inside-avoid"
                 whileHover={{ scale: 1.02 }}
                 onClick={() => setLightbox(img.image)}
@@ -71,7 +73,8 @@ const Gallery = () => {
             onClick={() => setLightbox(null)}
           >
             <button className="absolute top-6 right-6 text-white text-2xl"><FaTimes /></button>
-            <img src={lightbox} alt="" className="max-h-[85vh] rounded-xl" />
+            {/* Full-screen view gets the larger derivative, still not the original. */}
+            <img src={cdnImage(lightbox, IMG.hero)} alt="" className="max-h-[85vh] rounded-xl" />
           </motion.div>
         )}
       </AnimatePresence>

@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import api from "../../config/api";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 
 const GALLERY_CATEGORIES = ["Installation", "Team", "Events", "Projects", "Office"];
@@ -130,7 +131,7 @@ const AdminGallery = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {images?.map((img) => (
               <div key={img._id} className="relative group rounded-xl overflow-hidden bg-gray-100 aspect-square">
-                <img src={img.image} alt={img.title || "Gallery image"} className="h-full w-full object-cover" />
+                <img src={cdnImage(img.image, IMG.thumb)} alt={img.title || "Gallery image"} loading="lazy" className="h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-navy-dark/0 group-hover:bg-navy-dark/60 transition-colors flex flex-col justify-between p-2 opacity-0 group-hover:opacity-100">
                   <span className="text-xs text-white bg-navy-dark/70 rounded px-2 py-0.5 self-start">{img.category}</span>
                   <button
