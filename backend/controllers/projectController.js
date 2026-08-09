@@ -58,7 +58,26 @@ const createProject = asyncHandler(async (req, res) => {
 // @route   PUT /api/projects/:id
 // @access  Private (admin)
 const updateProject = asyncHandler(async (req, res) => {
-  const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
+  const payload = { ...req.body };
+
+  /*
+   * Re-derive the map pin when the district changes. createProject did this but
+   * update never did, so editing a project from Pune to Nagpur relabelled the
+   * card while leaving its marker sitting over Pune. Harmless while the admin
+   * had no edit screen; a visible wrong-city bug the moment one exists.
+   *
+   * Only when the caller didn't send explicit coordinates, so a precise GPS pin
+   * set by hand is never overwritten by the district centre.
+   */
+  if (!payload.location?.coordinates && payload.district) {
+    const existing = await Project.findById(req.params.id).select("district");
+    if (existing && existing.district !== payload.district) {
+      const point = pointForDistrict(payload.district);
+      if (point) payload.location = point;
+    }
+  }
+
+  const project = await Project.findByIdAndUpdate(req.params.id, payload, {
     new: true,
     runValidators: true,
   });
