@@ -68,12 +68,17 @@ const Hero = () => {
           Path: src/assets/videos/hero-solar-plant.mp4 (see config/images.js)
           Recommended: 1920x1080, H.264 mp4, muted/looping, under 8MB
       ================================================================= */}
+      {/* preload="none" so the poster paints first and the headline is readable
+          immediately. Without it the browser pulls the poster and streams the
+          video at the same time, and the two compete for the same bandwidth
+          above the fold. autoPlay still starts the video once it can. */}
       <video
         ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
+        preload="none"
         poster={posterSrc}
         className="absolute inset-0 h-full w-full object-cover"
         onPlay={() => setVideoPaused(false)}

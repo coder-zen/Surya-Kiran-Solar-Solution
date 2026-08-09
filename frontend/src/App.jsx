@@ -3,26 +3,31 @@ import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/layout/Layout";
 
-// Public pages
+// Home stays eager — it is the landing page for most visitors, and lazy-loading
+// it would only add a round trip before anything paints.
 import Home from "./pages/Home";
-import About from "./pages/About";
-import Services from "./pages/Services";
-import ServiceDetail from "./pages/ServiceDetail";
-import Projects from "./pages/Projects";
-import ProjectDetail from "./pages/ProjectDetail";
-import Gallery from "./pages/Gallery";
-import Products from "./pages/Products";
-import Pricing from "./pages/Pricing";
-import AMCPlans from "./pages/AMCPlans";
-import GovernmentSubsidy from "./pages/GovernmentSubsidy";
-import Blog from "./pages/Blog";
-import BlogDetail from "./pages/BlogDetail";
-import Career from "./pages/Career";
-import Contact from "./pages/Contact";
-import Calculators from "./pages/Calculators";
-import LegalNotice from "./pages/LegalNotice";
-import Terms from "./pages/Terms";
-import NotFound from "./pages/NotFound";
+
+// Every other public page is split out. They were all bundled into the initial
+// chunk, so a visitor who only ever reads the homepage was still downloading
+// the subsidy calculator's charting library and the blog's markdown renderer.
+const About = lazy(() => import("./pages/About"));
+const Services = lazy(() => import("./pages/Services"));
+const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
+const Projects = lazy(() => import("./pages/Projects"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
+const Gallery = lazy(() => import("./pages/Gallery"));
+const Products = lazy(() => import("./pages/Products"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const AMCPlans = lazy(() => import("./pages/AMCPlans"));
+const GovernmentSubsidy = lazy(() => import("./pages/GovernmentSubsidy"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogDetail = lazy(() => import("./pages/BlogDetail"));
+const Career = lazy(() => import("./pages/Career"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Calculators = lazy(() => import("./pages/Calculators"));
+const LegalNotice = lazy(() => import("./pages/LegalNotice"));
+const Terms = lazy(() => import("./pages/Terms"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Admin pages — lazy-loaded so the admin-only bundle (rich text editor, charts)
 // is never downloaded by public visitors, who are the vast majority of traffic.
