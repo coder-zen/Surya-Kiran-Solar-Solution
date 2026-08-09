@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { FaStar, FaTrash, FaCheckCircle, FaPlus } from "react-icons/fa";
+import { FaStar, FaTrash, FaCheckCircle, FaPlus, FaYoutube } from "react-icons/fa";
 import api from "../../config/api";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import { MAHARASHTRA_DISTRICTS } from "../../config/constants";
+import { youTubeId } from "../../utils/youtube";
 
 const fetchTestimonials = async () => (await api.get("/testimonials")).data.data;
 const fetchProjects = async () => (await api.get("/projects")).data.data;
@@ -21,7 +22,7 @@ const AdminTestimonials = () => {
   const [showForm, setShowForm] = useState(false);
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm({
-    defaultValues: { rating: 5, isVerified: true, relatedProject: "", location: "" },
+    defaultValues: { rating: 5, isVerified: true, relatedProject: "", location: "", videoUrl: "" },
   });
   const relatedProjectField = register("relatedProject");
 
@@ -107,6 +108,22 @@ const AdminTestimonials = () => {
               <p className="text-xs text-gray-400 mt-1">Picking a project auto-fills Location with its district — you can still change it manually after.</p>
             </div>
             <div className="sm:col-span-2">
+              <label className="section-label">YouTube Video Link (optional)</label>
+              <input
+                {...register("videoUrl", {
+                  validate: (v) =>
+                    !v || youTubeId(v) !== null || "Paste a full YouTube link, e.g. https://youtu.be/dQw4w9WgXcQ",
+                })}
+                className="input-field mt-1"
+                placeholder="https://youtu.be/..."
+              />
+              {errors.videoUrl && <p className="text-sm text-red-500 mt-1">{errors.videoUrl.message}</p>}
+              <p className="text-xs text-gray-400 mt-1">
+                Add a link and this review appears in the Video Reviews section on the homepage instead of
+                the scrolling text cards. Leave blank for a normal written testimonial.
+              </p>
+            </div>
+            <div className="sm:col-span-2">
               <label className="section-label">Message</label>
               <textarea
                 {...register("message", { required: "Required" })}
@@ -132,8 +149,8 @@ const AdminTestimonials = () => {
           {isLoading && <p className="p-6 text-gray-400 text-sm">Loading testimonials…</p>}
           {!isLoading && testimonials?.length === 0 && (
             <p className="p-6 text-gray-400 text-sm">
-              No testimonials yet — the public Customer Stories section is showing fallback sample
-              content until the first one is added here.
+              No testimonials yet — the Customer Stories section stays hidden on the homepage until
+              the first one is added here.
             </p>
           )}
           {testimonials?.map((t) => (
@@ -141,6 +158,9 @@ const AdminTestimonials = () => {
               <div className="min-w-0">
                 <p className="font-semibold text-navy flex items-center gap-1.5">
                   {t.customerName} {t.isVerified && <FaCheckCircle className="text-blue-500 text-xs shrink-0" />}
+                  {youTubeId(t.videoUrl) && (
+                    <FaYoutube className="text-red-600 text-sm shrink-0" title="Shown in Video Reviews on the homepage" />
+                  )}
                   <span className="text-xs text-gray-400 font-normal">{t.location}</span>
                 </p>
                 <div className="flex gap-0.5 mt-1 text-solar-yellow text-xs">

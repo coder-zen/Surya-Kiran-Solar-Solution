@@ -45,17 +45,6 @@ const pinIcon = new L.DivIcon({
 
 const MAHARASHTRA_CENTER = [18.2, 75.2];
 
-// Shown if the live API is unreachable (e.g. backend not deployed yet) so the
-// map never renders empty/broken. SK Solar Solutions serves all of Maharashtra;
-// these sample pins just cover a few districts so the map isn't blank.
-const FALLBACK_PROJECTS = [
-  { _id: "fallback-pune-1", title: "Rooftop Solar Installation", district: "Pune", category: "Residential", capacityKW: 15, location: { coordinates: [73.8567, 18.5204] } },
-  { _id: "fallback-pune-2", title: "Rooftop Solar Installation", district: "Pune", category: "Residential", capacityKW: 5, location: { coordinates: [73.9367, 18.5704] } },
-  { _id: "fallback-pune-3", title: "Rooftop Solar Installation", district: "Pune", category: "Commercial", capacityKW: 20, location: { coordinates: [73.7567, 18.4804] } },
-  { _id: "fallback-solapur-1", title: "Rooftop Solar Installation", district: "Solapur", category: "Residential", capacityKW: 4, location: { coordinates: [75.9064, 17.6599] } },
-  { _id: "fallback-kolhapur-1", title: "Rooftop Solar Installation", district: "Kolhapur", category: "Residential", capacityKW: 6, location: { coordinates: [74.2433, 16.705] } },
-];
-
 const fetchMapProjects = async () => {
   const { data } = await api.get("/projects/map");
   return data.data;
@@ -68,7 +57,16 @@ const ProjectMap = () => {
     retry: false,
   });
 
-  const pins = isError || !projects?.length ? FALLBACK_PROJECTS : projects;
+  /*
+   * The database is the single source of truth — there is deliberately no
+   * hardcoded fallback. Sample pins previously stood in whenever the API failed
+   * or returned nothing, which made a broken backend and an empty portfolio
+   * both look like a working map of installations that don't exist.
+   *
+   * A pin needs real GeoJSON coordinates to place, so anything lacking them is
+   * skipped rather than crashing the map on `coordinates[1]` of undefined.
+   */
+  const pins = (projects || []).filter((p) => p?.location?.coordinates?.length === 2);
 
   return (
     <section className="py-24 bg-white">
@@ -83,6 +81,20 @@ const ProjectMap = () => {
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
               <p className="text-gray-400">Loading project map…</p>
+            </div>
+          )}
+
+          {/* Same overlay treatment as the loading state, so the map frame
+              itself never changes shape between states. */}
+          {!isLoading && isError && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
+              <p className="text-gray-400">Couldn't load the project map. Please try again later.</p>
+            </div>
+          )}
+
+          {!isLoading && !isError && pins.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
+              <p className="text-gray-400">No projects to show on the map yet.</p>
             </div>
           )}
 

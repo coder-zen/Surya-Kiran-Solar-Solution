@@ -6,6 +6,7 @@ import WhyChooseUs from "../components/home/WhyChooseUs";
 import StatsSection from "../components/home/StatsSection";
 import FeaturedProjects from "../components/home/FeaturedProjects";
 import ProjectMap from "../components/home/ProjectMap";
+import VideoTestimonials from "../components/home/VideoTestimonials";
 import Testimonials from "../components/home/Testimonials";
 import Brands from "../components/home/Brands";
 import FAQSection from "../components/home/FAQSection";
@@ -27,6 +28,7 @@ const Home = () => (
     <StatsSection />
     <FeaturedProjects />
     <ProjectMap />
+    <VideoTestimonials />
     <Testimonials />
     <Brands />
     <FAQSection />

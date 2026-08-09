@@ -4,6 +4,7 @@ import { FaStar, FaCheckCircle, FaQuoteLeft } from "react-icons/fa";
 import api from "../../config/api";
 import { Assets } from "../../config/images";
 import { cdnImage, IMG } from "../../utils/cloudinaryImage";
+import { youTubeId } from "../../utils/youtube";
 import SectionHeading from "../common/SectionHeading";
 
 const fetchTestimonials = async () => {
@@ -12,44 +13,16 @@ const fetchTestimonials = async () => {
 };
 
 /**
- * Shown whenever the live /api/testimonials collection is empty (new deployment,
- * or admin hasn't added any yet) so the section is never blank. Same shape as a
- * real Testimonial document — swap is transparent to the marquee below.
+ * Below this many cards the marquee is replaced by a static row.
+ *
+ * The scroll animates the track from 0% to -50%, which only loops seamlessly
+ * because the list is rendered twice — at -50% the second copy sits exactly
+ * where the first began. That is invisible with a full row, but with a single
+ * testimonial the admin saw their one review rendered as two cards. Four
+ * cards duplicated is ~2750px, wider than any common viewport, so the seam
+ * stays off-screen from here up.
  */
-const FALLBACK_TESTIMONIALS = [
-  {
-    _id: "fallback-1",
-    customerName: "Rajesh Patil",
-    location: "Pune",
-    rating: 5,
-    message: "Our electricity bill dropped by almost 90% after installation. The team handled everything — paperwork, net metering, all of it.",
-    isVerified: true,
-  },
-  {
-    _id: "fallback-2",
-    customerName: "Sunita Deshmukh",
-    location: "Solapur",
-    rating: 5,
-    message: "Professional installation and honest pricing. No surprises after the site survey, exactly what they quoted.",
-    isVerified: true,
-  },
-  {
-    _id: "fallback-3",
-    customerName: "Anil Kulkarni",
-    location: "Kolhapur",
-    rating: 4,
-    message: "Good support during the subsidy application — they followed up with MSEDCL on our behalf so we didn't have to.",
-    isVerified: true,
-  },
-  {
-    _id: "fallback-4",
-    customerName: "Meera Joshi",
-    location: "Satara",
-    rating: 5,
-    message: "System has been running smoothly for over a year now. AMC team is responsive whenever we call.",
-    isVerified: true,
-  },
-];
+const MARQUEE_MIN = 4;
 
 const TestimonialCard = ({ t }) => (
   <div className="glass-card !bg-white p-7 h-full w-[320px] shrink-0 flex flex-col">
@@ -79,8 +52,16 @@ const TestimonialCard = ({ t }) => (
 const Testimonials = () => {
   const { data, isLoading } = useQuery({ queryKey: ["testimonials"], queryFn: fetchTestimonials });
 
-  const testimonials = !isLoading && data?.length > 0 ? data : FALLBACK_TESTIMONIALS;
-  const track = [...testimonials, ...testimonials];
+  // Testimonials with a video are shown by VideoTestimonials instead, so the
+  // same customer never appears in both sections.
+  const testimonials = (data || []).filter((t) => !youTubeId(t.videoUrl));
+
+  // No sample content: an empty collection hides the section rather than
+  // showing invented reviews under invented customer names.
+  if (isLoading || !testimonials.length) return null;
+
+  const isMarquee = testimonials.length >= MARQUEE_MIN;
+  const track = isMarquee ? [...testimonials, ...testimonials] : testimonials;
 
   return (
     <section className="py-24 bg-gray-50 overflow-hidden">
@@ -88,9 +69,9 @@ const Testimonials = () => {
         <SectionHeading eyebrow="Customer Stories" title="What Our Customers Say" />
 
         <motion.div
-          className="flex gap-6 mt-14 w-max"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+          className={isMarquee ? "flex gap-6 mt-14 w-max" : "flex flex-wrap gap-6 mt-14 justify-center"}
+          animate={isMarquee ? { x: ["0%", "-50%"] } : undefined}
+          transition={isMarquee ? { duration: 35, repeat: Infinity, ease: "linear" } : undefined}
         >
           {track.map((t, i) => (
             <TestimonialCard key={`${t._id}-${i}`} t={t} />

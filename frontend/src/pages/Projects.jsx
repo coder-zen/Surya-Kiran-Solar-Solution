@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import SeoHead from "../components/common/SeoHead";
 import { Link } from "react-router-dom";
 import api from "../config/api";
-import { Assets } from "../config/images";
 import { cdnImage, IMG } from "../utils/cloudinaryImage";
 import { PROJECT_CATEGORIES } from "../config/constants";
 
@@ -16,9 +15,12 @@ const Projects = () => {
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
 
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects, isLoading, isError } = useQuery({
     queryKey: ["projects", category, search],
     queryFn: () => fetchProjects({ category: category || undefined, search: search || undefined }),
+    // See FeaturedProjects — without this the default retries delay the error
+    // state long enough that a failure looks like an empty result set.
+    retry: false,
   });
 
   return (
@@ -64,20 +66,26 @@ const Projects = () => {
             {isLoading &&
               Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-72 rounded-2xl bg-gray-100 animate-pulse" />)}
 
-            {!isLoading &&
-              projects?.map((project, i) => (
+            {!isLoading && !isError &&
+              projects?.map((project) => (
                 <Link
                   key={project._id}
                   to={`/projects/${project.slug}`}
                   className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-premium h-72"
                 >
-                  <img
-                    src={cdnImage(project.coverImage || Assets.projectPlaceholders[i % Assets.projectPlaceholders.length], IMG.card)}
-                    alt={project.title}
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    onError={(e) => (e.target.style.background = "#0B2447")}
-                  />
+                  {/* Brand gradient rather than a stock photo when a project has
+                      no image of its own — see FeaturedProjects.jsx. */}
+                  {project.coverImage ? (
+                    <img
+                      src={cdnImage(project.coverImage, IMG.card)}
+                      alt={project.title}
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => (e.target.style.background = "#0B2447")}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-navy-gradient" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/90 to-transparent" />
                   <div className="absolute bottom-0 p-5 text-white">
                     <span className="text-xs uppercase text-solar-yellow font-semibold">{project.category} · {project.capacityKW}kW</span>
@@ -87,8 +95,16 @@ const Projects = () => {
                 </Link>
               ))}
 
-            {!isLoading && !projects?.length && (
-              <p className="col-span-full text-center text-gray-400 py-12">No projects match your filters.</p>
+            {!isLoading && isError && (
+              <p className="col-span-full text-center text-gray-400 py-12">
+                Couldn't load projects right now. Please refresh the page.
+              </p>
+            )}
+
+            {!isLoading && !isError && !projects?.length && (
+              <p className="col-span-full text-center text-gray-400 py-12">
+                {category || search ? "No projects match your filters." : "No projects published yet."}
+              </p>
             )}
           </div>
         </div>

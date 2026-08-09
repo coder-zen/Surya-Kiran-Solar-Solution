@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import api from "../../config/api";
-import { Assets } from "../../config/images";
 import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import SectionHeading from "../common/SectionHeading";
 
@@ -12,7 +11,15 @@ const fetchFeatured = async () => {
 };
 
 const FeaturedProjects = () => {
-  const { data: projects, isLoading } = useQuery({ queryKey: ["featured-projects"], queryFn: fetchFeatured });
+  const { data: projects, isLoading, isError } = useQuery({
+    queryKey: ["featured-projects"],
+    queryFn: fetchFeatured,
+    // Matches ProjectMap. With React Query's default 3 retries the component
+    // sat on skeletons for ~7s and then fell through to the "no projects yet"
+    // message rather than reporting the failure — an outage read as an empty
+    // portfolio. Failing on the first attempt surfaces the real state promptly.
+    retry: false,
+  });
 
   return (
     <section className="py-24 bg-gray-50">
@@ -29,7 +36,7 @@ const FeaturedProjects = () => {
               <div key={i} className="h-80 rounded-2xl bg-gray-200 animate-pulse" />
             ))}
 
-          {!isLoading &&
+          {!isLoading && !isError &&
             (projects?.length ? projects : []).slice(0, 4).map((project, i) => (
               <motion.div
                 key={project._id}
@@ -40,14 +47,20 @@ const FeaturedProjects = () => {
                 whileHover={{ y: -6 }}
                 className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-premium h-80"
               >
-                {/* TODO: replace with real project photo — Assets.projectPlaceholders */}
-                <img
-                  src={cdnImage(project.coverImage || Assets.projectPlaceholders[i % Assets.projectPlaceholders.length], IMG.card)}
-                  alt={project.title}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  onError={(e) => (e.target.style.background = "#0B2447")}
-                />
+                {/* No stock-photo fallback: a project without its own photo
+                    shows the brand gradient rather than borrowing an unrelated
+                    installation's image, which misrepresents the portfolio. */}
+                {project.coverImage ? (
+                  <img
+                    src={cdnImage(project.coverImage, IMG.card)}
+                    alt={project.title}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => (e.target.style.background = "#0B2447")}
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-navy-gradient" />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/90 via-navy-dark/20 to-transparent" />
                 <div className="absolute bottom-0 p-5 text-white">
                   <span className="text-xs uppercase tracking-wide text-solar-yellow font-semibold">
@@ -65,7 +78,13 @@ const FeaturedProjects = () => {
               </motion.div>
             ))}
 
-          {!isLoading && !projects?.length && (
+          {!isLoading && isError && (
+            <p className="col-span-full text-center text-gray-400">
+              Couldn't load projects right now. Please refresh the page.
+            </p>
+          )}
+
+          {!isLoading && !isError && !projects?.length && (
             <p className="col-span-full text-center text-gray-400">
               No featured projects yet — add some from the admin panel.
             </p>

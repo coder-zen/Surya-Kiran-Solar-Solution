@@ -60,15 +60,11 @@ export const Assets = {
     groundMounted: "/assets/illustrations/service-ground-mounted.JPG",
   },
 
-  // ------------------------------------------------------------------------
-  // PROJECTS — featured project cards & portfolio grid
-  // ------------------------------------------------------------------------
-  projectPlaceholders: [
-    "/assets/images/projects/p1.JPG",
-    "/assets/images/projects/p2.JPG",
-    "/assets/images/projects/p3.JPG",
-    "/assets/images/projects/p4.JPG",
-  ],
+  // NOTE: there are deliberately no project placeholders here. Project cards
+  // render only real photos uploaded through the admin panel — the database is
+  // the single source of truth for the portfolio. A project with no photo of
+  // its own falls back to the brand gradient, never to a stock image of a
+  // different installation.
 
   // ------------------------------------------------------------------------
   // GALLERY
