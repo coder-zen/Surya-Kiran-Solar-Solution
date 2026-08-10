@@ -4,13 +4,7 @@
   ],
   "headers": [
     {
-      "//": "Files under /assets keep stable, unhashed names, so without this a returning visitor re-downloads every photo and the hero video on each visit. The flip side: replacing an image reuses its filename, so rename the file (or purge the Vercel cache) when swapping one, or browsers will hold the old copy for a year.",
       "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
-    },
-    {
-      "//": "Vite fingerprints these filenames on every build, so a new deploy produces new URLs and the old ones are safe to cache indefinitely.",
-      "source": "/(.*)\\.(js|css|woff2)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     }
   ]
