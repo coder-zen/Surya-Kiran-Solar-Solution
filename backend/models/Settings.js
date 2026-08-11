@@ -67,6 +67,27 @@ const settingsSchema = new mongoose.Schema(
       },
       aboutStatValue: { type: String, default: "70+" },
       aboutStatLabel: { type: String, default: "Homes Solarized" },
+
+      /**
+       * Video Reviews section.
+       *
+       * The featured video is about the company itself, so it belongs here
+       * rather than in the Testimonial collection — it has no customer, no
+       * rating and no location. The six-up grid below it is fed by
+       * Testimonial documents carrying a videoUrl.
+       *
+       * youtubeChannelUrl drives the "Watch All Reviews on YouTube" button.
+       * It is separate from socialLinks.youtube so saving this form cannot
+       * overwrite the other social links, and falls back to socialLinks.youtube
+       * when left blank.
+       */
+      videoSectionEyebrow: { type: String, default: "Video Reviews" },
+      videoSectionHeadline: { type: String, default: "Hear It From Our Customers" },
+      videoSectionSubtext: { type: String, default: "Real installations, in their own words." },
+      featuredVideoUrl: { type: String, default: "" },
+      featuredVideoTitle: { type: String, default: "" },
+      featuredVideoSubtitle: { type: String, default: "" },
+      youtubeChannelUrl: { type: String, default: "" },
     },
   },
   { timestamps: true }

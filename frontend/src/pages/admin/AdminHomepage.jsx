@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { FaTrash, FaExternalLinkAlt, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import api from "../../config/api";
 import { cdnImage, IMG } from "../../utils/cloudinaryImage";
+import { youTubeId } from "../../utils/youtube";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 
 const fetchSettings = async () => (await api.get("/settings")).data.data;
@@ -66,7 +67,7 @@ const AdminHomepage = () => {
   const queryClient = useQueryClient();
   const { data: settings, isLoading } = useQuery({ queryKey: ["admin-settings"], queryFn: fetchSettings });
 
-  const { register, handleSubmit, control, watch, setValue, reset, formState: { isDirty } } = useForm({
+  const { register, handleSubmit, control, watch, setValue, reset, formState: { isDirty, errors } } = useForm({
     values: settings
       ? {
           ...settings.homepageContent,
@@ -190,6 +191,63 @@ const AdminHomepage = () => {
               <div>
                 <label className="section-label">Badge Label</label>
                 <input {...register("aboutStatLabel")} className="input-field mt-1" placeholder="Homes Solarized" />
+              </div>
+            </div>
+
+            {/* ---------------- Video Reviews ---------------- */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm grid sm:grid-cols-2 gap-5">
+              <h3 className="font-display font-semibold text-navy sm:col-span-2">Video Reviews Section</h3>
+              <p className="text-xs text-gray-400 sm:col-span-2 -mt-3">
+                The large featured video below is about SK Solar itself. The six-up grid under it is
+                filled automatically by any testimonial that has a YouTube link — add those on the
+                Testimonials page, not here. The whole section stays hidden until there is at least
+                one video.
+              </p>
+
+              <div>
+                <label className="section-label">Eyebrow</label>
+                <input {...register("videoSectionEyebrow")} className="input-field mt-1" placeholder="Video Reviews" />
+              </div>
+              <div>
+                <label className="section-label">Headline</label>
+                <input {...register("videoSectionHeadline")} className="input-field mt-1" placeholder="Hear It From Our Customers" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="section-label">Subtext</label>
+                <input {...register("videoSectionSubtext")} className="input-field mt-1" placeholder="Real installations, in their own words." />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="section-label">Featured Video URL (about SK Solar)</label>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  A YouTube link — watch, youtu.be, embed or Shorts all work. Leave blank to show only
+                  the customer grid.
+                </p>
+                <input
+                  {...register("featuredVideoUrl", {
+                    validate: (v) => !v || youTubeId(v) !== null || "Paste a full YouTube link, e.g. https://youtu.be/dQw4w9WgXcQ",
+                  })}
+                  className="input-field mt-2"
+                  placeholder="https://youtu.be/..."
+                />
+                {errors.featuredVideoUrl && <p className="text-sm text-red-500 mt-1">{errors.featuredVideoUrl.message}</p>}
+              </div>
+              <div>
+                <label className="section-label">Featured Video Title</label>
+                <input {...register("featuredVideoTitle")} className="input-field mt-1" placeholder="The SK Solar Story" />
+              </div>
+              <div>
+                <label className="section-label">Featured Video Subtitle</label>
+                <input {...register("featuredVideoSubtitle")} className="input-field mt-1" placeholder="How we solarized 70+ homes" />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="section-label">YouTube Channel URL</label>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Powers the "Watch All Reviews on YouTube" button under the grid. Leave blank to use
+                  the YouTube link from your social links, or hide the button if that is empty too.
+                </p>
+                <input {...register("youtubeChannelUrl")} className="input-field mt-2" placeholder="https://youtube.com/@yourchannel" />
               </div>
             </div>
 
