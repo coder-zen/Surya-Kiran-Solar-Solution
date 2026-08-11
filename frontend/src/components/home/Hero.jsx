@@ -24,7 +24,7 @@ const fetchSettings = async () => (await api.get("/settings")).data.data;
 const FALLBACK = {
   heroVideoUrl: "",
   heroFallbackImageUrl: "",
-  heroEyebrow: "Pune's Trusted On-Grid Rooftop Solar EPC Partner",
+  heroEyebrow: "Maharashtra's Trusted On-Grid Rooftop Solar EPC Company",
   heroHeadline: "Powering Homes & Businesses With Smart Solar Energy",
   heroSubtext:
     "MNRE & IEC-certified on-grid solar rooftop systems for homes, businesses and institutions — complete design, supply, installation, testing, commissioning and MSEDCL net-metering coordination, handled end-to-end.",
