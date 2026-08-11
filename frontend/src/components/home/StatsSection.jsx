@@ -1,13 +1,17 @@
 import { motion } from "framer-motion";
 import { FaSolarPanel, FaBolt, FaSmile, FaCalendarAlt, FaMapMarkedAlt } from "react-icons/fa";
 import CountUp from "../ui/CountUp";
+import { MAHARASHTRA_DISTRICTS } from "../../config/constants";
 
 const stats = [
   { icon: FaSolarPanel, value: 25, suffix: "", label: "Year Panel Warranty" },
   { icon: FaBolt, value: 98, suffix: "%", label: "Inverter Efficiency" },
   { icon: FaSmile, value: 70, suffix: "+", label: "Homes Solarized Pan-India" },
   { icon: FaCalendarAlt, value: 22, suffix: "+", label: "Year System Life" },
-  { icon: FaMapMarkedAlt, value: 6, suffix: "", label: "Districts We Serve" },
+  // Counted from the district list rather than typed, so this can't fall out of
+  // step with the service area again — it read 6 long after the map subtitle,
+  // the district dropdowns and the search schema had all moved to the full 36.
+  { icon: FaMapMarkedAlt, value: MAHARASHTRA_DISTRICTS.length, suffix: "", label: "Districts We Serve" },
 ];
 
 const StatsSection = () => (
