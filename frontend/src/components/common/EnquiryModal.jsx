@@ -8,8 +8,13 @@ import api from "../../config/api";
  * "Get Free Quote" modal — triggered from header CTA, hero buttons, exit-intent,
  * and service page CTAs. Posts to POST /api/enquiries with a `source` tag so
  * leads can be attributed back to whichever UI element opened the modal.
+ *
+ * `contextMessage` lets a caller attach what the visitor was doing when they
+ * opened it — the quotation configurator passes the system they built, so the
+ * lead arrives with the specification rather than as a bare callback request.
+ * It is prepended to anything the customer types, never replacing it.
  */
-const EnquiryModal = ({ isOpen, onClose, source = "other" }) => {
+const EnquiryModal = ({ isOpen, onClose, source = "other", contextMessage = "" }) => {
   const {
     register,
     handleSubmit,
@@ -19,7 +24,8 @@ const EnquiryModal = ({ isOpen, onClose, source = "other" }) => {
 
   const onSubmit = async (formData) => {
     try {
-      await api.post("/enquiries", { ...formData, source });
+      const message = [contextMessage, formData.message].filter(Boolean).join("\n\n");
+      await api.post("/enquiries", { ...formData, message, source });
       toast.success("Thanks! Our team will call you shortly.");
       reset();
       onClose();

@@ -41,6 +41,7 @@ const AdminLeads = lazy(() => import("./pages/admin/AdminLeads"));
 const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
 const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
 const AdminPricing = lazy(() => import("./pages/admin/AdminPricing"));
+const AdminQuoteBuilder = lazy(() => import("./pages/admin/AdminQuoteBuilder"));
 const AdminHomepage = lazy(() => import("./pages/admin/AdminHomepage"));
 const AdminCareers = lazy(() => import("./pages/admin/AdminCareers"));
 const ForgotPassword = lazy(() => import("./pages/admin/ForgotPassword"));
@@ -151,6 +152,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminPricing />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/quote-pricing"
+          element={
+            <ProtectedRoute>
+              <AdminQuoteBuilder />
             </ProtectedRoute>
           }
         />

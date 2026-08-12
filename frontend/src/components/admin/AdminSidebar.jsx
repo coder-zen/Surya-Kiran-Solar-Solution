@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaTachometerAlt, FaSolarPanel, FaTools, FaImages, FaBlog, FaEnvelope,
-  FaSignOutAlt, FaUsers, FaBriefcase, FaCommentDots, FaTags, FaHome,
+  FaSignOutAlt, FaUsers, FaBriefcase, FaCommentDots, FaTags, FaHome, FaCalculator,
 } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 
@@ -14,6 +14,7 @@ const navItems = [
   { icon: FaImages, label: "Gallery", path: "/admin/gallery" },
   { icon: FaBlog, label: "Blog", path: "/admin/blog" },
   { icon: FaTags, label: "Pricing", path: "/admin/pricing" },
+  { icon: FaCalculator, label: "Quote Pricing", path: "/admin/quote-pricing" },
   { icon: FaCommentDots, label: "Testimonials", path: "/admin/testimonials" },
   { icon: FaEnvelope, label: "Leads / Enquiries", path: "/admin/leads" },
   { icon: FaBriefcase, label: "Careers", path: "/admin/careers" },

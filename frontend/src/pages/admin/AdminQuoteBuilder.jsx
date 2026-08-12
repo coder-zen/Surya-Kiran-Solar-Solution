@@ -1,0 +1,346 @@
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { FaTrash, FaPlus, FaExternalLinkAlt, FaExclamationTriangle } from "react-icons/fa";
+import api from "../../config/api";
+import AdminSidebar from "../../components/admin/AdminSidebar";
+import { UNIT_LABELS, formatINR } from "../../utils/quotePricing";
+
+/*
+ * Reads the admin-only endpoint, which is the one that carries purchase cost and
+ * margin. The public /quote-config deliberately cannot return them — see
+ * backend/controllers/quoteConfigController.js.
+ */
+const fetchAdminConfig = async () => (await api.get("/quote-config/admin")).data.data;
+
+const OPTION_GROUPS = [
+  { key: "panelBrands", title: "Solar Panel Brands", hint: "Usually priced per watt." },
+  { key: "inverterBrands", title: "Inverter Brands", hint: "Set a capacity range to auto-suggest by system size." },
+  { key: "structureTypes", title: "Structure Types" },
+  { key: "walkwayOptions", title: "Walkway" },
+  { key: "railingOptions", title: "Walkway Railing" },
+  { key: "ladderOptions", title: "Ladder" },
+  { key: "protectionCoverOptions", title: "Inverter Protection Cover" },
+  { key: "sprinklerOptions", title: "Sprinkler System" },
+  { key: "addOns", title: "Add Extra Services", hint: "Shown in the configurator's optional add-ons section." },
+];
+
+const CHARGE_FIELDS = [
+  ["gstPercent", "GST %", "%"],
+  ["transportation", "Transportation", "₹"],
+  ["installation", "Installation", "₹"],
+  ["delivery", "Delivery", "₹"],
+  ["msedclCharges", "MSEDCL Charges", "₹"],
+  ["extraMaterial", "Extra Material", "₹"],
+  ["siteSpecific", "Site-Specific Charges", "₹"],
+  ["discount", "Discount", "₹"],
+  ["specialDiscount", "Special Discount", "₹"],
+];
+
+/** One editable option row: name, basis, selling price, cost, and live margin. */
+const OptionRow = ({ option, groupKey, onChange, onRemove }) => {
+  const price = Number(option.price) || 0;
+  const cost = Number(option.purchaseCost) || 0;
+  const margin = price - cost;
+  const isInverter = groupKey === "inverterBrands";
+
+  return (
+    <div className="grid grid-cols-12 gap-2 items-start py-3 border-b border-gray-100 last:border-0">
+      <input
+        value={option.name}
+        onChange={(e) => onChange({ ...option, name: e.target.value })}
+        placeholder="Option name"
+        className="col-span-12 sm:col-span-3 rounded-lg border border-gray-200 px-3 py-2 text-sm"
+      />
+
+      <select
+        value={option.pricingUnit}
+        onChange={(e) => onChange({ ...option, pricingUnit: e.target.value })}
+        className="col-span-6 sm:col-span-2 rounded-lg border border-gray-200 px-2 py-2 text-sm"
+      >
+        {Object.entries(UNIT_LABELS).map(([value, label]) => (
+          <option key={value} value={value}>{label}</option>
+        ))}
+      </select>
+
+      <div className="col-span-3 sm:col-span-2">
+        <input
+          type="number" min="0" step="0.01"
+          value={option.price ?? 0}
+          onChange={(e) => onChange({ ...option, price: Number(e.target.value) })}
+          placeholder="Selling"
+          className={`w-full rounded-lg border px-3 py-2 text-sm ${price > 0 ? "border-gray-200" : "border-amber-300 bg-amber-50"}`}
+        />
+        <span className="text-[10px] text-gray-400">selling</span>
+      </div>
+
+      <div className="col-span-3 sm:col-span-2">
+        <input
+          type="number" min="0" step="0.01"
+          value={option.purchaseCost ?? 0}
+          onChange={(e) => onChange({ ...option, purchaseCost: Number(e.target.value) })}
+          placeholder="Cost"
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+        />
+        <span className="text-[10px] text-gray-400">cost (internal)</span>
+      </div>
+
+      {/* Margin is derived, never typed — and never sent to the public API. */}
+      <div className="col-span-6 sm:col-span-1 pt-2">
+        <span className={`text-sm font-semibold ${margin < 0 ? "text-red-500" : "text-green-600"}`}>
+          {margin < 0 ? "−" : ""}{formatINR(Math.abs(margin))}
+        </span>
+        <span className="block text-[10px] text-gray-400">margin</span>
+      </div>
+
+      <div className="col-span-6 sm:col-span-2 flex items-center gap-2 justify-end pt-2">
+        <label className="flex items-center gap-1.5 text-xs text-gray-500">
+          <input
+            type="checkbox"
+            checked={option.isActive !== false}
+            onChange={(e) => onChange({ ...option, isActive: e.target.checked })}
+            className="h-3.5 w-3.5 accent-solar-orange"
+          />
+          Live
+        </label>
+        <button type="button" onClick={onRemove} aria-label="Remove option" className="text-gray-300 hover:text-red-500">
+          <FaTrash />
+        </button>
+      </div>
+
+      {isInverter && (
+        <div className="col-span-12 flex items-center gap-2 pl-1">
+          <span className="text-[11px] text-gray-400">Suits</span>
+          <input
+            type="number" min="0" step="0.5"
+            value={option.minCapacityKW ?? 0}
+            onChange={(e) => onChange({ ...option, minCapacityKW: Number(e.target.value) })}
+            className="w-20 rounded-lg border border-gray-200 px-2 py-1 text-xs"
+          />
+          <span className="text-[11px] text-gray-400">to</span>
+          <input
+            type="number" min="0" step="0.5"
+            value={option.maxCapacityKW ?? 0}
+            onChange={(e) => onChange({ ...option, maxCapacityKW: Number(e.target.value) })}
+            className="w-20 rounded-lg border border-gray-200 px-2 py-1 text-xs"
+          />
+          <span className="text-[11px] text-gray-400">kW — leave both 0 to offer for any size</span>
+        </div>
+      )}
+
+      <input
+        value={option.note || ""}
+        onChange={(e) => onChange({ ...option, note: e.target.value })}
+        placeholder="Note shown to the customer (optional)"
+        className="col-span-12 rounded-lg border border-gray-100 px-3 py-1.5 text-xs text-gray-600"
+      />
+    </div>
+  );
+};
+
+const AdminQuoteBuilder = () => {
+  const queryClient = useQueryClient();
+  const { data: config, isLoading } = useQuery({ queryKey: ["admin-quote-config"], queryFn: fetchAdminConfig });
+  const [draft, setDraft] = useState(null);
+
+  // Seed the editable draft once the server copy arrives.
+  useEffect(() => {
+    if (config && !draft) setDraft(config);
+  }, [config, draft]);
+
+  const saveMutation = useMutation({
+    mutationFn: (payload) => api.put("/quote-config", payload),
+    onSuccess: ({ data: res }) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-quote-config"] });
+      queryClient.invalidateQueries({ queryKey: ["quote-config"] }); // public configurator
+      setDraft(res.data);
+      toast.success(res.message || "Pricing updated");
+    },
+    onError: (err) => toast.error(err?.response?.data?.message || "Could not save pricing"),
+  });
+
+  if (isLoading || !draft) {
+    return (
+      <div className="min-h-screen flex bg-gray-50">
+        <AdminSidebar />
+        <main className="flex-1 p-8"><p className="text-gray-400 text-sm">Loading pricing…</p></main>
+      </div>
+    );
+  }
+
+  const setGroup = (key, options) => setDraft((d) => ({ ...d, [key]: options }));
+
+  const updateOption = (key, index, next) =>
+    setGroup(key, draft[key].map((o, i) => (i === index ? next : o)));
+
+  const addOption = (key) =>
+    setGroup(key, [...(draft[key] || []), { name: "", pricingUnit: "fixed", price: 0, purchaseCost: 0, isActive: true, order: (draft[key] || []).length }]);
+
+  const removeOption = (key, index) => setGroup(key, draft[key].filter((_, i) => i !== index));
+
+  const setCharge = (field, value) =>
+    setDraft((d) => ({ ...d, charges: { ...d.charges, [field]: Number(value) } }));
+
+  // Counts options still sitting at the seeded ₹0, which quote nothing.
+  const unpriced = OPTION_GROUPS.reduce(
+    (n, g) => n + (draft[g.key] || []).filter((o) => o.isActive !== false && !(Number(o.price) > 0)).length,
+    0
+  );
+
+  return (
+    <div className="min-h-screen flex bg-gray-50">
+      <AdminSidebar />
+
+      <main className="flex-1 p-8">
+        <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
+          <div>
+            <h1 className="font-display font-bold text-2xl text-navy">Quotation Pricing</h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Every rate the customer-facing configurator uses. Saving updates the live site immediately.
+            </p>
+          </div>
+          <a href="/pricing" target="_blank" rel="noopener noreferrer" className="text-sm text-solar-orange font-semibold flex items-center gap-1.5">
+            View on site <FaExternalLinkAlt className="text-xs" />
+          </a>
+        </div>
+
+        <div className="bg-navy/5 border border-navy/10 rounded-xl p-4 mb-6 text-sm text-navy">
+          <strong>Purchase cost and margin are internal.</strong> They are served only to this screen —
+          the public configurator API cannot return them, so customers never see cost or margin.
+        </div>
+
+        {unpriced > 0 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-900 flex gap-2">
+            <FaExclamationTriangle className="mt-0.5 shrink-0" />
+            <span>
+              <strong>{unpriced} live option{unpriced > 1 ? "s" : ""} still priced at ₹0.</strong> The
+              configurator stays hidden from the public site until at least one real price is set, and
+              any option left at ₹0 adds nothing to a customer's total.
+            </span>
+          </div>
+        )}
+
+        {/* ---------------- capacity + master switch ---------------- */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h3 className="font-display font-semibold text-navy">System Capacity Range</h3>
+            <label className="flex items-center gap-2 text-sm text-navy">
+              <input
+                type="checkbox"
+                checked={draft.isEnabled !== false}
+                onChange={(e) => setDraft((d) => ({ ...d, isEnabled: e.target.checked }))}
+                className="h-4 w-4 accent-solar-orange"
+              />
+              Show configurator on the website
+            </label>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+            {[["minKW", "Minimum kW"], ["maxKW", "Maximum kW"], ["defaultKW", "Default kW"], ["stepKW", "Step"]].map(([f, label]) => (
+              <div key={f}>
+                <label className="section-label">{label}</label>
+                <input
+                  type="number" min="0.1" step="0.1"
+                  value={draft.capacity?.[f] ?? 0}
+                  onChange={(e) => setDraft((d) => ({ ...d, capacity: { ...d.capacity, [f]: Number(e.target.value) } }))}
+                  className="input-field mt-1"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ---------------- option groups ---------------- */}
+        {OPTION_GROUPS.map((group) => (
+          <div key={group.key} className="bg-white rounded-2xl p-6 shadow-sm mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <div>
+                <h3 className="font-display font-semibold text-navy">{group.title}</h3>
+                {group.hint && <p className="text-xs text-gray-400 mt-0.5">{group.hint}</p>}
+              </div>
+              <button type="button" onClick={() => addOption(group.key)} className="text-sm text-solar-orange font-semibold flex items-center gap-1.5">
+                <FaPlus className="text-xs" /> Add
+              </button>
+            </div>
+
+            {(draft[group.key] || []).length === 0 && (
+              <p className="text-sm text-gray-400 py-3">Nothing here yet — this step is skipped in the configurator.</p>
+            )}
+
+            {(draft[group.key] || []).map((option, i) => (
+              <OptionRow
+                key={option._id || i}
+                option={option}
+                groupKey={group.key}
+                onChange={(next) => updateOption(group.key, i, next)}
+                onRemove={() => removeOption(group.key, i)}
+              />
+            ))}
+          </div>
+        ))}
+
+        {/* ---------------- charges & terms ---------------- */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
+          <h3 className="font-display font-semibold text-navy">Tax &amp; Other Charges</h3>
+          <p className="text-xs text-gray-400 mt-0.5">Applied to every quotation. Discounts are deducted before GST.</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+            {CHARGE_FIELDS.map(([field, label, prefix]) => (
+              <div key={field}>
+                <label className="section-label">{label} ({prefix})</label>
+                <input
+                  type="number" min="0" step="0.01"
+                  value={draft.charges?.[field] ?? 0}
+                  onChange={(e) => setCharge(field, e.target.value)}
+                  className="input-field mt-1"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 shadow-sm mb-6 grid sm:grid-cols-2 gap-4">
+          <h3 className="font-display font-semibold text-navy sm:col-span-2">Terms</h3>
+          <div>
+            <label className="section-label">Quotation Validity (days)</label>
+            <input
+              type="number" min="1"
+              value={draft.terms?.quotationValidityDays ?? 15}
+              onChange={(e) => setDraft((d) => ({ ...d, terms: { ...d.terms, quotationValidityDays: Number(e.target.value) } }))}
+              className="input-field mt-1"
+            />
+          </div>
+          <div>
+            <label className="section-label">Warranty Terms</label>
+            <textarea
+              rows={2}
+              value={draft.terms?.warranty || ""}
+              onChange={(e) => setDraft((d) => ({ ...d, terms: { ...d.terms, warranty: e.target.value } }))}
+              className="input-field mt-1"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="section-label">Disclaimer (shown under the estimate)</label>
+            <textarea
+              rows={2}
+              value={draft.terms?.disclaimer || ""}
+              onChange={(e) => setDraft((d) => ({ ...d, terms: { ...d.terms, disclaimer: e.target.value } }))}
+              className="input-field mt-1"
+            />
+          </div>
+        </div>
+
+        {/* Sticky so the save button is reachable from anywhere in a long form. */}
+        <div className="sticky bottom-0 bg-gray-50 py-4 border-t border-gray-200">
+          <button
+            onClick={() => saveMutation.mutate(draft)}
+            disabled={saveMutation.isPending}
+            className="btn-primary"
+          >
+            {saveMutation.isPending ? "Saving…" : "Save All Pricing"}
+          </button>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default AdminQuoteBuilder;

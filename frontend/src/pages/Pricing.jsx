@@ -4,6 +4,7 @@ import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import api from "../config/api";
 import EnquiryModal from "../components/common/EnquiryModal";
 import SeoHead from "../components/common/SeoHead";
+import QuoteConfigurator from "../components/pricing/QuoteConfigurator";
 
 const fetchPricing = async () => (await api.get("/pricing")).data.data;
 
@@ -91,6 +92,10 @@ const Pricing = () => {
           <p className="mt-4 text-gray-300 max-w-2xl mx-auto">{content.intro}</p>
         </div>
       </section>
+
+      {/* Renders nothing until the admin has entered at least one real rate,
+          so the page never shows a calculator that quotes ₹0. */}
+      <QuoteConfigurator />
 
       <section className="py-16 bg-white">
         <div className="container-custom grid lg:grid-cols-5 gap-12">
