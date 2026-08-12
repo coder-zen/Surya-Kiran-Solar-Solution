@@ -297,6 +297,185 @@ const AdminQuoteBuilder = () => {
           </div>
         </div>
 
+        {/* ---------------- government subsidy ---------------- */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
+          <div className="flex flex-wrap justify-between items-center gap-3">
+            <div>
+              <h3 className="font-display font-semibold text-navy">Government Subsidy</h3>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Deducted after GST — a subsidy is reimbursed against what was paid, so it must not reduce tax.
+              </p>
+            </div>
+            <label className="flex items-center gap-2 text-sm text-navy">
+              <input
+                type="checkbox"
+                checked={draft.subsidy?.isEnabled !== false}
+                onChange={(e) => setDraft((d) => ({ ...d, subsidy: { ...d.subsidy, isEnabled: e.target.checked } }))}
+                className="h-4 w-4 accent-solar-orange"
+              />
+              Show subsidy
+            </label>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="section-label">Scheme Name</label>
+              <input
+                value={draft.subsidy?.label || ""}
+                onChange={(e) => setDraft((d) => ({ ...d, subsidy: { ...d.subsidy, label: e.target.value } }))}
+                className="input-field mt-1"
+              />
+            </div>
+            <div>
+              <label className="section-label">Maximum Subsidy (₹)</label>
+              <input
+                type="number" min="0"
+                value={draft.subsidy?.maxAmount ?? 0}
+                onChange={(e) => setDraft((d) => ({ ...d, subsidy: { ...d.subsidy, maxAmount: Number(e.target.value) } }))}
+                className="input-field mt-1"
+              />
+              <p className="text-xs text-gray-400 mt-1">Applied to systems larger than the biggest slab.</p>
+            </div>
+          </div>
+
+          <label className="flex items-center gap-2 text-sm text-navy mt-4">
+            <input
+              type="checkbox"
+              checked={draft.subsidy?.residentialOnly !== false}
+              onChange={(e) => setDraft((d) => ({ ...d, subsidy: { ...d.subsidy, residentialOnly: e.target.checked } }))}
+              className="h-4 w-4 accent-solar-orange"
+            />
+            Residential rooftops only
+          </label>
+
+          <div className="mt-4">
+            <div className="flex justify-between items-center">
+              <label className="section-label">Subsidy Slabs</label>
+              <button
+                type="button"
+                onClick={() => setDraft((d) => ({
+                  ...d,
+                  subsidy: { ...d.subsidy, slabs: [...(d.subsidy?.slabs || []), { upToKW: 0, amount: 0 }] },
+                }))}
+                className="text-sm text-solar-orange font-semibold"
+              >
+                + Add slab
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 mt-0.5">
+              A system takes the largest slab it reaches — a 5kW system on a 3kW slab gets that slab's amount.
+            </p>
+            <div className="space-y-2 mt-3">
+              {(draft.subsidy?.slabs || []).map((slab, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 w-14">System</span>
+                  <input
+                    type="number" min="0" step="0.5"
+                    value={slab.upToKW ?? 0}
+                    onChange={(e) => setDraft((d) => ({
+                      ...d,
+                      subsidy: { ...d.subsidy, slabs: d.subsidy.slabs.map((s, j) => j === i ? { ...s, upToKW: Number(e.target.value) } : s) },
+                    }))}
+                    className="w-24 rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  />
+                  <span className="text-xs text-gray-400">kW →</span>
+                  <span className="text-xs text-gray-400">₹</span>
+                  <input
+                    type="number" min="0"
+                    value={slab.amount ?? 0}
+                    onChange={(e) => setDraft((d) => ({
+                      ...d,
+                      subsidy: { ...d.subsidy, slabs: d.subsidy.slabs.map((s, j) => j === i ? { ...s, amount: Number(e.target.value) } : s) },
+                    }))}
+                    className="w-32 rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setDraft((d) => ({
+                      ...d,
+                      subsidy: { ...d.subsidy, slabs: d.subsidy.slabs.filter((_, j) => j !== i) },
+                    }))}
+                    aria-label="Remove slab"
+                    className="text-gray-300 hover:text-red-500"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <label className="section-label">Eligibility Note (shown to the customer)</label>
+            <input
+              value={draft.subsidy?.note || ""}
+              onChange={(e) => setDraft((d) => ({ ...d, subsidy: { ...d.subsidy, note: e.target.value } }))}
+              className="input-field mt-1"
+            />
+          </div>
+        </div>
+
+        {/* ---------------- savings & sizing ---------------- */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
+          <div className="flex flex-wrap justify-between items-center gap-3">
+            <div>
+              <h3 className="font-display font-semibold text-navy">Savings &amp; Payback</h3>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Drives the payback figure, and the bill-to-size suggestion in the configurator.
+              </p>
+            </div>
+            <label className="flex items-center gap-2 text-sm text-navy">
+              <input
+                type="checkbox"
+                checked={draft.savings?.isEnabled !== false}
+                onChange={(e) => setDraft((d) => ({ ...d, savings: { ...d.savings, isEnabled: e.target.checked } }))}
+                className="h-4 w-4 accent-solar-orange"
+              />
+              Show payback
+            </label>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+            <div>
+              <label className="section-label">Tariff (₹/unit)</label>
+              <input
+                type="number" min="0" step="0.1"
+                value={draft.savings?.unitRateRupees ?? 8}
+                onChange={(e) => setDraft((d) => ({ ...d, savings: { ...d.savings, unitRateRupees: Number(e.target.value) } }))}
+                className="input-field mt-1"
+              />
+            </div>
+            <div>
+              <label className="section-label">Units / kW / day</label>
+              <input
+                type="number" min="0" step="0.1"
+                value={draft.savings?.generationPerKWPerDay ?? 4}
+                onChange={(e) => setDraft((d) => ({ ...d, savings: { ...d.savings, generationPerKWPerDay: Number(e.target.value) } }))}
+                className="input-field mt-1"
+              />
+            </div>
+            <div>
+              <label className="section-label">System Life (years)</label>
+              <input
+                type="number" min="1"
+                value={draft.savings?.systemLifeYears ?? 25}
+                onChange={(e) => setDraft((d) => ({ ...d, savings: { ...d.savings, systemLifeYears: Number(e.target.value) } }))}
+                className="input-field mt-1"
+              />
+            </div>
+            <div>
+              <label className="section-label">Bill Offset (%)</label>
+              <input
+                type="number" min="1" max="100"
+                value={draft.billEstimator?.offsetPercent ?? 90}
+                onChange={(e) => setDraft((d) => ({ ...d, billEstimator: { ...d.billEstimator, offsetPercent: Number(e.target.value) } }))}
+                className="input-field mt-1"
+              />
+              <p className="text-xs text-gray-400 mt-1">Share of the bill a suggested system covers.</p>
+            </div>
+          </div>
+        </div>
+
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-6 grid sm:grid-cols-2 gap-4">
           <h3 className="font-display font-semibold text-navy sm:col-span-2">Terms</h3>
           <div>

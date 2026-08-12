@@ -76,13 +76,107 @@ export const priceOption = (option, { capacityKW = 0, quantity = 1, base = 0 } =
   }
 };
 
+/** Property types offered in the configurator. Subsidy eligibility turns on this. */
+export const PROPERTY_TYPES = ["Residential", "Commercial", "Institutional"];
+
+/**
+ * Government subsidy for a given system size.
+ *
+ * Reads the largest slab the system qualifies for — a 5kW system takes the 3kW
+ * slab, not nothing — and falls back to maxAmount once capacity passes the last
+ * one. Deliberately conservative for in-between sizes: a 1.5kW system quotes the
+ * 1kW slab rather than the 2kW one, because a quote that under-promises a
+ * government payment is recoverable and one that over-promises is not.
+ *
+ * Returns 0 whenever the scheme doesn't apply, so callers never special-case it.
+ */
+export const subsidyFor = (config, capacityKW, propertyType) => {
+  const s = config?.subsidy;
+  if (!s?.isEnabled) return 0;
+  if (s.residentialOnly && propertyType !== "Residential") return 0;
+
+  const kW = Number(capacityKW) || 0;
+  const slabs = [...(s.slabs || [])].sort((a, b) => a.upToKW - b.upToKW);
+  if (!slabs.length) return 0;
+
+  const largest = slabs[slabs.length - 1];
+  if (kW > largest.upToKW) return Number(s.maxAmount) || largest.amount || 0;
+
+  const match = [...slabs].reverse().find((slab) => kW >= slab.upToKW);
+  return match ? Number(match.amount) || 0 : 0;
+};
+
+/**
+ * Turns a system into what it saves, which is the number that makes a price
+ * feel like an investment rather than a cost.
+ *
+ * `netCost` is what the customer actually pays — after subsidy — so payback
+ * reflects their real outlay. Generation and tariff come from settings because
+ * both vary by region and change with MSEDCL revisions.
+ */
+export const savingsFor = (config, capacityKW, netCost) => {
+  const s = config?.savings;
+  if (!s?.isEnabled) return null;
+
+  const kW = Number(capacityKW) || 0;
+  const unitRate = Number(s.unitRateRupees) || 0;
+  const perKWDay = Number(s.generationPerKWPerDay) || 0;
+  const lifeYears = Number(s.systemLifeYears) || 25;
+  if (!kW || !unitRate || !perKWDay) return null;
+
+  const unitsPerMonth = kW * perKWDay * 30;
+  const monthlySavings = unitsPerMonth * unitRate;
+  const annualSavings = monthlySavings * 12;
+  const cost = Math.max(0, Number(netCost) || 0);
+
+  return {
+    unitsPerMonth,
+    monthlySavings,
+    annualSavings,
+    // Undefined rather than Infinity when nothing is configured yet, so the UI
+    // can simply not render a payback line instead of printing a broken one.
+    paybackYears: annualSavings > 0 && cost > 0 ? cost / annualSavings : null,
+    lifetimeSavings: annualSavings * lifeYears,
+    systemLifeYears: lifeYears,
+  };
+};
+
+/**
+ * Suggests a system size from a monthly electricity bill — the question a
+ * customer can answer, unlike "how many kW do you need".
+ *
+ * Sizes to cover `offsetPercent` of consumption rather than all of it, since
+ * oversizing past your own usage exports units at a lower rate than they're
+ * billed at.
+ */
+export const capacityForBill = (config, monthlyBill) => {
+  const bill = Number(monthlyBill) || 0;
+  const s = config?.savings || {};
+  const b = config?.billEstimator || {};
+  const unitRate = Number(s.unitRateRupees) || 8;
+  const perKWDay = Number(s.generationPerKWPerDay) || 4;
+  const offset = (Number(b.offsetPercent) || 90) / 100;
+  if (!bill || !unitRate || !perKWDay) return null;
+
+  const unitsPerMonth = bill / unitRate;
+  const kW = (unitsPerMonth * offset) / (perKWDay * 30);
+
+  // Snap to the configurator's own step so the suggestion is a size the slider
+  // can actually represent.
+  const step = Number(config?.capacity?.stepKW) || 0.5;
+  const min = Number(config?.capacity?.minKW) || 1;
+  const max = Number(config?.capacity?.maxKW) || 100;
+  const snapped = Math.round(kW / step) * step;
+  return Math.min(max, Math.max(min, Number(snapped.toFixed(2))));
+};
+
 /**
  * Builds the full breakdown the cart renders.
  *
  * `selections` is keyed by config group — each holds the chosen option and, for
  * quantity-based units, how many. `addOns` is a list of {option, quantity}.
  */
-export const buildQuote = ({ config, capacityKW, selections = {}, addOns = [] }) => {
+export const buildQuote = ({ config, capacityKW, selections = {}, addOns = [], propertyType = "Residential" }) => {
   if (!config) return null;
 
   const kW = Number(capacityKW) || 0;
@@ -154,9 +248,19 @@ export const buildQuote = ({ config, capacityKW, selections = {}, addOns = [] })
   const taxable = Math.max(0, baseSystem + addOnsTotal + chargesTotal - discountTotal);
   const gstPercent = Number(c.gstPercent) || 0;
   const gst = (taxable * gstPercent) / 100;
+  const total = taxable + gst;
+
+  /*
+   * Subsidy comes off the GST-inclusive total, not the taxable base: it is
+   * reimbursed against what the customer actually paid, and is not a discount
+   * on the sale, so it must not reduce the tax charged.
+   */
+  const subsidy = subsidyFor(config, kW, propertyType);
+  const netPayable = Math.max(0, total - subsidy);
 
   return {
     capacityKW: kW,
+    propertyType,
     lines,
     baseSystem,
     addOnLines,
@@ -168,7 +272,11 @@ export const buildQuote = ({ config, capacityKW, selections = {}, addOns = [] })
     taxable,
     gstPercent,
     gst,
-    total: taxable + gst,
+    total,
+    subsidy,
+    netPayable,
+    // Payback is measured against what they actually part with.
+    savings: savingsFor(config, kW, netPayable),
   };
 };
 

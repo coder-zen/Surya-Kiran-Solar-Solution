@@ -165,6 +165,62 @@ const quoteConfigSchema = new mongoose.Schema(
 
     charges: { type: chargesSchema, default: () => ({}) },
 
+    /*
+     * Government subsidy, shown as a deduction beneath the quoted total.
+     *
+     * Slabs rather than a flat figure because PM Surya Ghar pays by system
+     * size, and admin-editable rather than hardcoded because the scheme's
+     * rates are policy and have already changed once. `residentialOnly`
+     * matters: the scheme excludes commercial and institutional rooftops, so
+     * quoting it to a factory would overstate their benefit by ₹78,000.
+     */
+    subsidy: {
+      isEnabled: { type: Boolean, default: true },
+      label: { type: String, default: "PM Surya Ghar Subsidy" },
+      // Highest matching slab wins; anything above the last one gets maxAmount.
+      slabs: {
+        type: [
+          new mongoose.Schema(
+            { upToKW: { type: Number, required: true }, amount: { type: Number, default: 0 } },
+            { _id: false }
+          ),
+        ],
+        default: () => [
+          { upToKW: 1, amount: 30000 },
+          { upToKW: 2, amount: 60000 },
+          { upToKW: 3, amount: 78000 },
+        ],
+      },
+      maxAmount: { type: Number, default: 78000 },
+      residentialOnly: { type: Boolean, default: true },
+      note: {
+        type: String,
+        default: "Subject to eligibility and approval under the national rooftop solar programme.",
+      },
+    },
+
+    /*
+     * Inputs for the savings and payback figures. Generation and tariff vary by
+     * region and change with MSEDCL revisions, so they are settings rather than
+     * constants — the same reason nothing else here is hardcoded.
+     */
+    savings: {
+      isEnabled: { type: Boolean, default: true },
+      unitRateRupees: { type: Number, default: 8 }, // ₹ per kWh billed
+      generationPerKWPerDay: { type: Number, default: 4 }, // kWh generated per kW
+      systemLifeYears: { type: Number, default: 25 },
+    },
+
+    /*
+     * Maps a monthly electricity bill to a system size, so the configurator can
+     * open with a question the customer can actually answer. Same arithmetic the
+     * existing savings calculator uses, lifted into admin control.
+     */
+    billEstimator: {
+      isEnabled: { type: Boolean, default: true },
+      offsetPercent: { type: Number, default: 90 }, // share of the bill solar is sized to cover
+    },
+
     terms: {
       warranty: {
         type: String,

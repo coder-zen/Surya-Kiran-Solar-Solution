@@ -4,7 +4,13 @@ import { FaCheck, FaChevronDown } from "react-icons/fa";
 import api from "../../config/api";
 import SectionHeading from "../common/SectionHeading";
 import EnquiryModal from "../common/EnquiryModal";
-import { buildQuote, formatINR, QUANTITY_FOR_UNIT } from "../../utils/quotePricing";
+import {
+  buildQuote,
+  formatINR,
+  capacityForBill,
+  QUANTITY_FOR_UNIT,
+  PROPERTY_TYPES,
+} from "../../utils/quotePricing";
 
 const fetchQuoteConfig = async () => (await api.get("/quote-config")).data.data;
 
@@ -71,12 +77,30 @@ const QuoteConfigurator = () => {
   });
 
   const [capacityKW, setCapacityKW] = useState(null);
+  const [propertyType, setPropertyType] = useState(PROPERTY_TYPES[0]);
+  const [monthlyBill, setMonthlyBill] = useState("");
+  const [sizedFromBill, setSizedFromBill] = useState(false);
   const [selections, setSelections] = useState({});
   const [addOnState, setAddOnState] = useState({});
   const [addOnsOpen, setAddOnsOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
 
   const capacity = capacityKW ?? config?.capacity?.defaultKW ?? 5;
+
+  /*
+   * Sizing from the bill is the entry point most customers can actually answer —
+   * almost nobody knows their kW, everybody knows what they pay. It only ever
+   * suggests: the slider stays authoritative, so a customer who knows their
+   * requirement is never overridden by an estimate.
+   */
+  const applyBill = (value) => {
+    setMonthlyBill(value);
+    const suggested = capacityForBill(config, value);
+    if (suggested) {
+      setCapacityKW(suggested);
+      setSizedFromBill(true);
+    }
+  };
 
   /*
    * The admin seeds every option at ₹0 until the real rates are entered. Quoting
@@ -130,8 +154,9 @@ const QuoteConfigurator = () => {
         capacityKW: capacity,
         selections,
         addOns: Object.values(addOnState),
+        propertyType,
       }),
-    [config, capacity, selections, addOnState]
+    [config, capacity, selections, addOnState, propertyType]
   );
 
   if (isLoading) {
@@ -164,10 +189,64 @@ const QuoteConfigurator = () => {
         <div className="mt-14 grid lg:grid-cols-3 gap-8 items-start">
           {/* ---------------- configuration ---------------- */}
           <div className="lg:col-span-2 space-y-6">
+            {/* property type — drives subsidy eligibility */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="font-display font-semibold text-navy">Property Type</h3>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Government subsidy applies to residential rooftops only.
+              </p>
+              <div className="grid grid-cols-3 gap-3 mt-4">
+                {PROPERTY_TYPES.map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setPropertyType(type)}
+                    className={`rounded-xl border p-3 text-sm font-semibold transition-all ${
+                      propertyType === type
+                        ? "border-solar-orange bg-solar-orange/5 text-navy"
+                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* capacity */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <h3 className="font-display font-semibold text-navy">System Capacity</h3>
               <p className="text-xs text-gray-400 mt-0.5">Everything else scales from this.</p>
+
+              {config.billEstimator?.isEnabled !== false && (
+                <div className="mt-4 rounded-xl bg-gray-50 border border-gray-100 p-4">
+                  <label className="text-sm font-medium text-navy">
+                    Not sure what size you need?
+                  </label>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Enter your average monthly electricity bill and we'll size it for you.
+                  </p>
+                  <div className="flex items-center gap-2 mt-3">
+                    <span className="text-sm text-gray-500">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="100"
+                      value={monthlyBill}
+                      onChange={(e) => applyBill(e.target.value)}
+                      placeholder="4000"
+                      className="w-32 rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                    />
+                    <span className="text-sm text-gray-500">per month</span>
+                  </div>
+                  {sizedFromBill && (
+                    <p className="text-xs text-solar-orange font-medium mt-2">
+                      Suggested: {capacity} kW — adjust below if you already know your requirement.
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="flex items-center gap-4 mt-4">
                 <input
                   type="range"
@@ -175,7 +254,10 @@ const QuoteConfigurator = () => {
                   max={cap.maxKW ?? 100}
                   step={cap.stepKW ?? 0.5}
                   value={capacity}
-                  onChange={(e) => setCapacityKW(Number(e.target.value))}
+                  onChange={(e) => {
+                    setCapacityKW(Number(e.target.value));
+                    setSizedFromBill(false); // their own choice supersedes the estimate
+                  }}
                   className="flex-1 accent-solar-orange"
                 />
                 <div className="flex items-center gap-2 shrink-0">
@@ -185,7 +267,10 @@ const QuoteConfigurator = () => {
                     max={cap.maxKW ?? 100}
                     step={cap.stepKW ?? 0.5}
                     value={capacity}
-                    onChange={(e) => setCapacityKW(Number(e.target.value) || cap.minKW || 1)}
+                    onChange={(e) => {
+                      setCapacityKW(Number(e.target.value) || cap.minKW || 1);
+                      setSizedFromBill(false);
+                    }}
                     className="w-24 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-navy"
                   />
                   <span className="text-sm text-gray-500">kW</span>
@@ -356,9 +441,50 @@ const QuoteConfigurator = () => {
               </div>
 
               <div className="border-t border-gray-200 mt-4 pt-4">
-                <p className="text-xs text-gray-400">Estimated Final Amount</p>
-                <p className="text-3xl font-display font-bold text-navy mt-1">{formatINR(quote.total)}</p>
+                {quote.subsidy > 0 ? (
+                  <>
+                    {/* Subsidy leads: the number a customer weighs is what they
+                        actually part with, not the gross project cost. */}
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Project Cost</span>
+                      <span className="text-gray-500">{formatINR(quote.total)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm mt-1">
+                      <span className="text-green-600">{config.subsidy?.label || "Government Subsidy"}</span>
+                      <span className="text-green-600 font-medium">−{formatINR(quote.subsidy)}</span>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-3">Your Net Investment</p>
+                    <p className="text-3xl font-display font-bold text-navy mt-1">{formatINR(quote.netPayable)}</p>
+                    {config.subsidy?.note && (
+                      <p className="text-[11px] text-gray-400 mt-1.5 leading-relaxed">{config.subsidy.note}</p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-gray-400">Estimated Final Amount</p>
+                    <p className="text-3xl font-display font-bold text-navy mt-1">{formatINR(quote.total)}</p>
+                  </>
+                )}
               </div>
+
+              {/* Reframes the price as an investment with a return date. */}
+              {quote.savings?.paybackYears && (
+                <div className="mt-4 rounded-xl bg-navy/5 border border-navy/10 p-4">
+                  <p className="text-sm font-semibold text-navy">
+                    Pays for itself in {quote.savings.paybackYears.toFixed(1)} years
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1.5">
+                    Then about{" "}
+                    <span className="font-semibold text-navy">{formatINR(quote.savings.monthlySavings)}</span>{" "}
+                    saved every month, for a system built to last{" "}
+                    {quote.savings.systemLifeYears} years.
+                  </p>
+                  <div className="flex justify-between text-xs mt-3 pt-3 border-t border-navy/10">
+                    <span className="text-gray-500">Lifetime savings</span>
+                    <span className="font-semibold text-green-600">{formatINR(quote.savings.lifetimeSavings)}</span>
+                  </div>
+                </div>
+              )}
 
               <button onClick={() => setQuoteOpen(true)} className="btn-primary w-full mt-5 justify-center">
                 Request Detailed Quotation
@@ -381,8 +507,12 @@ const QuoteConfigurator = () => {
       {quote.total > 0 && (
         <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-premium px-5 py-3 flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-xs text-gray-400">Estimated total</p>
-            <p className="text-xl font-display font-bold text-navy truncate">{formatINR(quote.total)}</p>
+            <p className="text-xs text-gray-400">
+              {quote.subsidy > 0 ? "After subsidy" : "Estimated total"}
+            </p>
+            <p className="text-xl font-display font-bold text-navy truncate">
+              {formatINR(quote.netPayable)}
+            </p>
           </div>
           <button onClick={() => setQuoteOpen(true)} className="btn-primary !py-2.5 !px-5 text-sm shrink-0">
             Get Quotation
@@ -394,7 +524,7 @@ const QuoteConfigurator = () => {
         isOpen={quoteOpen}
         onClose={() => setQuoteOpen(false)}
         source="quote_configurator"
-        contextMessage={buildEnquiryMessage({ capacity, selections, addOnState, quote })}
+        contextMessage={buildEnquiryMessage({ capacity, propertyType, monthlyBill, selections, addOnState, quote })}
       />
     </section>
   );
@@ -404,8 +534,10 @@ const QuoteConfigurator = () => {
  * Summarises the configuration into the enquiry message, so the sales team sees
  * exactly what the customer built instead of a bare "wants a quote" lead.
  */
-const buildEnquiryMessage = ({ capacity, selections, addOnState, quote }) => {
-  const parts = [`Configured ${capacity}kW system:`];
+const buildEnquiryMessage = ({ capacity, propertyType, monthlyBill, selections, addOnState, quote }) => {
+  const parts = [`Configured ${capacity}kW ${propertyType.toLowerCase()} system:`];
+  if (monthlyBill) parts.push(`• Current monthly bill: ₹${monthlyBill}`);
+
   for (const step of STEPS) {
     const chosen = selections[step.key];
     if (chosen?.option) {
@@ -417,7 +549,12 @@ const buildEnquiryMessage = ({ capacity, selections, addOnState, quote }) => {
   if (addOns.length) {
     parts.push(`• Add-ons: ${addOns.map((a) => a.option.name).join(", ")}`);
   }
-  parts.push(`Estimated total: ${formatINR(quote.total)}`);
+
+  parts.push(`Project cost: ${formatINR(quote.total)}`);
+  if (quote.subsidy > 0) {
+    parts.push(`Subsidy applied: −${formatINR(quote.subsidy)}`);
+    parts.push(`Net investment: ${formatINR(quote.netPayable)}`);
+  }
   return parts.join("\n");
 };
 
