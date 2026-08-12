@@ -157,8 +157,8 @@ const JobsTab = () => {
         {isLoading && <p className="p-6 text-gray-400 text-sm">Loading jobs…</p>}
         {!isLoading && jobs?.length === 0 && (
           <p className="p-6 text-gray-400 text-sm">
-            No job postings yet — the public Careers page is showing placeholder listings until the
-            first one is added here.
+            No job postings yet — the public Careers page shows "No open positions right now" until
+            the first one is added here.
           </p>
         )}
         {jobs?.map((job) => (

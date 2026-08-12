@@ -8,32 +8,17 @@ import api from "../config/api";
 
 const fetchCareers = async () => (await api.get("/careers")).data.data;
 
-/**
- * Shown while /api/careers is loading or if it's unreachable, so the page is
- * never blank. Real postings (added at /admin/careers) replace this on next
- * fetch — same pattern as the Testimonials/Gallery fallback content.
- */
-const FALLBACK_OPENINGS = [
-  { _id: "fallback-1", title: "Solar Installation Engineer", department: "Engineering", location: "Pune", type: "Full-Time" },
-  { _id: "fallback-2", title: "Sales Executive", department: "Sales", location: "Pune / Kolhapur", type: "Full-Time" },
-  { _id: "fallback-3", title: "Site Supervisor", department: "Operations", location: "Solapur", type: "Full-Time" },
-];
-
 const Career = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
-  const { data, isLoading } = useQuery({ queryKey: ["careers"], queryFn: fetchCareers, retry: false });
+  const { data, isLoading, isError } = useQuery({ queryKey: ["careers"], queryFn: fetchCareers, retry: false });
 
-  const openings = !isLoading && data?.length > 0 ? data : FALLBACK_OPENINGS;
-  const isFallback = openings === FALLBACK_OPENINGS;
+  // No sample listings: three invented roles used to show here whenever the
+  // collection was empty or the API was down, so visitors applied for jobs
+  // that did not exist and the Apply button could only ever reject them.
+  const openings = data || [];
 
   const onApply = async (formData) => {
-    if (isFallback) {
-      // These are placeholder listings, not real Career documents — there's
-      // nothing to POST an application against yet.
-      toast.error("This listing isn't open for applications yet — please check back soon.");
-      return;
-    }
     if (!formData.resume?.[0]) {
       toast.error("Please attach your resume (PDF, DOC or DOCX).");
       return;
@@ -71,7 +56,12 @@ const Career = () => {
       <section className="py-16 bg-white">
         <div className="container-custom grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            {openings.map((job) => (
+            {isLoading &&
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-28 rounded-2xl bg-gray-100 animate-pulse" />
+              ))}
+
+            {!isLoading && openings.map((job) => (
               <div key={job._id} className={`rounded-2xl border p-6 flex justify-between items-center ${selectedJob === job._id ? "border-solar-orange" : "border-gray-100"}`}>
                 <div>
                   <h3 className="font-display font-semibold text-lg text-navy">{job.title}</h3>
@@ -83,7 +73,13 @@ const Career = () => {
                 <button onClick={() => setSelectedJob(job._id)} className="btn-navy !py-2 !px-5 text-sm shrink-0">Apply</button>
               </div>
             ))}
-            {!isLoading && openings.length === 0 && (
+            {!isLoading && isError && (
+              <p className="text-gray-400 text-center py-12">
+                Couldn't load open positions right now. Please refresh the page.
+              </p>
+            )}
+
+            {!isLoading && !isError && openings.length === 0 && (
               <p className="text-gray-400 text-center py-12">No open positions right now — check back soon.</p>
             )}
           </div>
