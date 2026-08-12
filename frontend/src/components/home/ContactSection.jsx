@@ -1,10 +1,13 @@
 import { useForm } from "react-hook-form";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { lazy, Suspense } from "react";
 import toast from "react-hot-toast";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import api from "../../config/api";
 import { COMPANY } from "../../config/constants";
 import SectionHeading from "../common/SectionHeading";
+
+// Keeps Leaflet out of the eager homepage bundle — see OfficeMap.jsx.
+const OfficeMap = lazy(() => import("./OfficeMap"));
 
 const ContactSection = () => {
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
@@ -26,20 +29,10 @@ const ContactSection = () => {
 
         <div className="mt-14 grid lg:grid-cols-2 gap-10">
           <div className="rounded-3xl overflow-hidden shadow-premium h-80 lg:h-auto">
-            <MapContainer
-              center={[COMPANY.officeCoordinates.lat, COMPANY.officeCoordinates.lng]}
-              zoom={13}
-              scrollWheelZoom={false}
-              className="h-full w-full"
-            >
-              <TileLayer
-                attribution='&copy; OpenStreetMap contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <Marker position={[COMPANY.officeCoordinates.lat, COMPANY.officeCoordinates.lng]}>
-                <Popup>{COMPANY.name}</Popup>
-              </Marker>
-            </MapContainer>
+            {/* Fills the same frame as the map, so nothing shifts on swap. */}
+            <Suspense fallback={<div className="h-full w-full bg-gray-100" />}>
+              <OfficeMap />
+            </Suspense>
           </div>
 
           <div className="glass-card !bg-white p-8">
