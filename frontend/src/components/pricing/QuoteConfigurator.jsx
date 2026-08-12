@@ -443,20 +443,36 @@ const QuoteConfigurator = () => {
               <div className="border-t border-gray-200 mt-4 pt-4">
                 {quote.subsidy > 0 ? (
                   <>
-                    {/* Subsidy leads: the number a customer weighs is what they
-                        actually part with, not the gross project cost. */}
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Project Cost</span>
-                      <span className="text-gray-500">{formatINR(quote.total)}</span>
+                    {/*
+                      The amount payable leads, not the post-subsidy figure.
+                      PM Surya Ghar is reimbursed by bank transfer after DISCOM
+                      commissioning — it is not deducted at purchase. Headlining
+                      the net number would tell a customer to arrange ₹2.15L when
+                      they need ₹2.93L on the day, which is a worse outcome than
+                      any gain from the smaller figure looking friendlier.
+                    */}
+                    <p className="text-xs text-gray-400">Amount Payable</p>
+                    <p className="text-3xl font-display font-bold text-navy mt-1">{formatINR(quote.total)}</p>
+
+                    <div className="mt-4 rounded-xl bg-green-50 border border-green-100 p-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-green-700 font-medium">
+                          {config.subsidy?.label || "Government Subsidy"}
+                        </span>
+                        <span className="text-green-700 font-semibold">−{formatINR(quote.subsidy)}</span>
+                      </div>
+                      <p className="text-[11px] text-green-800/70 mt-1.5 leading-relaxed">
+                        Credited to your bank account after commissioning — not deducted from the
+                        amount payable above.
+                      </p>
+                      <div className="flex justify-between text-sm mt-2.5 pt-2.5 border-t border-green-200">
+                        <span className="text-gray-600">Effective cost</span>
+                        <span className="text-navy font-semibold">{formatINR(quote.netPayable)}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-sm mt-1">
-                      <span className="text-green-600">{config.subsidy?.label || "Government Subsidy"}</span>
-                      <span className="text-green-600 font-medium">−{formatINR(quote.subsidy)}</span>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-3">Your Net Investment</p>
-                    <p className="text-3xl font-display font-bold text-navy mt-1">{formatINR(quote.netPayable)}</p>
+
                     {config.subsidy?.note && (
-                      <p className="text-[11px] text-gray-400 mt-1.5 leading-relaxed">{config.subsidy.note}</p>
+                      <p className="text-[11px] text-gray-400 mt-2 leading-relaxed">{config.subsidy.note}</p>
                     )}
                   </>
                 ) : (
@@ -507,11 +523,12 @@ const QuoteConfigurator = () => {
       {quote.total > 0 && (
         <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-premium px-5 py-3 flex items-center justify-between gap-4">
           <div className="min-w-0">
+            {/* Payable, not net — matches the cart for the same reason. */}
             <p className="text-xs text-gray-400">
-              {quote.subsidy > 0 ? "After subsidy" : "Estimated total"}
+              {quote.subsidy > 0 ? `Payable · ${formatINR(quote.subsidy)} back` : "Estimated total"}
             </p>
             <p className="text-xl font-display font-bold text-navy truncate">
-              {formatINR(quote.netPayable)}
+              {formatINR(quote.total)}
             </p>
           </div>
           <button onClick={() => setQuoteOpen(true)} className="btn-primary !py-2.5 !px-5 text-sm shrink-0">
@@ -550,10 +567,10 @@ const buildEnquiryMessage = ({ capacity, propertyType, monthlyBill, selections, 
     parts.push(`• Add-ons: ${addOns.map((a) => a.option.name).join(", ")}`);
   }
 
-  parts.push(`Project cost: ${formatINR(quote.total)}`);
+  parts.push(`Amount payable: ${formatINR(quote.total)}`);
   if (quote.subsidy > 0) {
-    parts.push(`Subsidy applied: −${formatINR(quote.subsidy)}`);
-    parts.push(`Net investment: ${formatINR(quote.netPayable)}`);
+    parts.push(`Subsidy (reimbursed after commissioning): −${formatINR(quote.subsidy)}`);
+    parts.push(`Effective cost: ${formatINR(quote.netPayable)}`);
   }
   return parts.join("\n");
 };

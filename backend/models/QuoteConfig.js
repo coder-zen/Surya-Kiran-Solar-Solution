@@ -195,7 +195,8 @@ const quoteConfigSchema = new mongoose.Schema(
       residentialOnly: { type: Boolean, default: true },
       note: {
         type: String,
-        default: "Subject to eligibility and approval under the national rooftop solar programme.",
+        default:
+          "Subject to eligibility and approval. The subsidy is paid by bank transfer after your system is commissioned by the DISCOM, so the full amount is payable at purchase.",
       },
     },
 
