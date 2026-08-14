@@ -40,6 +40,18 @@ const optionSchema = new mongoose.Schema(
     price: { type: Number, default: 0, min: 0 },
     purchaseCost: { type: Number, default: 0, min: 0 }, // ADMIN ONLY
     note: { type: String, trim: true, default: "" }, // shown to the customer
+
+    /*
+     * Brand mark shown on the option card — a Cloudinary URL from the admin
+     * uploader, same path as every other image on the site.
+     *
+     * Uploaded rather than hotlinked or bundled: these are trademarks, and the
+     * only correct copy is the one the manufacturer supplies to its dealers.
+     * Optional throughout, since most options (walkway, ladder, sprinkler)
+     * aren't branded at all.
+     */
+    logoUrl: { type: String, trim: true, default: "" },
+
     isActive: { type: Boolean, default: true },
     order: { type: Number, default: 0 },
 

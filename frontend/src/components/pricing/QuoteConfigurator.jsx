@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FaCheck, FaChevronDown } from "react-icons/fa";
 import api from "../../config/api";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import SectionHeading from "../common/SectionHeading";
 import EnquiryModal from "../common/EnquiryModal";
 import {
@@ -42,7 +43,24 @@ const OptionCard = ({ option, selected, onSelect }) => (
     }`}
   >
     <div className="flex items-start justify-between gap-2">
-      <span className="font-semibold text-navy text-sm">{option.name}</span>
+      <div className="flex items-center gap-2.5 min-w-0">
+        {/*
+          Brand mark where the admin has uploaded one. object-contain and a
+          fixed box so logos of different aspect ratios line up instead of
+          each card sizing itself to its own image. Unbranded options (walkway,
+          ladder) simply have no logo and fall back to the name alone.
+        */}
+        {option.logoUrl && (
+          <img
+            src={cdnImage(option.logoUrl, IMG.thumb)}
+            alt={`${option.name} logo`}
+            loading="lazy"
+            className="h-7 w-14 object-contain shrink-0"
+            onError={(e) => (e.target.style.display = "none")}
+          />
+        )}
+        <span className="font-semibold text-navy text-sm truncate">{option.name}</span>
+      </div>
       {selected && <FaCheck className="text-solar-orange text-xs mt-1 shrink-0" />}
     </div>
     {option.note && <p className="text-xs text-gray-400 mt-1">{option.note}</p>}

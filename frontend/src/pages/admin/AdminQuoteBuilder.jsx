@@ -4,7 +4,60 @@ import toast from "react-hot-toast";
 import { FaTrash, FaPlus, FaExternalLinkAlt, FaExclamationTriangle } from "react-icons/fa";
 import api from "../../config/api";
 import AdminSidebar from "../../components/admin/AdminSidebar";
+import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import { UNIT_LABELS, formatINR } from "../../utils/quotePricing";
+
+/** Same Cloudinary upload path the other admin screens use. */
+const uploadImage = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  const { data } = await api.post("/upload", formData, { headers: { "Content-Type": undefined } });
+  return data.url;
+};
+
+/**
+ * Brand logo for one option. Only worth filling in for manufacturer-branded
+ * choices — panels and inverters — which is why it's a small control tucked
+ * into the row rather than a prominent field.
+ */
+const LogoField = ({ value, onChange }) => {
+  const [uploading, setUploading] = useState(false);
+
+  const handle = async (file) => {
+    if (!file) return;
+    setUploading(true);
+    try {
+      onChange(await uploadImage(file));
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Logo upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="col-span-12 flex items-center gap-3 pl-1">
+      {value ? (
+        <img src={cdnImage(value, IMG.thumb)} alt="" className="h-7 w-16 object-contain bg-white rounded border border-gray-100 shrink-0" />
+      ) : (
+        <span className="h-7 w-16 rounded border border-dashed border-gray-200 shrink-0" />
+      )}
+      <input
+        type="file"
+        accept="image/*"
+        disabled={uploading}
+        onChange={(e) => { handle(e.target.files?.[0]); e.target.value = ""; }}
+        className="text-[11px] text-gray-500 flex-1 min-w-0"
+      />
+      {uploading && <span className="text-[11px] text-gray-400">Uploading…</span>}
+      {value && !uploading && (
+        <button type="button" onClick={() => onChange("")} className="text-[11px] text-red-500 shrink-0">
+          Remove logo
+        </button>
+      )}
+    </div>
+  );
+};
 
 /*
  * Reads the admin-only endpoint, which is the one that carries purchase cost and
@@ -134,6 +187,8 @@ const OptionRow = ({ option, groupKey, onChange, onRemove }) => {
         placeholder="Note shown to the customer (optional)"
         className="col-span-12 rounded-lg border border-gray-100 px-3 py-1.5 text-xs text-gray-600"
       />
+
+      <LogoField value={option.logoUrl} onChange={(logoUrl) => onChange({ ...option, logoUrl })} />
     </div>
   );
 };
