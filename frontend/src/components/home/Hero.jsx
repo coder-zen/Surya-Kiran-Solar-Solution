@@ -121,14 +121,17 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-navy-dark/80 via-navy-dark/70 to-navy-dark/90" />
 
       {videoPaused && (
+        /* Deliberately a small corner control rather than a full-bleed overlay.
+           It used to span the entire hero, so on a phone — where the video is
+           held back by default — any stray tap or imprecise scroll started a
+           19.5MB download on mobile data. Tucked out of the way of the
+           headline and the CTAs, it stays an opt-in. */
         <button
           onClick={handlePlayClick}
           aria-label="Play background video"
-          className="absolute inset-0 z-[5] flex items-center justify-center"
+          className="absolute bottom-6 right-6 z-[5] flex h-12 w-12 items-center justify-center rounded-full bg-white/20 border border-white/40 text-white text-lg"
         >
-          <span className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/40 text-white text-lg sm:text-xl">
-            <FaPlay className="ml-0.5" />
-          </span>
+          <FaPlay className="ml-0.5" />
         </button>
       )}
 
@@ -146,7 +149,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white max-w-3xl leading-tight"
+          className="text-[28px] sm:text-5xl lg:text-6xl font-display font-bold text-white max-w-3xl leading-tight"
         >
           {content.heroHeadline}
         </motion.h1>
@@ -155,7 +158,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-6 text-lg text-gray-200 max-w-xl"
+          className="mt-6 text-base sm:text-lg text-gray-200 max-w-xl"
         >
           {content.heroSubtext}
         </motion.p>

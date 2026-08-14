@@ -5,6 +5,7 @@ import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp } from "react-icons/
 import api from "../../config/api";
 import { COMPANY } from "../../config/constants";
 import SectionHeading from "../common/SectionHeading";
+import LazyVisible from "../common/LazyVisible";
 
 // Keeps Leaflet out of the eager homepage bundle — see OfficeMap.jsx.
 const OfficeMap = lazy(() => import("./OfficeMap"));
@@ -29,10 +30,14 @@ const ContactSection = () => {
 
         <div className="mt-14 grid lg:grid-cols-2 gap-10">
           <div className="rounded-3xl overflow-hidden shadow-premium h-80 lg:h-auto">
-            {/* Fills the same frame as the map, so nothing shifts on swap. */}
-            <Suspense fallback={<div className="h-full w-full bg-gray-100" />}>
-              <OfficeMap />
-            </Suspense>
+            {/* Fills the same frame as the map, so nothing shifts on swap.
+                LazyVisible holds the chunk back until the section is near the
+                viewport — lazy() alone would fetch Leaflet on page load. */}
+            <LazyVisible className="h-full w-full" placeholder={<div className="h-full w-full bg-gray-100" />}>
+              <Suspense fallback={<div className="h-full w-full bg-gray-100" />}>
+                <OfficeMap />
+              </Suspense>
+            </LazyVisible>
           </div>
 
           <div className="glass-card !bg-white p-8">

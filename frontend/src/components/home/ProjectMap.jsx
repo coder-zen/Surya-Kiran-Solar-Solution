@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import api from "../../config/api";
 import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import SectionHeading from "../common/SectionHeading";
+import LazyVisible from "../common/LazyVisible";
 
 /**
  * =============================================================================
@@ -98,6 +99,10 @@ const ProjectMap = () => {
             </div>
           )}
 
+          {/* Held back until the section nears the viewport. Leaflet used to
+              initialise and pull tiles on page load, ~12,000px below the fold
+              on a phone, which cost main-thread time nobody benefited from. */}
+          <LazyVisible className="h-full w-full" placeholder={<div className="h-full w-full bg-gray-100" />}>
           <MapContainer center={MAHARASHTRA_CENTER} zoom={7} scrollWheelZoom={false} className="h-full w-full">
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -139,6 +144,7 @@ const ProjectMap = () => {
               ))}
             </MarkerClusterGroup>
           </MapContainer>
+          </LazyVisible>
         </div>
       </div>
     </section>

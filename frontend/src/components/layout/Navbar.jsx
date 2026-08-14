@@ -15,7 +15,10 @@ const Navbar = () => {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll);
+    // passive: the browser can start scrolling without waiting to see whether
+    // this handler calls preventDefault. A non-passive scroll listener on
+    // window is a standard cause of stuttery scrolling on phones.
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -70,8 +73,12 @@ const Navbar = () => {
             </button>
           </div>
 
+          {/* p-3 with a matching negative margin: the icon stays visually where
+              it was, but the tap target grows from 24x24 to 48x48. At 24px it
+              was well under the ~44px minimum for a reliable touch, which is
+              why the menu appeared to need several taps to open. */}
           <button
-            className={`xl:hidden text-2xl ${scrolled ? "text-navy" : "text-white"}`}
+            className={`xl:hidden text-2xl p-3 -mr-3 ${scrolled ? "text-navy" : "text-white"}`}
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
           >
