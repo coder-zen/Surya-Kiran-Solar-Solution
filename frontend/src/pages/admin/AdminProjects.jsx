@@ -140,7 +140,24 @@ const ProjectForm = ({ initial, onCancel, onSaved }) => {
           {MAHARASHTRA_DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
         </select>
         {errors.district && <p className="text-sm text-red-500 mt-1">{errors.district.message}</p>}
-        <p className="text-xs text-gray-400 mt-1">Places this project on the homepage map at the district center automatically.</p>
+      </div>
+
+      <div>
+        <label className="section-label">PIN Code (optional)</label>
+        <input
+          {...register("pincode", {
+            validate: (v) => !v || /^[1-9][0-9]{5}$/.test(v) || "Enter a 6-digit PIN code",
+          })}
+          className="input-field mt-1"
+          placeholder="411028"
+          inputMode="numeric"
+          maxLength={6}
+        />
+        {errors.pincode && <p className="text-sm text-red-500 mt-1">{errors.pincode.message}</p>}
+        <p className="text-xs text-gray-400 mt-1">
+          Pins this project to its locality on the homepage map. Without it the project sits at the
+          district centre, where every project in that district stacks on one marker.
+        </p>
       </div>
 
       <div>

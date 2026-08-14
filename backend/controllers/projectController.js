@@ -1,6 +1,29 @@
 const asyncHandler = require("express-async-handler");
 const Project = require("../models/Project");
 const { pointForDistrict } = require("../config/districts");
+const geocodePincode = require("../utils/geocodePincode");
+
+/**
+ * Best available position for a project, most precise first:
+ *
+ *   1. coordinates sent explicitly — a hand-placed pin always wins
+ *   2. the PIN code's locality — accurate to a few streets
+ *   3. the district centre — the old behaviour, and still the fallback when
+ *      there is no PIN code or the lookup fails
+ *
+ * Returns null when nothing can be resolved, leaving the caller's existing
+ * value untouched.
+ */
+const resolveLocation = async ({ explicit, pincode, district }) => {
+  if (explicit?.coordinates?.length === 2) return null; // caller already has it
+
+  if (pincode) {
+    const coords = await geocodePincode(pincode);
+    if (coords) return { type: "Point", coordinates: coords };
+  }
+
+  return pointForDistrict(district) || null;
+};
 
 // @desc    Get all published projects (supports ?category= &district= &featured=true)
 // @route   GET /api/projects
@@ -45,10 +68,13 @@ const getProjectBySlug = asyncHandler(async (req, res) => {
 // @access  Private (admin)
 const createProject = asyncHandler(async (req, res) => {
   const payload = { ...req.body };
-  if (!payload.location?.coordinates) {
-    const point = pointForDistrict(payload.district);
-    if (point) payload.location = point;
-  }
+
+  const located = await resolveLocation({
+    explicit: payload.location,
+    pincode: payload.pincode,
+    district: payload.district,
+  });
+  if (located) payload.location = located;
 
   const project = await Project.create(payload);
   res.status(201).json({ success: true, data: project });
@@ -61,19 +87,24 @@ const updateProject = asyncHandler(async (req, res) => {
   const payload = { ...req.body };
 
   /*
-   * Re-derive the map pin when the district changes. createProject did this but
-   * update never did, so editing a project from Pune to Nagpur relabelled the
-   * card while leaving its marker sitting over Pune. Harmless while the admin
-   * had no edit screen; a visible wrong-city bug the moment one exists.
+   * Re-derive the map pin whenever the inputs to it change — district (the old
+   * bug: editing Pune to Nagpur relabelled the card but left the marker over
+   * Pune) or now the PIN code, which is the whole point of entering one.
    *
-   * Only when the caller didn't send explicit coordinates, so a precise GPS pin
-   * set by hand is never overwritten by the district centre.
+   * Skipped entirely when the caller sends explicit coordinates, so a precise
+   * pin set by hand is never overwritten.
    */
-  if (!payload.location?.coordinates && payload.district) {
-    const existing = await Project.findById(req.params.id).select("district");
-    if (existing && existing.district !== payload.district) {
-      const point = pointForDistrict(payload.district);
-      if (point) payload.location = point;
+  if (!payload.location?.coordinates && (payload.district || payload.pincode)) {
+    const existing = await Project.findById(req.params.id).select("district pincode");
+    const districtChanged = payload.district && existing?.district !== payload.district;
+    const pincodeChanged = payload.pincode !== undefined && existing?.pincode !== payload.pincode;
+
+    if (districtChanged || pincodeChanged) {
+      const located = await resolveLocation({
+        pincode: payload.pincode ?? existing?.pincode,
+        district: payload.district || existing?.district,
+      });
+      if (located) payload.location = located;
     }
   }
 

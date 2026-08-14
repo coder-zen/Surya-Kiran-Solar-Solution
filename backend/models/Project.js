@@ -21,6 +21,24 @@ const projectSchema = new mongoose.Schema(
     state: { type: String, default: "Maharashtra" },
     district: { type: String, required: true }, // Pune, Solapur, Satara, Kolhapur, Sangli, Ahmednagar...
     address: { type: String },
+
+    /*
+     * Optional, and the reason the map can show locality-level detail. Without
+     * it a project is pinned to its district centre, which put every Pune
+     * installation on one pixel. Six digits, no leading zero.
+     *
+     * Locality is deliberately as fine as this gets — precise enough to answer
+     * "do they work near me", not so precise that it publishes a customer's
+     * house.
+     */
+    pincode: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: (v) => !v || /^[1-9][0-9]{5}$/.test(v),
+        message: "PIN code must be 6 digits",
+      },
+    },
     location: {
       type: {
         type: String,
