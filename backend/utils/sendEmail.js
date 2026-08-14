@@ -17,17 +17,8 @@ const nodemailer = require("nodemailer");
  */
 const FROM_NAME = "SK Solar Solutions";
 
-/*
- * Falls back to the company inbox rather than a no-reply address: a customer
- * answering an acknowledgement email should reach someone, and replies to
- * no-reply@ are silently lost. MAIL_FROM still overrides when a dedicated
- * sending identity is configured.
- *
- * Whatever this resolves to must be verified with the provider (Brevo:
- * Senders & Domains) — an unverified sender is rejected at the API.
- */
 const getSenderAddress = () =>
-  process.env.MAIL_FROM || process.env.SMTP_USER || "info@sksolarsolution.com";
+  process.env.MAIL_FROM || process.env.SMTP_USER || "no-reply@sksolarsolution.com";
 
 /** Brevo: 300 emails/day on the free tier. Sender address must be verified in their dashboard. */
 const sendViaBrevo = async ({ to, subject, html }) => {
