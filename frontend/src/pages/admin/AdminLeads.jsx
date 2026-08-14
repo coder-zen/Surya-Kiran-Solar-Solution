@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { FaPhoneAlt, FaWhatsapp, FaEnvelope, FaArrowRight, FaTimes, FaExternalLinkAlt } from "react-icons/fa";
+import { FaPhoneAlt, FaWhatsapp, FaEnvelope, FaArrowRight, FaTimes, FaExternalLinkAlt, FaTrash } from "react-icons/fa";
 import api from "../../config/api";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import { PROJECT_CATEGORIES, MAHARASHTRA_DISTRICTS } from "../../config/constants";
@@ -129,6 +129,57 @@ const RejectModal = ({ lead, onClose, onConfirm, isSaving }) => {
 };
 
 /**
+ * Deleting is for rows that were never real leads — test submissions and form
+ * spam. Requires typing the lead's name rather than a single "are you sure",
+ * because the button sits on a list of otherwise-identical cards and there is
+ * no undo: a mis-click on the neighbouring row would destroy a real customer's
+ * details with no way back. Typing forces the eye onto the row being removed.
+ */
+const DeleteModal = ({ lead, onClose, onConfirm, isSaving }) => {
+  const [typed, setTyped] = useState("");
+  const matches = typed.trim().toLowerCase() === (lead.name || "").trim().toLowerCase();
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-navy-dark/60 backdrop-blur-sm px-4" onClick={onClose}>
+      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-premium" onClick={(e) => e.stopPropagation()}>
+        <h3 className="font-display font-bold text-xl text-navy mb-1">Delete Lead</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          This permanently removes <strong className="text-navy">{lead.name}</strong> and their contact
+          details. It cannot be undone.
+        </p>
+        <p className="text-xs text-gray-500 bg-gray-50 border border-gray-100 rounded-lg p-3 mb-5">
+          Only for test entries and spam. If this was a genuine lead you didn't win,
+          use <strong>Reject</strong> instead — that keeps the record.
+        </p>
+
+        <label className="section-label">
+          Type <span className="text-navy font-semibold">{lead.name}</span> to confirm
+        </label>
+        <input
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          className="input-field mt-1"
+          placeholder={lead.name}
+          autoFocus
+        />
+
+        <div className="flex gap-3 mt-5">
+          <button
+            type="button"
+            disabled={!matches || isSaving}
+            onClick={() => onConfirm(lead)}
+            className="btn-primary flex-1 !bg-none !bg-red-500 !text-white disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {isSaving ? "Deleting..." : "Delete Permanently"}
+          </button>
+          <button type="button" onClick={onClose} className="btn-navy !bg-gray-100 !text-gray-600">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
  * Leads / Enquiries pipeline. Every lead from the public site lands here at
  * "Enquiry Received" and is advanced manually through the stages defined in
  * backend/models/Enquiry.js. The next stage is computed server-side from the
@@ -138,6 +189,7 @@ const AdminLeads = () => {
   const [filter, setFilter] = useState("All");
   const [convertTarget, setConvertTarget] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: leads, isLoading } = useQuery({ queryKey: ["admin-leads"], queryFn: fetchLeads });
@@ -165,6 +217,16 @@ const AdminLeads = () => {
       setRejectTarget(null);
     },
     onError: (err) => toast.error(err?.response?.data?.message || "Could not reject lead"),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => api.delete(`/enquiries/${id}`),
+    onSuccess: ({ data }) => {
+      invalidate();
+      toast.success(data.message);
+      setDeleteTarget(null);
+    },
+    onError: (err) => toast.error(err?.response?.data?.message || "Could not delete lead"),
   });
 
   const handleAdvance = (lead) => {
@@ -260,23 +322,36 @@ const AdminLeads = () => {
                     )}
                   </div>
 
-                  {!isTerminal && (
-                    <div className="flex gap-2 shrink-0">
-                      <button
-                        onClick={() => handleAdvance(lead)}
-                        disabled={advanceMutation.isPending}
-                        className="btn-primary !py-2 !px-4 text-sm whitespace-nowrap"
-                      >
-                        {ADVANCE_LABELS[lead.status]} <FaArrowRight className="text-xs" />
-                      </button>
-                      <button
-                        onClick={() => setRejectTarget(lead)}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 whitespace-nowrap"
-                      >
-                        <FaTimes className="text-xs" /> Reject
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex gap-2 shrink-0 items-center">
+                    {!isTerminal && (
+                      <>
+                        <button
+                          onClick={() => handleAdvance(lead)}
+                          disabled={advanceMutation.isPending}
+                          className="btn-primary !py-2 !px-4 text-sm whitespace-nowrap"
+                        >
+                          {ADVANCE_LABELS[lead.status]} <FaArrowRight className="text-xs" />
+                        </button>
+                        <button
+                          onClick={() => setRejectTarget(lead)}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 whitespace-nowrap"
+                        >
+                          <FaTimes className="text-xs" /> Reject
+                        </button>
+                      </>
+                    )}
+                    {/* Outside the isTerminal guard: spam and test rows land in
+                        every stage, including Completed and Rejected, and those
+                        are exactly the ones skewing the dashboard counts. */}
+                    <button
+                      onClick={() => setDeleteTarget(lead)}
+                      aria-label={`Delete lead ${lead.name}`}
+                      title="Delete this lead permanently"
+                      className="p-2 text-gray-300 hover:text-red-500"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -298,6 +373,14 @@ const AdminLeads = () => {
           isSaving={rejectMutation.isPending}
           onClose={() => setRejectTarget(null)}
           onConfirm={({ reason }) => rejectMutation.mutate({ id: rejectTarget._id, reason })}
+        />
+      )}
+      {deleteTarget && (
+        <DeleteModal
+          lead={deleteTarget}
+          isSaving={deleteMutation.isPending}
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={(lead) => deleteMutation.mutate(lead._id)}
         />
       )}
     </div>

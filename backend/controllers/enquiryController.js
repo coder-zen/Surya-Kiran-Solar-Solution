@@ -169,4 +169,57 @@ const rejectEnquiry = asyncHandler(async (req, res) => {
   res.json({ success: true, data: enquiry, message: "Lead marked as Rejected/Lost." });
 });
 
-module.exports = { createEnquiry, getEnquiries, updateEnquiry, advanceEnquiry, rejectEnquiry };
+// @desc    Permanently delete an enquiry
+// @route   DELETE /api/enquiries/:id
+// @access  Private (admin/super_admin)
+/*
+ * For entries that were never real leads — test submissions and form spam —
+ * which otherwise skew every count on the dashboard.
+ *
+ * Distinct from rejectEnquiry, and the two are not interchangeable. Rejecting
+ * records that a genuine lead was lost, which is history worth keeping. This
+ * erases the row outright, so it is only for rows that never represented a
+ * customer at all.
+ *
+ * Deliberately unavailable to the "employee" role that can otherwise work the
+ * pipeline: advancing and rejecting are reversible bookkeeping, this is not.
+ */
+const deleteEnquiry = asyncHandler(async (req, res) => {
+  const enquiry = await Enquiry.findById(req.params.id);
+  if (!enquiry) {
+    res.status(404);
+    throw new Error("Enquiry not found");
+  }
+
+  /*
+   * A lead that reached a real project is refusing deletion rather than
+   * cascading it. Removing it would orphan the project it produced, and
+   * anything with delivered work behind it is by definition not a fake lead —
+   * whoever is clicking has the wrong row.
+   */
+  if (enquiry.convertedProjectId) {
+    res.status(400);
+    throw new Error(
+      "This lead has a project linked to it and can't be deleted. Reject it instead if the deal was lost."
+    );
+  }
+
+  await enquiry.deleteOne();
+
+  // Logged because there is nothing left to inspect afterwards.
+  console.log(
+    `[enquiries] "${enquiry.name}" (${enquiry.phone || "no phone"}, source: ${enquiry.source || "unknown"}) ` +
+      `deleted by ${req.user?.email || "unknown user"}`
+  );
+
+  res.json({ success: true, message: "Lead deleted." });
+});
+
+module.exports = {
+  createEnquiry,
+  getEnquiries,
+  updateEnquiry,
+  advanceEnquiry,
+  rejectEnquiry,
+  deleteEnquiry,
+};
