@@ -1,8 +1,30 @@
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
-import { COMPANY, NAV_LINKS } from "../../config/constants";
+// X's mark only exists in the Font Awesome 6 set; the rest stay on fa5, where
+// this file's other icons (FaMapMarkerAlt, FaPhoneAlt) are still named.
+import { FaXTwitter } from "react-icons/fa6";
+import api from "../../config/api";
+import { COMPANY, NAV_LINKS, resolveSocialLinks } from "../../config/constants";
 
-const Footer = () => (
+const fetchSettings = async () => (await api.get("/settings")).data.data;
+
+/** Icon and accessible name per network, keyed to Settings.socialLinks. */
+const SOCIAL_META = {
+  facebook: { Icon: FaFacebookF, label: "Facebook" },
+  instagram: { Icon: FaInstagram, label: "Instagram" },
+  linkedin: { Icon: FaLinkedinIn, label: "LinkedIn" },
+  youtube: { Icon: FaYoutube, label: "YouTube" },
+  twitter: { Icon: FaXTwitter, label: "X" },
+};
+
+const Footer = () => {
+  // Shares the "settings" cache with Hero and AboutSection, so appearing on
+  // every page costs no extra request.
+  const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: fetchSettings, retry: false });
+  const socials = resolveSocialLinks(settings);
+
+  return (
   <footer className="bg-navy-dark text-white pt-16 pb-8">
     <div className="container-custom grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
       <div>
@@ -13,22 +35,26 @@ const Footer = () => (
           long-term reliability.
         </p>
         <div className="flex gap-3 mt-5">
-          {[
-            [FaFacebookF, COMPANY.social.facebook],
-            [FaInstagram, COMPANY.social.instagram],
-            [FaLinkedinIn, COMPANY.social.linkedin],
-            [FaYoutube, COMPANY.social.youtube],
-          ].map(([Icon, href], i) => (
-            <a
-              key={i}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="h-9 w-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-solar-orange transition-colors"
-            >
-              <Icon size={14} />
-            </a>
-          ))}
+          {/* Only networks with a real profile — an icon linking to a bare
+              domain sends visitors to that site's homepage, not to us. */}
+          {Object.entries(socials).map(([network, href]) => {
+            const meta = SOCIAL_META[network];
+            if (!meta) return null;
+            const { Icon, label } = meta;
+            return (
+              <a
+                key={network}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${COMPANY.name} on ${label}`}
+                title={label}
+                className="h-9 w-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-solar-orange transition-colors"
+              >
+                <Icon size={14} />
+              </a>
+            );
+          })}
         </div>
       </div>
 
@@ -88,6 +114,7 @@ const Footer = () => (
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 export default Footer;

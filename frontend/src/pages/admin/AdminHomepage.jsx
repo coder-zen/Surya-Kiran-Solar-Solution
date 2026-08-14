@@ -73,6 +73,10 @@ const AdminHomepage = () => {
           ...settings.homepageContent,
           // [String] → objects, which useFieldArray needs to track rows.
           aboutBulletPoints: (settings.homepageContent?.aboutBulletPoints || []).map((value) => ({ value })),
+          // Site-wide rather than homepage content, but this is the only
+          // Settings editor, and a separate screen for five URLs would be
+          // harder to find than it is to scroll to.
+          socialLinks: settings.socialLinks || {},
         }
       : undefined,
   });
@@ -82,23 +86,27 @@ const AdminHomepage = () => {
   const aboutImage = watch("aboutImageUrl");
 
   const saveMutation = useMutation({
-    mutationFn: (homepageContent) => api.put("/settings", { homepageContent }),
+    mutationFn: (payload) => api.put("/settings", payload),
     onSuccess: ({ data: res }) => {
       queryClient.invalidateQueries({ queryKey: ["admin-settings"] });
-      queryClient.invalidateQueries({ queryKey: ["settings"] }); // public Hero + AboutSection
+      queryClient.invalidateQueries({ queryKey: ["settings"] }); // public Hero, AboutSection, Footer
       toast.success(res.message || "Homepage updated");
       reset({
         ...res.data.homepageContent,
         aboutBulletPoints: (res.data.homepageContent?.aboutBulletPoints || []).map((value) => ({ value })),
+        socialLinks: res.data.socialLinks || {},
       });
     },
     onError: (err) => toast.error(err?.response?.data?.message || "Could not save homepage content"),
   });
 
-  const onSubmit = (formData) =>
+  const onSubmit = ({ socialLinks, ...homepageContent }) =>
     saveMutation.mutate({
-      ...formData,
-      aboutBulletPoints: (formData.aboutBulletPoints || []).map((b) => b.value).filter(Boolean),
+      homepageContent: {
+        ...homepageContent,
+        aboutBulletPoints: (homepageContent.aboutBulletPoints || []).map((b) => b.value).filter(Boolean),
+      },
+      socialLinks,
     });
 
   const move = (from, to) => {
@@ -249,6 +257,39 @@ const AdminHomepage = () => {
                 </p>
                 <input {...register("youtubeChannelUrl")} className="input-field mt-2" placeholder="https://youtube.com/@yourchannel" />
               </div>
+            </div>
+
+            {/* ---------------- Social links ---------------- */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm grid sm:grid-cols-2 gap-5">
+              <div className="sm:col-span-2">
+                <h3 className="font-display font-semibold text-navy">Social Links</h3>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Shown as icons in the site footer, and published to search engines so Google can
+                  connect these profiles to your business. Leave a field blank to hide that icon.
+                </p>
+              </div>
+
+              {[
+                ["instagram", "Instagram", "https://www.instagram.com/yourhandle"],
+                ["youtube", "YouTube", "https://www.youtube.com/@yourchannel"],
+                ["facebook", "Facebook", "https://www.facebook.com/yourpage"],
+                ["linkedin", "LinkedIn", "https://www.linkedin.com/company/yourcompany"],
+                ["twitter", "X (Twitter)", "https://x.com/yourhandle"],
+              ].map(([field, label, placeholder]) => (
+                <div key={field}>
+                  <label className="section-label">{label}</label>
+                  <input
+                    {...register(`socialLinks.${field}`)}
+                    className="input-field mt-1"
+                    placeholder={placeholder}
+                  />
+                </div>
+              ))}
+
+              <p className="sm:col-span-2 text-xs text-gray-400">
+                Paste the full profile URL. A bare domain like "instagram.com" is treated as no
+                profile — the icon is hidden rather than linking visitors to Instagram's homepage.
+              </p>
             </div>
 
             {/* ---------------- Bullets ---------------- */}

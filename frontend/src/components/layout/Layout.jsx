@@ -1,11 +1,15 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import WhatsAppButton from "../common/WhatsAppButton";
 import CallButton from "../common/CallButton";
-import { COMPANY, MAHARASHTRA_DISTRICTS } from "../../config/constants";
+import api from "../../config/api";
+import { COMPANY, MAHARASHTRA_DISTRICTS, resolveSocialLinks } from "../../config/constants";
 import { SITE_URL, DEFAULT_OG_IMAGE } from "../../config/seo";
+
+const fetchSettings = async () => (await api.get("/settings")).data.data;
 
 // Site-wide LocalBusiness structured data — helps Google show a rich local
 // result (address, phone, service area) for "solar Pune" / "SK Solar"
@@ -51,22 +55,31 @@ const localBusinessSchema = {
     })),
   ],
   priceRange: "₹₹",
-  // Only include real profile links — COMPANY.social currently holds bare
-  // placeholder domains (no handle yet), which would be false structured
-  // data if published as-is.
-  sameAs: Object.values(COMPANY.social).filter((url) => new URL(url).pathname.length > 1),
 };
 
 const Layout = () => {
+  // sameAs is what ties this site to its social profiles in Google's knowledge
+  // graph, so it has to follow whatever the admin has saved rather than a
+  // build-time constant. Shares the "settings" cache with Hero and Footer.
+  const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: fetchSettings, retry: false });
+
   useEffect(() => {
     const id = "local-business-schema";
-    if (document.getElementById(id)) return;
+    // Rebuilt when the links arrive, so the tag isn't frozen with whatever was
+    // known on first paint.
+    document.getElementById(id)?.remove();
+
     const script = document.createElement("script");
     script.id = id;
     script.type = "application/ld+json";
-    script.textContent = JSON.stringify(localBusinessSchema);
+    script.textContent = JSON.stringify({
+      ...localBusinessSchema,
+      // resolveSocialLinks drops bare domains, so an unclaimed network is
+      // omitted rather than published as a profile that doesn't exist.
+      sameAs: Object.values(resolveSocialLinks(settings)),
+    });
     document.head.appendChild(script);
-  }, []);
+  }, [settings]);
 
   return (
     <div className="min-h-screen flex flex-col">

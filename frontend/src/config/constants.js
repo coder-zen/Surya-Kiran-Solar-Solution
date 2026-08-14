@@ -14,12 +14,52 @@ export const COMPANY = {
   email: "info@sksolarsolution.com",
   address: "Near Akshay Garden Hotel, Belekar Wasti, Manjari Budruk, Pune, Maharashtra 412307, India",
   officeCoordinates: { lat: 18.5124, lng: 73.9718 },
+  /*
+   * Defaults only. The live values come from Settings.socialLinks, editable at
+   * /admin/homepage — these are the fallback while that loads, and for any
+   * network the admin hasn't filled in.
+   *
+   * A bare domain here means "no profile yet": Footer and the search-engine
+   * schema both treat a URL with no path as absent rather than linking
+   * visitors to facebook.com's front page.
+   */
   social: {
     facebook: "https://facebook.com/",
-    instagram: "https://instagram.com/",
+    instagram: "https://www.instagram.com/sk_solar_solutions",
     linkedin: "https://linkedin.com/",
-    youtube: "https://youtube.com/",
+    youtube: "https://www.youtube.com/@sksolarsolution30",
+    twitter: "https://x.com/",
   },
+};
+
+/**
+ * True only for a URL that points at an actual profile.
+ *
+ * "https://facebook.com/" parses fine and would render a perfectly clickable
+ * icon that dumps a visitor on Facebook's homepage, so a bare domain counts as
+ * absent. Malformed strings are absent too — an admin typing "instagram.com/x"
+ * without a scheme shouldn't crash the footer.
+ */
+const isRealProfile = (url) => {
+  if (!url || typeof url !== "string") return false;
+  try {
+    return new URL(url).pathname.replace(/\/+$/, "").length > 0;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Live social links: whatever the admin has saved, falling back to the defaults
+ * above for anything unset. Networks without a real profile are dropped, so the
+ * footer and the search-engine schema both show only what exists.
+ *
+ * Clearing a field in the admin removes its icon — an empty string overrides
+ * the default and then fails the profile check.
+ */
+export const resolveSocialLinks = (settings) => {
+  const merged = { ...COMPANY.social, ...(settings?.socialLinks || {}) };
+  return Object.fromEntries(Object.entries(merged).filter(([, url]) => isRealProfile(url)));
 };
 
 export const NAV_LINKS = [
