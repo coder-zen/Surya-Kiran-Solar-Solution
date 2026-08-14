@@ -11,7 +11,7 @@ export const COMPANY = {
   phone: "+91 90678 56576",
   phoneRaw: "+919067856576",
   whatsapp: "+919067856576",
-  email: "sksolarsolutions.electrical@gmail.com",
+  email: "info@sksolarsolution.com",
   address: "Near Akshay Garden Hotel, Belekar Wasti, Manjari Budruk, Pune, Maharashtra 412307, India",
   officeCoordinates: { lat: 18.5124, lng: 73.9718 },
   social: {
