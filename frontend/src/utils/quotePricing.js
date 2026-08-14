@@ -80,6 +80,42 @@ export const priceOption = (option, { capacityKW = 0, quantity = 1, base = 0 } =
 export const PROPERTY_TYPES = ["Residential", "Commercial", "Institutional"];
 
 /**
+ * What one option adds, phrased for the card the customer is choosing from.
+ *
+ * Capacity-scaled options resolve to a real rupee figure, because "₹1,60,000"
+ * is a decision and "₹32 per watt" is homework. Quantity-driven ones can't be
+ * totalled before the customer says how many, so they show their rate instead
+ * of a number that would be wrong; percentage options show the percentage.
+ *
+ * Returns { amount, label, isEstimate } — amount is null when no total exists.
+ */
+export const describeOptionPrice = (option, capacityKW) => {
+  if (!option) return null;
+  const rate = Number(option.price) || 0;
+  if (rate <= 0) return { amount: 0, label: "Included", isEstimate: false };
+
+  switch (option.pricingUnit) {
+    case "perWatt":
+    case "perKW":
+      return { amount: priceOption(option, { capacityKW }), label: null, isEstimate: false };
+    case "perKWYear":
+      return { amount: priceOption(option, { capacityKW }), label: "per year", isEstimate: false };
+    case "fixed":
+      return { amount: rate, label: null, isEstimate: false };
+    case "percent":
+      return { amount: null, label: `${rate}% of project value`, isEstimate: true };
+    case "perUnit":
+      return { amount: rate, label: "per unit", isEstimate: true };
+    case "perRunningFt":
+      return { amount: rate, label: "per running ft", isEstimate: true };
+    case "perSqFt":
+      return { amount: rate, label: "per sq ft", isEstimate: true };
+    default:
+      return { amount: rate, label: null, isEstimate: false };
+  }
+};
+
+/**
  * Government subsidy for a given system size.
  *
  * Reads the largest slab the system qualifies for — a 5kW system takes the 3kW
@@ -255,7 +291,15 @@ export const buildQuote = ({ config, capacityKW, selections = {}, addOns = [], p
    * reimbursed against what the customer actually paid, and is not a discount
    * on the sale, so it must not reduce the tax charged.
    */
-  const subsidy = subsidyFor(config, kW, propertyType);
+  /*
+   * Capped at the project total, and withheld until a system actually exists.
+   *
+   * Without the cap, an empty configuration showed ₹43,244 of fixed charges
+   * against a ₹78,000 subsidy and reported an effective cost of ₹0 — a free
+   * solar system, before the customer had chosen anything. A subsidy also
+   * cannot in reality exceed what was spent, so the cap is right regardless.
+   */
+  const subsidy = baseSystem > 0 ? Math.min(subsidyFor(config, kW, propertyType), total) : 0;
   const netPayable = Math.max(0, total - subsidy);
 
   return {

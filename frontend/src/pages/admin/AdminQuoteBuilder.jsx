@@ -147,6 +147,15 @@ const OptionRow = ({ option, groupKey, onChange, onRemove }) => {
       </div>
 
       <div className="col-span-6 sm:col-span-2 flex items-center gap-2 justify-end pt-2">
+        <label className="flex items-center gap-1.5 text-xs text-gray-500" title="Badged and shown first to customers">
+          <input
+            type="checkbox"
+            checked={Boolean(option.isRecommended)}
+            onChange={(e) => onChange({ ...option, isRecommended: e.target.checked })}
+            className="h-3.5 w-3.5 accent-navy"
+          />
+          Pick
+        </label>
         <label className="flex items-center gap-1.5 text-xs text-gray-500">
           <input
             type="checkbox"

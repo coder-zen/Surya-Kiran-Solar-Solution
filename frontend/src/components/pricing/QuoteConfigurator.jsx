@@ -9,6 +9,7 @@ import {
   buildQuote,
   formatINR,
   capacityForBill,
+  describeOptionPrice,
   QUANTITY_FOR_UNIT,
   PROPERTY_TYPES,
 } from "../../utils/quotePricing";
@@ -32,40 +33,80 @@ const STEPS = [
  * requirement is that the customer sees a selection's effect on their total,
  * not the rate behind it, and the running cart is where that effect appears.
  */
-const OptionCard = ({ option, selected, onSelect }) => (
-  <button
-    type="button"
-    onClick={() => onSelect(option)}
-    className={`text-left rounded-xl border p-4 transition-all ${
-      selected
-        ? "border-solar-orange bg-solar-orange/5 shadow-sm"
-        : "border-gray-200 hover:border-gray-300 bg-white"
-    }`}
-  >
-    <div className="flex items-start justify-between gap-2">
-      <div className="flex items-center gap-2.5 min-w-0">
-        {/*
-          Brand mark where the admin has uploaded one. object-contain and a
-          fixed box so logos of different aspect ratios line up instead of
-          each card sizing itself to its own image. Unbranded options (walkway,
-          ladder) simply have no logo and fall back to the name alone.
-        */}
-        {option.logoUrl && (
-          <img
-            src={cdnImage(option.logoUrl, IMG.thumb)}
-            alt={`${option.name} logo`}
-            loading="lazy"
-            className="h-7 w-14 object-contain shrink-0"
-            onError={(e) => (e.target.style.display = "none")}
-          />
+/**
+ * One choice, laid out so a customer can compare across a row without reading
+ * carefully: brand mark, name, what it gets you, what it costs.
+ *
+ * Stacked rather than putting the logo beside the name — inline, a wide mark
+ * like Waaree's squeezed the name into a narrow column while logo-less options
+ * in the same row started hard left, so the grid never lined up. Giving the
+ * logo its own band keeps every card on the same rhythm whether it has one
+ * or not.
+ */
+const OptionCard = ({ option, selected, onSelect, capacityKW }) => {
+  const price = describeOptionPrice(option, capacityKW);
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(option)}
+      aria-pressed={selected}
+      className={`relative text-left rounded-xl border p-4 flex flex-col gap-2 transition-all ${
+        selected
+          ? "border-solar-orange bg-solar-orange/5 ring-1 ring-solar-orange/30"
+          : "border-gray-200 hover:border-gray-300 hover:shadow-sm bg-white"
+      }`}
+    >
+      {option.isRecommended && (
+        <span className="absolute -top-2 right-3 rounded-full bg-navy px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+          Recommended
+        </span>
+      )}
+
+      {/* Reserved only when a logo exists, but always the same height when it
+          does, so branded options across a row sit on one line. */}
+      {option.logoUrl && (
+        <img
+          src={cdnImage(option.logoUrl, IMG.thumb)}
+          alt={`${option.name} logo`}
+          loading="lazy"
+          className="h-6 w-auto max-w-[88px] object-contain object-left"
+          onError={(e) => (e.target.style.display = "none")}
+        />
+      )}
+
+      <div className="flex items-start justify-between gap-2">
+        <span className="font-display font-semibold text-navy text-[15px] leading-tight">
+          {option.name}
+        </span>
+        {selected && (
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-solar-orange shrink-0">
+            <FaCheck className="text-white text-[9px]" />
+          </span>
         )}
-        <span className="font-semibold text-navy text-sm truncate">{option.name}</span>
       </div>
-      {selected && <FaCheck className="text-solar-orange text-xs mt-1 shrink-0" />}
-    </div>
-    {option.note && <p className="text-xs text-gray-400 mt-1">{option.note}</p>}
-  </button>
-);
+
+      {option.note && <p className="text-xs text-gray-500 leading-relaxed">{option.note}</p>}
+
+      {/* Pushed to the bottom so prices align across cards of differing height. */}
+      {price && (
+        <div className="mt-auto pt-1">
+          {price.amount === 0 ? (
+            <span className="text-sm font-semibold text-green-600">Included</span>
+          ) : price.amount === null ? (
+            <span className="text-sm font-semibold text-navy">{price.label}</span>
+          ) : (
+            <span className="text-sm font-semibold text-navy">
+              {price.isEstimate && <span className="text-gray-400 font-normal">from </span>}
+              +{formatINR(price.amount)}
+              {price.label && <span className="text-xs text-gray-400 font-normal"> {price.label}</span>}
+            </span>
+          )}
+        </div>
+      )}
+    </button>
+  );
+};
 
 /** Quantity input shown only for options priced per unit / ft / sq ft. */
 const QuantityInput = ({ unit, value, onChange }) => {
@@ -298,8 +339,13 @@ const QuoteConfigurator = () => {
 
             {/* the eight steps */}
             {STEPS.map((step, i) => {
-              const options = step.key === "inverter" ? compatibleInverters : config[step.group] || [];
-              if (!options.length) return null;
+              const raw = step.key === "inverter" ? compatibleInverters : config[step.group] || [];
+              if (!raw.length) return null;
+              // Recommended first — a customer scanning six unfamiliar brands
+              // should meet the company's pick before the alphabet's.
+              const options = [...raw].sort(
+                (a, b) => Number(Boolean(b.isRecommended)) - Number(Boolean(a.isRecommended))
+              );
               const chosen = selections[step.key];
 
               return (
@@ -316,7 +362,9 @@ const QuoteConfigurator = () => {
                     </p>
                   )}
 
-                  <div className="grid sm:grid-cols-2 gap-3 mt-4">
+                  {/* items-stretch keeps every card the same height so the
+                      price line sits on one baseline across the row. */}
+                  <div className="grid sm:grid-cols-2 gap-3 mt-5 items-stretch">
                     {options.map((option) => (
                       <OptionCard
                         key={option._id}

@@ -52,6 +52,14 @@ const optionSchema = new mongoose.Schema(
      */
     logoUrl: { type: String, trim: true, default: "" },
 
+    /*
+     * Marks the option the company would put forward if asked. Faced with six
+     * brand names they don't know, most customers stall — a single clear
+     * recommendation is what turns browsing into a decision. Admin-set, since
+     * only the company knows which stock it actually wants to move.
+     */
+    isRecommended: { type: Boolean, default: false },
+
     isActive: { type: Boolean, default: true },
     order: { type: Number, default: 0 },
 
