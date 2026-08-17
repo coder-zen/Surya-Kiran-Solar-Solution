@@ -83,3 +83,77 @@ on a cold site may appear to hang. Upgrade to a paid instance before real traffi
   Service, Project, Testimonial and FAQ collections.
 - If you get locked out, `backend/scripts/recover-admin.js` can repoint an admin
   account at a mailbox you control so password reset can reach you.
+
+---
+
+## Email: sending as the company, not a personal Gmail
+
+Render blocks outbound SMTP ports, so mail from production goes through an
+HTTP email API. Brevo is the configured default (300/day free). Once
+`BREVO_API_KEY` is set, `utils/sendEmail.js` prefers it automatically and the
+`SMTP_*` variables become a local-development fallback only.
+
+Setting `MAIL_FROM` without authenticating the domain is not enough. Providers
+check that whoever sent the mail is allowed to use the From domain; fail that
+and the message lands in spam even though it "sent successfully".
+
+### DNS facts for sksolarsolution.com
+
+Recorded here because they decide which steps matter:
+
+| | |
+|---|---|
+| DNS hosted at | **Hostinger** (`*.dns-parking.com` nameservers) — not Vercel |
+| Existing SPF | `v=spf1 include:_spf.google.com ~all` — Google Workspace |
+| Existing DKIM | `google._domainkey` present |
+| DMARC | **none** |
+| MX | `smtp.google.com` — `info@` is a real Workspace mailbox |
+
+### Steps
+
+1. Sign up at brevo.com and open **Senders, Domains & Dedicated IPs → Domains
+   → Add a domain**. Enter `sksolarsolution.com`.
+2. Brevo offers to configure DNS automatically by signing into the DNS host.
+   That works when it recognises the provider; otherwise take the manual
+   records and add them in **Hostinger hPanel → Domains → DNS Zone Editor**.
+3. Add the three records Brevo shows: the **Brevo code** (TXT, proves
+   ownership), the **DKIM** record, and the **DMARC** record.
+   - **Do not touch the existing SPF record.** Brevo handles SPF on its own
+     return-path domain and does not need an `include:`. Editing the Google
+     SPF entry risks breaking Workspace mail delivery for no benefit.
+   - Brevo's DKIM uses its own selector, so it coexists with
+     `google._domainkey`.
+   - There is no DMARC record today, so Brevo's can be added as-is. (Had one
+     existed, Brevo would offer to replace it — decline and merge by hand.)
+4. Wait for propagation, then press verify in Brevo. Success looks like a
+   green **"Value matched"** against all three records.
+5. Create an API key: **SMTP & API → API Keys → Generate a new API key**.
+6. On Render → the service → **Environment**, set:
+
+   ```
+   BREVO_API_KEY = <the key>
+   MAIL_FROM     = info@sksolarsolution.com
+   NOTIFY_EMAIL_TO = info@sksolarsolution.com
+   ```
+
+   `REPLY_TO` is optional — it defaults to the first `NOTIFY_EMAIL_TO`
+   address. Leave the `SMTP_*` variables in place; they are ignored while a
+   Brevo key is present and keep local development working.
+
+7. Redeploy and check the boot log. It prints the active configuration:
+
+   ```
+   [email] Ready — brevo HTTP API, sending as info@sksolarsolution.com.
+   ```
+
+   If it still says `SMTP ...`, the key did not reach the environment.
+
+8. Submit a real enquiry through the site. Two mails should follow: the lead
+   alert to `info@`, whose Reply-To is the customer, and the acknowledgement
+   to the customer, sent from `info@` with Reply-To `info@`.
+
+### Checking it properly
+
+In Gmail, open the received acknowledgement → ⋮ → **Show original**. Look for
+`SPF: PASS`, `DKIM: PASS` and `DMARC: PASS`. Anything else means the domain
+authentication has not fully taken effect, regardless of the mail arriving.
