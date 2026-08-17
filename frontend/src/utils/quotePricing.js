@@ -178,24 +178,35 @@ export const savingsFor = (config, capacityKW, netCost) => {
 };
 
 /**
- * Suggests a system size from a monthly electricity bill — the question a
- * customer can answer, unlike "how many kW do you need".
+ * Suggests a system size from a year's electricity consumption in units (kWh).
  *
- * Sizes to cover `offsetPercent` of consumption rather than all of it, since
- * oversizing past your own usage exports units at a lower rate than they're
- * billed at.
+ * A year rather than a month because consumption swings hard with the season —
+ * sizing off a single summer bill oversizes the system, off a winter one
+ * undersizes it. The yearly total on the bill averages that out.
+ *
+ * Units rather than rupees because the arithmetic is then exact: rupees have
+ * to be divided back through a tariff that varies by slab, and a wrong tariff
+ * moves the recommended size by multiples, not percentages.
+ *
+ *   units/year ÷ 12 = units/month ÷ 30 = units/day ÷ generation per kW = kW
  */
-export const capacityForBill = (config, monthlyBill) => {
-  const bill = Number(monthlyBill) || 0;
-  const s = config?.savings || {};
-  const b = config?.billEstimator || {};
-  const unitRate = Number(s.unitRateRupees) || 8;
-  const perKWDay = Number(s.generationPerKWPerDay) || 4;
-  const offset = (Number(b.offsetPercent) || 90) / 100;
-  if (!bill || !unitRate || !perKWDay) return null;
+export const rawCapacityForAnnualUnits = (config, annualUnits) => {
+  const units = Number(annualUnits) || 0;
+  const perKWDay = Number(config?.savings?.generationPerKWPerDay) || 4;
+  if (!units || !perKWDay) return null;
 
-  const unitsPerMonth = bill / unitRate;
-  const kW = (unitsPerMonth * offset) / (perKWDay * 30);
+  const unitsPerDay = units / 12 / 30;
+  return unitsPerDay / perKWDay;
+};
+
+/**
+ * The same size, snapped to something the configurator's slider can represent.
+ * The standalone savings calculator uses the raw figure instead, since it has
+ * no slider to agree with.
+ */
+export const capacityForAnnualUnits = (config, annualUnits) => {
+  const kW = rawCapacityForAnnualUnits(config, annualUnits);
+  if (!kW) return null;
 
   // Snap to the configurator's own step so the suggestion is a size the slider
   // can actually represent.
@@ -204,6 +215,19 @@ export const capacityForBill = (config, monthlyBill) => {
   const max = Number(config?.capacity?.maxKW) || 100;
   const snapped = Math.round(kW / step) * step;
   return Math.min(max, Math.max(min, Number(snapped.toFixed(2))));
+};
+
+/**
+ * Shadow-free roof area a system of this size needs, in square feet.
+ *
+ * Rounded to the nearest 5 — quoting "just over 344 sq ft" implies a precision
+ * no rule of thumb has, and every real roof has obstructions that move it.
+ */
+export const areaSqFtForCapacity = (config, capacityKW) => {
+  const kW = Number(capacityKW) || 0;
+  const perKW = Number(config?.savings?.areaSqFtPerKW) || 100;
+  if (!kW) return null;
+  return Math.round((kW * perKW) / 5) * 5;
 };
 
 /**

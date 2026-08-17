@@ -4,28 +4,47 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import api from "../config/api";
+import { rawCapacityForAnnualUnits, areaSqFtForCapacity } from "../utils/quotePricing";
+
+/** ₹ per unit, used only to turn units back into a rupee saving figure. */
+const UNIT_RATE_RUPEES = 8;
+/** Share of the bill a correctly sized system displaces. */
+const BILL_OFFSET = 0.85;
+const COST_PER_KW = 55000;
 
 /**
  * Solar Savings Calculator
- * Simplified estimation model (for lead-gen purposes only — NOT a formal quote):
- *   avg unit cost ≈ ₹8/kWh · 1kW generates ~4 units/day · system size ≈ (monthly bill / 8) / 30 / 4
+ * Simplified estimation model (for lead-gen purposes only — NOT a formal quote).
+ *
+ * Sized from a year's units rather than one month's bill: consumption swings
+ * hard between summer and winter, so any single month sizes the system wrong
+ * in one direction or the other. Units rather than rupees because rupees would
+ * have to be divided back through a slab tariff, and a wrong tariff moves the
+ * answer by multiples.
+ *
+ *   units/year ÷ 12 ÷ 30 ÷ 4 units-per-kW-per-day = kW
  */
 const SolarSavingsCalculator = () => {
   const [result, setResult] = useState(null);
   const { register, handleSubmit, getValues } = useForm({
-    defaultValues: { electricityBill: 3000, roofArea: 300, location: "" },
+    defaultValues: { annualUnits: 4800, roofArea: 300, location: "" },
   });
 
   const onCalculate = (data) => {
-    const bill = Number(data.electricityBill);
-    const unitsPerMonth = bill / 8; // avg ₹8/unit
-    const systemSizeKW = Math.max(1, Math.round((unitsPerMonth / 30 / 4) * 10) / 10);
-    const systemCost = systemSizeKW * 55000; // approx ₹55,000/kW after typical component costs
-    const monthlySavings = Math.round(bill * 0.85);
+    const annualUnits = Number(data.annualUnits);
+    const roofArea = Number(data.roofArea) || 0;
+
+    const systemSizeKW = Math.max(1, Math.round(rawCapacityForAnnualUnits(null, annualUnits) * 10) / 10);
+    const systemCost = systemSizeKW * COST_PER_KW;
+    const monthlyBill = (annualUnits / 12) * UNIT_RATE_RUPEES;
+    const monthlySavings = Math.round(monthlyBill * BILL_OFFSET);
     const paybackYears = Math.round((systemCost / (monthlySavings * 12)) * 10) / 10;
     const carbonOffsetKg = Math.round(systemSizeKW * 1.2 * 365); // ~1.2kg CO2 offset per kWh/day/kW
+    const areaNeededSqFt = areaSqFtForCapacity(null, systemSizeKW);
+    // Only judge the roof when they actually told us its size.
+    const roofFits = roofArea > 0 ? roofArea >= areaNeededSqFt : null;
 
-    setResult({ systemSizeKW, monthlySavings, paybackYears, carbonOffsetKg, systemCost });
+    setResult({ systemSizeKW, monthlySavings, paybackYears, carbonOffsetKg, systemCost, areaNeededSqFt, roofFits });
   };
 
   const { register: register2, handleSubmit: handleSubmit2, formState: { isSubmitting } } = useForm();
@@ -34,7 +53,7 @@ const SolarSavingsCalculator = () => {
       const values = getValues();
       await api.post("/enquiries", {
         ...leadData,
-        message: `Solar Savings Calculator lead — Bill: ₹${values.electricityBill}, Estimated size: ${result?.systemSizeKW}kW`,
+        message: `Solar Savings Calculator lead — Yearly usage: ${values.annualUnits} units, Estimated size: ${result?.systemSizeKW}kW (needs ~${result?.areaNeededSqFt} sq ft)`,
         source: "calculator",
       });
       toast.success("Thanks! Our team will call you with a detailed quote.");
@@ -54,10 +73,14 @@ const SolarSavingsCalculator = () => {
     <div className="grid lg:grid-cols-2 gap-10">
       <form onSubmit={handleSubmit(onCalculate)} className="glass-card !bg-gray-50 p-8 space-y-5">
         <div>
-          <label className="section-label">Monthly Electricity Bill (₹)</label>
+          <label className="section-label">Electricity Used Last Year (units / kWh)</label>
+          <p className="text-xs text-gray-400 mt-0.5">
+            The yearly total printed on your MSEDCL bill. A full year evens out the summer and
+            winter swing, so the size comes out right.
+          </p>
           <input
             type="number"
-            {...register("electricityBill", { required: true, min: 100 })}
+            {...register("annualUnits", { required: true, min: 100 })}
             className="input-field mt-1"
           />
         </div>
@@ -85,7 +108,20 @@ const SolarSavingsCalculator = () => {
               <div><p className="text-2xl font-display font-bold text-navy">₹{result.monthlySavings.toLocaleString()}</p><p className="text-xs text-gray-500">Monthly Savings</p></div>
               <div><p className="text-2xl font-display font-bold text-navy">{result.paybackYears} yrs</p><p className="text-xs text-gray-500">Payback Period</p></div>
               <div><p className="text-2xl font-display font-bold text-navy">{result.carbonOffsetKg.toLocaleString()} kg</p><p className="text-xs text-gray-500">Annual CO₂ Offset</p></div>
+              <div className="col-span-2">
+                <p className="text-2xl font-display font-bold text-navy">{result.areaNeededSqFt.toLocaleString()} sq ft</p>
+                <p className="text-xs text-gray-500">Shadow-Free Roof Space Needed</p>
+              </div>
             </div>
+
+            {/* Only shown when they gave us a roof area to compare against. */}
+            {result.roofFits !== null && (
+              <p className={`text-sm text-center mb-6 ${result.roofFits ? "text-green-600" : "text-solar-orange"}`}>
+                {result.roofFits
+                  ? "Your roof has enough space for this system."
+                  : "That's more roof than you listed — we can fit a smaller system, or survey the site for options."}
+              </p>
+            )}
 
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>

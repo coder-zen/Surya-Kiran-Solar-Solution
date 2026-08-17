@@ -528,6 +528,19 @@ const AdminQuoteBuilder = () => {
               />
             </div>
             <div>
+              <label className="section-label">Roof Area per kW (sq ft)</label>
+              <input
+                type="number" min="1"
+                value={draft.savings?.areaSqFtPerKW ?? 100}
+                onChange={(e) => setDraft((d) => ({ ...d, savings: { ...d.savings, areaSqFtPerKW: Number(e.target.value) } }))}
+                className="input-field mt-1"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Shadow-free area one kW occupies. SECI/MNRE quote 130; industry practice runs 80–130
+                depending on panel efficiency.
+              </p>
+            </div>
+            <div>
               <label className="section-label">Bill Offset (%)</label>
               <input
                 type="number" min="1" max="100"
@@ -535,7 +548,9 @@ const AdminQuoteBuilder = () => {
                 onChange={(e) => setDraft((d) => ({ ...d, billEstimator: { ...d.billEstimator, offsetPercent: Number(e.target.value) } }))}
                 className="input-field mt-1"
               />
-              <p className="text-xs text-gray-400 mt-1">Share of the bill a suggested system covers.</p>
+              <p className="text-xs text-gray-400 mt-1">
+                Not currently applied to sizing — the size comes straight from yearly units.
+              </p>
             </div>
           </div>
         </div>

@@ -230,16 +230,27 @@ const quoteConfigSchema = new mongoose.Schema(
       unitRateRupees: { type: Number, default: 8 }, // ₹ per kWh billed
       generationPerKWPerDay: { type: Number, default: 4 }, // kWh generated per kW
       systemLifeYears: { type: Number, default: 25 },
+      /*
+       * Shadow-free roof area one kW occupies, used to tell a customer whether
+       * their roof actually fits the system their usage implies.
+       *
+       * The SECI/MNRE FAQ quotes 12 sq m (130 sq ft) per kW; industry practice
+       * ranges 80-130 depending on panel efficiency and how tightly rows can be
+       * packed. 100 is a realistic middle for the mono PERC modules used on
+       * these installs — a setting, not a constant, because it moves with
+       * panel technology.
+       */
+      areaSqFtPerKW: { type: Number, default: 100 },
     },
 
     /*
-     * Maps a monthly electricity bill to a system size, so the configurator can
-     * open with a question the customer can actually answer. Same arithmetic the
-     * existing savings calculator uses, lifted into admin control.
+     * Maps a year's electricity consumption to a system size, so the
+     * configurator can open with a question the customer can actually answer.
+     * Units come straight off the bill, which avoids guessing a tariff.
      */
     billEstimator: {
       isEnabled: { type: Boolean, default: true },
-      offsetPercent: { type: Number, default: 90 }, // share of the bill solar is sized to cover
+      offsetPercent: { type: Number, default: 90 }, // share of consumption solar is sized to cover
     },
 
     terms: {

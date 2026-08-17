@@ -8,7 +8,8 @@ import EnquiryModal from "../common/EnquiryModal";
 import {
   buildQuote,
   formatINR,
-  capacityForBill,
+  capacityForAnnualUnits,
+  areaSqFtForCapacity,
   describeOptionPrice,
   QUANTITY_FOR_UNIT,
   PROPERTY_TYPES,
@@ -137,8 +138,8 @@ const QuoteConfigurator = () => {
 
   const [capacityKW, setCapacityKW] = useState(null);
   const [propertyType, setPropertyType] = useState(PROPERTY_TYPES[0]);
-  const [monthlyBill, setMonthlyBill] = useState("");
-  const [sizedFromBill, setSizedFromBill] = useState(false);
+  const [annualUnits, setAnnualUnits] = useState("");
+  const [sizedFromUsage, setSizedFromUsage] = useState(false);
   const [selections, setSelections] = useState({});
   const [addOnState, setAddOnState] = useState({});
   const [addOnsOpen, setAddOnsOpen] = useState(false);
@@ -147,17 +148,20 @@ const QuoteConfigurator = () => {
   const capacity = capacityKW ?? config?.capacity?.defaultKW ?? 5;
 
   /*
-   * Sizing from the bill is the entry point most customers can actually answer —
-   * almost nobody knows their kW, everybody knows what they pay. It only ever
-   * suggests: the slider stays authoritative, so a customer who knows their
-   * requirement is never overridden by an estimate.
+   * Sizing from a year's usage is the entry point most customers can actually
+   * answer — almost nobody knows their kW, but the yearly unit total is printed
+   * on the bill. A year also averages out the seasonal swing that makes any
+   * single month a bad basis for sizing.
+   *
+   * It only ever suggests: the slider stays authoritative, so a customer who
+   * knows their requirement is never overridden by an estimate.
    */
-  const applyBill = (value) => {
-    setMonthlyBill(value);
-    const suggested = capacityForBill(config, value);
+  const applyAnnualUnits = (value) => {
+    setAnnualUnits(value);
+    const suggested = capacityForAnnualUnits(config, value);
     if (suggested) {
       setCapacityKW(suggested);
-      setSizedFromBill(true);
+      setSizedFromUsage(true);
     }
   };
 
@@ -283,24 +287,25 @@ const QuoteConfigurator = () => {
                     Not sure what size you need?
                   </label>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    Enter your average monthly electricity bill and we'll size it for you.
+                    Enter the total units (kWh) you used over the last year — it's printed on your
+                    MSEDCL bill — and we'll size it for you.
                   </p>
                   <div className="flex items-center gap-2 mt-3">
-                    <span className="text-sm text-gray-500">₹</span>
                     <input
                       type="number"
                       min="0"
-                      step="100"
-                      value={monthlyBill}
-                      onChange={(e) => applyBill(e.target.value)}
-                      placeholder="4000"
+                      step="50"
+                      value={annualUnits}
+                      onChange={(e) => applyAnnualUnits(e.target.value)}
+                      placeholder="4958"
                       className="w-32 rounded-lg border border-gray-200 px-3 py-2 text-sm"
                     />
-                    <span className="text-sm text-gray-500">per month</span>
+                    <span className="text-sm text-gray-500">units per year</span>
                   </div>
-                  {sizedFromBill && (
+                  {sizedFromUsage && (
                     <p className="text-xs text-solar-orange font-medium mt-2">
-                      Suggested: {capacity} kW — adjust below if you already know your requirement.
+                      Suggested: {capacity} kW, needing roughly {areaSqFtForCapacity(config, capacity)} sq ft
+                      of shadow-free roof — adjust below if you already know your requirement.
                     </p>
                   )}
                 </div>
@@ -607,7 +612,7 @@ const QuoteConfigurator = () => {
         isOpen={quoteOpen}
         onClose={() => setQuoteOpen(false)}
         source="quote_configurator"
-        contextMessage={buildEnquiryMessage({ capacity, propertyType, monthlyBill, selections, addOnState, quote })}
+        contextMessage={buildEnquiryMessage({ capacity, propertyType, annualUnits, selections, addOnState, quote })}
       />
     </section>
   );
@@ -617,9 +622,9 @@ const QuoteConfigurator = () => {
  * Summarises the configuration into the enquiry message, so the sales team sees
  * exactly what the customer built instead of a bare "wants a quote" lead.
  */
-const buildEnquiryMessage = ({ capacity, propertyType, monthlyBill, selections, addOnState, quote }) => {
+const buildEnquiryMessage = ({ capacity, propertyType, annualUnits, selections, addOnState, quote }) => {
   const parts = [`Configured ${capacity}kW ${propertyType.toLowerCase()} system:`];
-  if (monthlyBill) parts.push(`• Current monthly bill: ₹${monthlyBill}`);
+  if (annualUnits) parts.push(`• Electricity used last year: ${annualUnits} units`);
 
   for (const step of STEPS) {
     const chosen = selections[step.key];
