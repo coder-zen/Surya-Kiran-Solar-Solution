@@ -133,9 +133,13 @@ const SolarSavingsCalculator = () => {
               </PieChart>
             </ResponsiveContainer>
 
-            <form onSubmit={handleSubmit2(onRequestQuote)} className="mt-6 flex gap-2">
-              <input {...register2("name", { required: true })} placeholder="Your Name" className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" />
-              <input {...register2("phone", { required: true })} placeholder="Phone" className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" />
+            {/* Wraps on mobile: three fields plus a button do not fit a phone
+                in one row. Email is here for the same reason as the quote
+                modal — without it the customer gets no written follow-up. */}
+            <form onSubmit={handleSubmit2(onRequestQuote)} className="mt-6 flex flex-wrap gap-2">
+              <input {...register2("name", { required: true })} placeholder="Your Name" className="flex-1 min-w-[140px] rounded-lg border border-gray-200 px-3 py-2 text-sm" />
+              <input {...register2("phone", { required: true })} placeholder="Phone" className="flex-1 min-w-[140px] rounded-lg border border-gray-200 px-3 py-2 text-sm" />
+              <input type="email" {...register2("email", { required: true })} placeholder="Email" className="flex-1 min-w-[180px] rounded-lg border border-gray-200 px-3 py-2 text-sm" />
               <button disabled={isSubmitting} className="btn-primary !px-4 !py-2 text-sm shrink-0">Get Quote</button>
             </form>
           </>

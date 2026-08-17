@@ -85,6 +85,25 @@ const EnquiryModal = ({ isOpen, onClose, source = "other", contextMessage = "" }
                 {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone.message}</p>}
               </div>
 
+              {/*
+                Required, because the acknowledgement email has nowhere to go
+                without it — the quote form previously collected only a phone
+                number, so a customer submitting it could never be sent
+                anything in writing.
+              */}
+              <div>
+                <input
+                  type="email"
+                  {...register("email", {
+                    required: "Email is required — we'll send your quote here",
+                    pattern: { value: /^\S+@\S+\.\S+$/, message: "Enter a valid email address" },
+                  })}
+                  placeholder="Email Address"
+                  className="input-field"
+                />
+                {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
+              </div>
+
               <input
                 {...register("city")}
                 placeholder="City"
