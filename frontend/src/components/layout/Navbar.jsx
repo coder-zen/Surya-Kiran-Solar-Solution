@@ -115,7 +115,11 @@ const Navbar = () => {
                     key={entry.path}
                     to={entry.path}
                     onClick={() => setMobileOpen(false)}
-                    className="text-xl font-display font-semibold"
+                    /* py-2 brings the row to ~44px. At its natural 28px this
+                       had the same too-small-to-hit problem as the hamburger,
+                       which is why the mobile menu felt unreliable beyond the
+                       hamburger itself. */
+                    className="text-xl font-display font-semibold py-2"
                   >
                     {entry.label}
                   </NavLink>
