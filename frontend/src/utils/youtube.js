@@ -31,11 +31,38 @@ export const youTubeId = (url) => {
 };
 
 /**
- * Poster frame. `hqdefault` rather than `maxresdefault` on purpose —
- * maxres only exists for videos uploaded above 720p and 404s silently
- * otherwise, which would leave holes in the grid for phone-shot reviews.
+ * Poster frames, largest first.
+ *
+ * Resolution matters more than it looks: `hqdefault` is only 480x360, so a
+ * featured card ~1120px wide upscales it past 2x and it reads as blurry on
+ * first sight. It is also a 4:3 frame of a 16:9 video, so it carries black
+ * letterbox bars that have to be cropped away, leaving barely 480x270 of
+ * real picture.
+ *
+ * `maxresdefault` is a true 1280x720 with no bars, but it only exists for
+ * videos uploaded above 720p — it 404s otherwise. So callers render the first
+ * entry and fall back through the rest on error, rather than committing to
+ * one and getting either blur or a hole in the grid.
  */
-export const youTubeThumbnail = (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+const THUMB = {
+  maxres: (id) => `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`, // 1280x720, 16:9, ~270KB
+  sd: (id) => `https://i.ytimg.com/vi/${id}/sddefault.jpg`, //         640x480,  4:3, ~100KB
+  hq: (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, //         480x360,  4:3, ~30KB
+};
+
+/**
+ * @param {string} id
+ * @param {"featured"|"grid"} slot how large this will be displayed
+ *
+ * The slot matters because maxres is roughly nine times the weight of hq.
+ * Spending that on the one card that renders ~900px wide is worth it; spending
+ * it on six thumbnails that render at 384px would add close to 2MB to the page
+ * for detail nobody can see.
+ */
+export const youTubeThumbnails = (id, slot = "grid") =>
+  slot === "featured"
+    ? [THUMB.maxres(id), THUMB.sd(id), THUMB.hq(id)]
+    : [THUMB.sd(id), THUMB.hq(id)];
 
 /**
  * Embed URL for the lightbox player. youtube-nocookie.com does not write

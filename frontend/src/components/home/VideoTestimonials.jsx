@@ -13,7 +13,7 @@ import {
 import api from "../../config/api";
 import { COMPANY } from "../../config/constants";
 import SectionHeading from "../common/SectionHeading";
-import { youTubeId, youTubeThumbnail, youTubeEmbedUrl } from "../../utils/youtube";
+import { youTubeId, youTubeThumbnails, youTubeEmbedUrl } from "../../utils/youtube";
 
 const fetchTestimonials = async () => {
   const { data } = await api.get("/testimonials");
@@ -33,7 +33,14 @@ const PER_PAGE = 6;
  * thumbnail, gradient and play affordance stay identical between the featured
  * card and the grid so the section reads as one family.
  */
-const VideoCard = ({ video, onPlay, size = "grid", badge }) => (
+const VideoCard = ({ video, onPlay, size = "grid", badge }) => {
+  // Start at the sharpest thumbnail and step down only if it 404s. maxres does
+  // not exist for videos uploaded below 720p, and there is no way to know
+  // which without asking for it.
+  const sources = youTubeThumbnails(video.videoId, size);
+  const [sourceIndex, setSourceIndex] = useState(0);
+
+  return (
   <motion.button
     type="button"
     onClick={() => onPlay(video)}
@@ -42,9 +49,10 @@ const VideoCard = ({ video, onPlay, size = "grid", badge }) => (
     className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-premium aspect-video w-full text-left"
   >
     <img
-      src={youTubeThumbnail(video.videoId)}
+      src={sources[sourceIndex]}
       alt=""
       loading="lazy"
+      onError={() => setSourceIndex((i) => Math.min(i + 1, sources.length - 1))}
       className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
     />
     <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/90 via-navy-dark/25 to-navy-dark/10" />
@@ -76,7 +84,8 @@ const VideoCard = ({ video, onPlay, size = "grid", badge }) => (
       )}
     </div>
   </motion.button>
-);
+  );
+};
 
 /**
  * Video Reviews — a large featured film about the company, then a paginated
