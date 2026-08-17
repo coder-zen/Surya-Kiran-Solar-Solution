@@ -129,6 +129,9 @@ const notifyNewLead = (enquiry) => {
       to: emailTo,
       subject: `New Lead: ${enquiry.name} (${sourceLabel})`,
       html: buildLeadEmailHtml(enquiry),
+      // Reply goes straight to the lead rather than back to the company inbox,
+      // so answering an enquiry is one tap from the alert.
+      replyTo: enquiry.email || undefined,
     }).catch(swallow("email"));
   }
 

@@ -20,13 +20,27 @@ const FROM_NAME = "SK Solar Solutions";
 const getSenderAddress = () =>
   process.env.MAIL_FROM || process.env.SMTP_USER || "no-reply@sksolarsolution.com";
 
+/**
+ * Where a reply should land.
+ *
+ * Without this, hitting Reply on anything the site sends goes to whichever
+ * mailbox happens to be authenticating SMTP — for a Gmail-relayed setup that
+ * is a personal address, not the business. Falls back to the first lead-alert
+ * recipient, which is the company inbox by definition.
+ */
+const getReplyToAddress = () =>
+  process.env.REPLY_TO ||
+  (process.env.NOTIFY_EMAIL_TO || "").split(",")[0].trim() ||
+  getSenderAddress();
+
 /** Brevo: 300 emails/day on the free tier. Sender address must be verified in their dashboard. */
-const sendViaBrevo = async ({ to, subject, html }) => {
+const sendViaBrevo = async ({ to, subject, html, replyTo }) => {
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: { "api-key": process.env.BREVO_API_KEY, "content-type": "application/json" },
     body: JSON.stringify({
       sender: { email: getSenderAddress(), name: FROM_NAME },
+      replyTo: { email: replyTo || getReplyToAddress() },
       to: to.split(",").map((email) => ({ email: email.trim() })),
       subject,
       htmlContent: html,
@@ -38,7 +52,7 @@ const sendViaBrevo = async ({ to, subject, html }) => {
 };
 
 /** Resend: 3,000/month free. Needs a verified domain, or resend.dev while testing. */
-const sendViaResend = async ({ to, subject, html }) => {
+const sendViaResend = async ({ to, subject, html, replyTo }) => {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -47,6 +61,7 @@ const sendViaResend = async ({ to, subject, html }) => {
     },
     body: JSON.stringify({
       from: `${FROM_NAME} <${getSenderAddress()}>`,
+      reply_to: replyTo || getReplyToAddress(),
       to: to.split(",").map((e) => e.trim()),
       subject,
       html,
@@ -120,13 +135,13 @@ const getTransporter = () => {
  * logged here, not propagated, so a broken SMTP config can never fail the
  * request that triggered the email.
  */
-const sendEmail = async ({ to, subject, html }) => {
+const sendEmail = async ({ to, subject, html, replyTo }) => {
   // An HTTP provider wins when configured: it works from hosts that block
   // outbound SMTP ports, which is most free/shared hosting including Render.
   const httpProvider = getHttpProvider();
   if (httpProvider) {
     try {
-      const result = await httpProvider.send({ to, subject, html });
+      const result = await httpProvider.send({ to, subject, html, replyTo });
       console.log(
         `[sendEmail] "${subject}" via ${httpProvider.name} — accepted: [${result.accepted.join(", ")}]` +
           ` id: ${result.messageId || "n/a"}`
@@ -143,7 +158,18 @@ const sendEmail = async ({ to, subject, html }) => {
 
   try {
     const info = await client.sendMail({
-      from: `"SK Solar Solutions Website" <${process.env.SMTP_USER}>`,
+      /*
+       * getSenderAddress(), not SMTP_USER. This path used to hardcode the
+       * authenticating account, so MAIL_FROM was honoured by the HTTP
+       * providers and silently ignored here — setting it appeared to do
+       * nothing and customers kept seeing whichever mailbox relayed the mail.
+       *
+       * Note that Gmail will still rewrite this to the authenticated account
+       * unless the address is registered there under "Send mail as". A real
+       * sending domain (Brevo/Resend below) is the durable fix.
+       */
+      from: `${FROM_NAME} <${getSenderAddress()}>`,
+      replyTo: replyTo || getReplyToAddress(),
       to,
       subject,
       html,
