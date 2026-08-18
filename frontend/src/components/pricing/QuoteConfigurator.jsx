@@ -501,7 +501,7 @@ const QuoteConfigurator = () => {
                     on the site. The subtotal below is the quoted price. */}
                 {quote.total > 0 && (
                   <div className="border-t border-gray-100 pt-3 mt-3 flex justify-between">
-                    <span className="text-gray-500">Subtotal</span>
+                    <span className="text-gray-500">Subtotal (excl. GST)</span>
                     <span className="text-navy font-medium">{formatINR(quote.total)}</span>
                   </div>
                 )}
@@ -518,7 +518,7 @@ const QuoteConfigurator = () => {
                       they need ₹2.93L on the day, which is a worse outcome than
                       any gain from the smaller figure looking friendlier.
                     */}
-                    <p className="text-xs text-gray-400">Amount Payable</p>
+                    <p className="text-xs text-gray-400">Amount Payable <span className="text-gray-300">(excluding GST)</span></p>
                     <p className="text-3xl font-display font-bold text-navy mt-1">{formatINR(quote.total)}</p>
 
                     <div className="mt-4 rounded-xl bg-green-50 border border-green-100 p-3">
@@ -544,7 +544,7 @@ const QuoteConfigurator = () => {
                   </>
                 ) : (
                   <>
-                    <p className="text-xs text-gray-400">Estimated Final Amount</p>
+                    <p className="text-xs text-gray-400">Estimated Final Amount <span className="text-gray-300">(excluding GST)</span></p>
                     <p className="text-3xl font-display font-bold text-navy mt-1">{formatINR(quote.total)}</p>
                   </>
                 )}
@@ -592,7 +592,7 @@ const QuoteConfigurator = () => {
           <div className="min-w-0">
             {/* Payable, not net — matches the cart for the same reason. */}
             <p className="text-xs text-gray-400">
-              {quote.subsidy > 0 ? `Payable · ${formatINR(quote.subsidy)} back` : "Estimated total"}
+              {quote.subsidy > 0 ? `Payable · ${formatINR(quote.subsidy)} back` : "Estimated total (excl. GST)"}
             </p>
             <p className="text-xl font-display font-bold text-navy truncate">
               {formatINR(quote.total)}
