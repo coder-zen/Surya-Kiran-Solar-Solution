@@ -303,18 +303,14 @@ export const buildQuote = ({ config, capacityKW, selections = {}, addOns = [], p
 
   const discountTotal = discounts.reduce((sum, l) => sum + l.amount, 0);
 
-  // Discounts come off before tax, so the customer isn't taxed on money they
-  // were never charged.
-  const taxable = Math.max(0, baseSystem + addOnsTotal + chargesTotal - discountTotal);
-  const gstPercent = Number(c.gstPercent) || 0;
-  const gst = (taxable * gstPercent) / 100;
-  const total = taxable + gst;
-
   /*
-   * Subsidy comes off the GST-inclusive total, not the taxable base: it is
-   * reimbursed against what the customer actually paid, and is not a discount
-   * on the sale, so it must not reduce the tax charged.
+   * Quoted prices are GST-exclusive and GST is deliberately not shown on the
+   * site. The rates in the configurator are the ex-GST cost of each component,
+   * so adding a tax line here would have inflated every quotation above what
+   * the customer is actually being asked for. Tax is applied at invoicing,
+   * where the applicable rate is known.
    */
+  const total = Math.max(0, baseSystem + addOnsTotal + chargesTotal - discountTotal);
   /*
    * Capped at the project total, and withheld until a system actually exists.
    *
@@ -337,9 +333,6 @@ export const buildQuote = ({ config, capacityKW, selections = {}, addOns = [], p
     chargesTotal,
     discounts,
     discountTotal,
-    taxable,
-    gstPercent,
-    gst,
     total,
     subsidy,
     netPayable,

@@ -497,17 +497,13 @@ const QuoteConfigurator = () => {
                   </div>
                 ))}
 
+                {/* No tax line: quotes are GST-exclusive and GST is not shown
+                    on the site. The subtotal below is the quoted price. */}
                 {quote.total > 0 && (
-                  <>
-                    <div className="border-t border-gray-100 pt-3 mt-3 flex justify-between">
-                      <span className="text-gray-500">Taxable Amount</span>
-                      <span className="text-navy font-medium">{formatINR(quote.taxable)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">GST ({quote.gstPercent}%)</span>
-                      <span className="text-navy font-medium">{formatINR(quote.gst)}</span>
-                    </div>
-                  </>
+                  <div className="border-t border-gray-100 pt-3 mt-3 flex justify-between">
+                    <span className="text-gray-500">Subtotal</span>
+                    <span className="text-navy font-medium">{formatINR(quote.total)}</span>
+                  </div>
                 )}
               </div>
 

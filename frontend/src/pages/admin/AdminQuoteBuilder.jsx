@@ -79,7 +79,6 @@ const OPTION_GROUPS = [
 ];
 
 const CHARGE_FIELDS = [
-  ["gstPercent", "GST %", "%"],
   ["transportation", "Transportation", "₹"],
   ["installation", "Installation", "₹"],
   ["delivery", "Delivery", "₹"],
@@ -344,8 +343,11 @@ const AdminQuoteBuilder = () => {
 
         {/* ---------------- charges & terms ---------------- */}
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
-          <h3 className="font-display font-semibold text-navy">Tax &amp; Other Charges</h3>
-          <p className="text-xs text-gray-400 mt-0.5">Applied to every quotation. Discounts are deducted before GST.</p>
+          <h3 className="font-display font-semibold text-navy">Other Charges</h3>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Applied to every quotation. Enter amounts excluding GST — quotes are shown ex-GST and tax
+            is added at invoicing.
+          </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
             {CHARGE_FIELDS.map(([field, label, prefix]) => (
               <div key={field}>
@@ -367,7 +369,7 @@ const AdminQuoteBuilder = () => {
             <div>
               <h3 className="font-display font-semibold text-navy">Government Subsidy</h3>
               <p className="text-xs text-gray-400 mt-0.5">
-                Deducted after GST — a subsidy is reimbursed against what was paid, so it must not reduce tax.
+                Deducted from the quoted total — a subsidy is reimbursed against what was paid, not a discount on the sale.
               </p>
             </div>
             <label className="flex items-center gap-2 text-sm text-navy">

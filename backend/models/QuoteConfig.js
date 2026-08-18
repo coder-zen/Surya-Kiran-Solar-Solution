@@ -74,10 +74,16 @@ const optionSchema = new mongoose.Schema(
   { _id: true }
 );
 
-/** Flat charges and deductions applied after the configured line items. */
+/**
+ * Flat charges and deductions applied after the configured line items.
+ *
+ * All amounts are GST-exclusive. Quotations are shown ex-GST on the site and
+ * tax is applied at invoicing, so there is deliberately no gstPercent here —
+ * a rate stored but never applied is worse than none, because it reads as
+ * though quotes include tax when they do not.
+ */
 const chargesSchema = new mongoose.Schema(
   {
-    gstPercent: { type: Number, default: 13.8, min: 0 },
     transportation: { type: Number, default: 0, min: 0 },
     installation: { type: Number, default: 0, min: 0 },
     delivery: { type: Number, default: 0, min: 0 },

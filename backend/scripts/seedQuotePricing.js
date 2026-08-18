@@ -119,7 +119,6 @@ const run = async () => {
   apply(config.addOns, ADDONS);
 
   Object.assign(config.charges, {
-    gstPercent: 13.8,
     transportation: 8000,
     installation: 15000,
     delivery: 3000,

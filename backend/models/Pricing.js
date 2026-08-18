@@ -37,9 +37,8 @@ const DEFAULT_SPECS = [
 ];
 
 const DEFAULT_COST = [
-  { label: "Cost per kW (base price, with GST)", value: "₹60,000 / kW" },
+  { label: "Cost per kW (base price)", value: "₹60,000 / kW" },
   { label: "System capacity", value: "15 kW" },
-  { label: "GST", value: "13.8% (included in base price, as per Government rule)" },
   { label: "Government subsidy applied", value: "₹0" },
 ];
 
