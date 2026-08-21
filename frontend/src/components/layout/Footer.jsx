@@ -62,10 +62,21 @@ const Footer = () => {
         <h4 className="font-display font-semibold mb-4">Quick Links</h4>
         <ul className="space-y-2 text-base sm:text-sm text-gray-300">
           {NAV_LINKS.map((link) => (
-            <li key={link.path}>
-              <Link to={link.path} className="hover:text-solar-yellow transition-colors">
-                {link.label}
-              </Link>
+            <li key={link.path || link.href}>
+              {link.external ? (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-solar-yellow transition-colors"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link to={link.path} className="hover:text-solar-yellow transition-colors">
+                  {link.label}
+                </Link>
+              )}
             </li>
           ))}
         </ul>

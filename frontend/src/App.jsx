@@ -19,7 +19,6 @@ const Gallery = lazy(() => import("./pages/Gallery"));
 const Products = lazy(() => import("./pages/Products"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const AMCPlans = lazy(() => import("./pages/AMCPlans"));
-const GovernmentSubsidy = lazy(() => import("./pages/GovernmentSubsidy"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogDetail = lazy(() => import("./pages/BlogDetail"));
 const Career = lazy(() => import("./pages/Career"));
@@ -48,6 +47,8 @@ const ForgotPassword = lazy(() => import("./pages/admin/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
 
 import ProtectedRoute from "./pages/admin/ProtectedRoute";
+import ExternalRedirect from "./components/common/ExternalRedirect";
+import { PM_SURYA_GHAR_URL } from "./config/constants";
 
 function App() {
   return (
@@ -68,7 +69,12 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/amc-plans" element={<AMCPlans />} />
-          <Route path="/government-subsidy" element={<GovernmentSubsidy />} />
+          {/*
+            The subsidy page is gone — the nav item now points at the
+            government's own portal. This route stays only so existing links
+            and bookmarks land there instead of on a 404.
+          */}
+          <Route path="/government-subsidy" element={<ExternalRedirect to={PM_SURYA_GHAR_URL} />} />
           <Route path="/calculators" element={<Calculators />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />

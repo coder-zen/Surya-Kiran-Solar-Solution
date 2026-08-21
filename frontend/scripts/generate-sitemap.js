@@ -29,7 +29,6 @@ const STATIC_ROUTES = [
   { path: "/services", changefreq: "monthly", priority: "0.9" },
   { path: "/pricing", changefreq: "weekly", priority: "0.9" },
   { path: "/projects", changefreq: "weekly", priority: "0.8" },
-  { path: "/government-subsidy", changefreq: "monthly", priority: "0.8" },
   { path: "/contact", changefreq: "monthly", priority: "0.8" },
   // Ranks for "solar savings calculator" / "solar EMI calculator" — high
   // commercial intent, and it was missing from the hand-written sitemap.

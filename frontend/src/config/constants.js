@@ -62,6 +62,16 @@ export const resolveSocialLinks = (settings) => {
   return Object.fromEntries(Object.entries(merged).filter(([, url]) => isRealProfile(url)));
 };
 
+/**
+ * The government's own PM Surya Ghar portal.
+ *
+ * The subsidy nav item points here rather than at a page of our own. Scheme
+ * rates, eligibility and the application process change by notification, and a
+ * summary of them on our site is wrong the moment one does — quoting a stale
+ * subsidy figure to a customer is worse than sending them to the source.
+ */
+export const PM_SURYA_GHAR_URL = "https://pmsuryaghar.gov.in/#/";
+
 export const NAV_LINKS = [
   { label: "Home", path: "/" },
   { label: "About Us", path: "/about" },
@@ -71,7 +81,7 @@ export const NAV_LINKS = [
   { label: "Gallery", path: "/gallery" },
   { label: "Products", path: "/products" },
   { label: "AMC Plans", path: "/amc-plans" },
-  { label: "Govt. Subsidy", path: "/government-subsidy" },
+  { label: "Govt. Subsidy", href: PM_SURYA_GHAR_URL, external: true },
   { label: "Blog", path: "/blog" },
   { label: "Career", path: "/career" },
   { label: "Contact", path: "/contact" },
@@ -104,7 +114,7 @@ export const NAVBAR_GROUPS = [
   },
   { type: "link", label: "Pricing", path: "/pricing" },
   { type: "link", label: "AMC Plan", path: "/amc-plans" },
-  { type: "link", label: "Govt. Subsidy", path: "/government-subsidy" },
+  { type: "link", label: "Govt. Subsidy", href: PM_SURYA_GHAR_URL, external: true },
 ];
 
 export const PROJECT_CATEGORIES = ["Residential", "Commercial", "Industrial", "Ground Mounted", "Government"];

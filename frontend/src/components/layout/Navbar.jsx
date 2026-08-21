@@ -46,6 +46,20 @@ const Navbar = () => {
             {NAVBAR_GROUPS.map((entry) =>
               entry.type === "dropdown" ? (
                 <NavDropdown key={entry.key} label={entry.label} items={entry.items} scrolled={scrolled} />
+              ) : entry.external ? (
+                /* Leaves the site, so a plain anchor in a new tab — a NavLink
+                   would try to route it internally and 404. */
+                <a
+                  key={entry.href}
+                  href={entry.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`shrink-0 whitespace-nowrap text-sm font-medium transition-colors hover:text-solar-orange ${
+                    scrolled ? "text-ink" : "text-white"
+                  }`}
+                >
+                  {entry.label}
+                </a>
               ) : (
                 <NavLink
                   key={entry.path}
@@ -110,6 +124,17 @@ const Navbar = () => {
                     items={entry.items}
                     onNavigate={() => setMobileOpen(false)}
                   />
+                ) : entry.external ? (
+                  <a
+                    key={entry.href}
+                    href={entry.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileOpen(false)}
+                    className="text-xl font-display font-semibold py-2"
+                  >
+                    {entry.label}
+                  </a>
                 ) : (
                   <NavLink
                     key={entry.path}
