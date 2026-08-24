@@ -54,10 +54,9 @@
     <script>
       (function () {
         try {
-          var stored = localStorage.getItem("sk-theme");
-          var dark =
-            stored === "dark" ||
-            (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          // Dark only when the visitor has actually chosen it. The device's own
+          // preference is deliberately ignored — light is this site's default.
+          var dark = localStorage.getItem("sk-theme") === "dark";
           if (dark) document.documentElement.classList.add("dark");
           document.documentElement.style.colorScheme = dark ? "dark" : "light";
         } catch (e) {

@@ -3,24 +3,25 @@ import { createContext, useContext, useEffect, useState } from "react";
 /**
  * Light/dark theme, remembered per visitor.
  *
- * The stored choice always wins; a first-time visitor gets whatever their
- * device already prefers, so someone browsing at night lands in dark without
- * hunting for a toggle. Only an explicit choice is written to storage, which is
- * what lets "follow the system" remain the default until they say otherwise.
+ * Light is the default for everyone who hasn't chosen. The site's brand
+ * treatment is the light one, so that is what a first-time visitor should meet
+ * regardless of how their device happens to be configured; dark is opt-in
+ * through the navbar toggle. Once chosen, the preference is stored and wins on
+ * every later visit.
  */
 
 const STORAGE_KEY = "sk-theme";
 const ThemeContext = createContext(null);
 
-/** Reads the effective theme without touching React state — also used by the pre-paint script. */
+/** Reads the effective theme without touching React state — mirrored by the pre-paint script. */
 export const getInitialTheme = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "light" || stored === "dark") return stored;
   } catch {
-    // Private browsing can throw on localStorage access; fall through to the OS.
+    // Private browsing can throw on localStorage access; light is a fine default.
   }
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "light";
 };
 
 export const ThemeProvider = ({ children }) => {
@@ -39,27 +40,11 @@ export const ThemeProvider = ({ children }) => {
     }
   }, [theme]);
 
-  useEffect(() => {
-    /*
-     * Follow the OS while the visitor hasn't expressed a preference. Once they
-     * have, their choice is in storage and this stops overriding it — changing
-     * the system theme shouldn't undo a deliberate click.
-     */
-    const media = window.matchMedia?.("(prefers-color-scheme: dark)");
-    if (!media) return undefined;
-
-    const onChange = (event) => {
-      try {
-        if (localStorage.getItem(STORAGE_KEY)) return;
-      } catch {
-        return;
-      }
-      setTheme(event.matches ? "dark" : "light");
-    };
-
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
-  }, []);
+  /*
+   * No listener on prefers-color-scheme. The site defaults to light rather than
+   * following the device, so reacting to an OS change would flip the theme out
+   * from under a visitor who never asked for dark.
+   */
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
