@@ -24,13 +24,13 @@ const Blog = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-navy">
         <div className="container-custom">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search articles..."
-            className="rounded-full border border-gray-200 px-4 py-2 text-sm w-full sm:w-72 mb-10 block mx-auto"
+            className="rounded-full border border-gray-200 dark:border-white/15 px-4 py-2 text-sm w-full sm:w-72 mb-10 block mx-auto"
           />
 
           {!isLoading && !blogs?.length && (
@@ -39,12 +39,12 @@ const Blog = () => {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs?.map((post) => (
-              <Link key={post._id} to={`/blog/${post.slug}`} className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-premium transition-shadow">
-                <img src={cdnImage(post.coverImage, IMG.card)} alt={post.title} loading="lazy" className="h-44 w-full object-cover bg-gray-100" onError={(e) => (e.target.style.background = "#f3f4f6")} />
+              <Link key={post._id} to={`/blog/${post.slug}`} className="rounded-2xl overflow-hidden border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-premium transition-shadow">
+                <img src={cdnImage(post.coverImage, IMG.card)} alt={post.title} loading="lazy" className="h-44 w-full object-cover bg-gray-100 dark:bg-navy-light" onError={(e) => (e.target.style.background = "#f3f4f6")} />
                 <div className="p-5">
                   <span className="text-xs uppercase text-solar-orange font-semibold">{post.category}</span>
-                  <h3 className="font-display font-semibold text-lg text-navy mt-1">{post.title}</h3>
-                  <p className="text-sm text-gray-500 mt-2 line-clamp-2">{post.excerpt}</p>
+                  <h3 className="font-display font-semibold text-lg text-navy dark:text-white mt-1">{post.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-300 mt-2 line-clamp-2">{post.excerpt}</p>
                 </div>
               </Link>
             ))}

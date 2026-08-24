@@ -70,7 +70,7 @@ const ProjectMap = () => {
   const pins = (projects || []).filter((p) => p?.location?.coordinates?.length === 2);
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-white dark:bg-navy">
       <div className="container-custom">
         <SectionHeading
           eyebrow="Our Reach"
@@ -78,9 +78,9 @@ const ProjectMap = () => {
           subtitle="Serving all 36 districts of Maharashtra — zoom in and click a marker to see project details."
         />
 
-        <div className="mt-14 rounded-3xl overflow-hidden shadow-premium border border-gray-100 h-[550px] relative">
+        <div className="mt-14 rounded-3xl overflow-hidden shadow-premium border border-gray-100 dark:border-white/10 h-[550px] relative">
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-navy-light z-[1000]">
               <p className="text-gray-400">Loading project map…</p>
             </div>
           )}
@@ -88,13 +88,13 @@ const ProjectMap = () => {
           {/* Same overlay treatment as the loading state, so the map frame
               itself never changes shape between states. */}
           {!isLoading && isError && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-navy-light z-[1000]">
               <p className="text-gray-400">Couldn't load the project map. Please try again later.</p>
             </div>
           )}
 
           {!isLoading && !isError && pins.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-navy-light z-[1000]">
               <p className="text-gray-400">No projects to show on the map yet.</p>
             </div>
           )}
@@ -102,7 +102,7 @@ const ProjectMap = () => {
           {/* Held back until the section nears the viewport. Leaflet used to
               initialise and pull tiles on page load, ~12,000px below the fold
               on a phone, which cost main-thread time nobody benefited from. */}
-          <LazyVisible className="h-full w-full" placeholder={<div className="h-full w-full bg-gray-100" />}>
+          <LazyVisible className="h-full w-full" placeholder={<div className="h-full w-full bg-gray-100 dark:bg-navy-light" />}>
           <MapContainer center={MAHARASHTRA_CENTER} zoom={7} scrollWheelZoom={false} className="h-full w-full">
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -125,11 +125,11 @@ const ProjectMap = () => {
                           className="w-full h-24 object-cover rounded-md mb-2"
                         />
                       )}
-                      <p className="font-display font-semibold text-navy">{project.title}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="font-display font-semibold text-navy dark:text-white">{project.title}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">
                         {project.district}, Maharashtra · {project.capacityKW} kW
                       </p>
-                      <p className="text-xs text-gray-500">{project.category}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">{project.category}</p>
                       {project.slug && (
                         <Link
                           to={`/projects/${project.slug}`}

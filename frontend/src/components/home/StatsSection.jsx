@@ -15,7 +15,7 @@ const stats = [
 ];
 
 const StatsSection = () => (
-  <section className="py-20 bg-white border-y border-gray-100">
+  <section className="py-20 bg-white dark:bg-navy border-y border-gray-100 dark:border-white/10">
     <div className="container-custom grid grid-cols-2 md:grid-cols-5 gap-8">
       {stats.map((stat, i) => (
         <motion.div
@@ -27,10 +27,10 @@ const StatsSection = () => (
           className="text-center"
         >
           <stat.icon className="mx-auto text-solar-orange text-3xl mb-3" />
-          <p className="text-3xl lg:text-4xl font-display font-bold text-navy">
+          <p className="text-3xl lg:text-4xl font-display font-bold text-navy dark:text-white">
             <CountUp end={stat.value} />{stat.suffix}
           </p>
-          <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">{stat.label}</p>
         </motion.div>
       ))}
     </div>

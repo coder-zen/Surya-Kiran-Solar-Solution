@@ -17,7 +17,7 @@ const About = () => (
       </div>
     </section>
 
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-white dark:bg-navy">
       <div className="container-custom grid lg:grid-cols-2 gap-14 items-center">
         <img
           src={Assets.aboutSecondaryImage}
@@ -27,7 +27,7 @@ const About = () => (
         />
         <div>
           <SectionHeading align="left" eyebrow="Our Story" title="Why We Started" />
-          <p className="mt-6 text-gray-600 leading-relaxed">
+          <p className="mt-6 text-gray-600 dark:text-gray-300 leading-relaxed">
             SK Solar Solutions (Surya Kiran Solar Solutions), led by Director Suraj Dhotre, was
             founded with a simple belief: clean energy should be accessible, reliable, and
             financially rewarding for every Indian household and business. We plan and deliver
@@ -40,7 +40,7 @@ const About = () => (
       </div>
     </section>
 
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-gray-50 dark:bg-navy-dark">
       <div className="container-custom grid md:grid-cols-3 gap-8">
         {[
           { icon: FaHistory, title: "Our Journey", desc: "70+ residential homes solarized across India, with rooftop and ground-mounted plants for businesses and institutions." },
@@ -53,11 +53,11 @@ const About = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
-            className="bg-white rounded-2xl p-8 shadow-sm text-center"
+            className="bg-white dark:bg-navy rounded-2xl p-8 shadow-sm text-center"
           >
             <item.icon className="mx-auto text-solar-orange text-3xl mb-4" />
-            <h3 className="font-display font-semibold text-xl text-navy">{item.title}</h3>
-            <p className="text-gray-500 mt-2 text-sm leading-relaxed">{item.desc}</p>
+            <h3 className="font-display font-semibold text-xl text-navy dark:text-white">{item.title}</h3>
+            <p className="text-gray-500 dark:text-gray-300 mt-2 text-sm leading-relaxed">{item.desc}</p>
           </motion.div>
         ))}
       </div>

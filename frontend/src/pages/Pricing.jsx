@@ -96,18 +96,18 @@ const Pricing = () => {
           so the page never shows a calculator that quotes ₹0. */}
       <QuoteConfigurator />
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-navy">
         <div className="container-custom grid lg:grid-cols-5 gap-12">
           {/* Specifications */}
           <div className="lg:col-span-3">
             <h2 className="section-heading !text-2xl mb-6">Technical Component Specifications</h2>
-            <div className="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
+            <div className="overflow-x-auto rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm">
               <table className="w-full text-base sm:text-sm">
                 <tbody>
                   {content.specs.map((row, i) => (
-                    <tr key={row.label} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                      <td className="px-5 py-4 font-semibold text-navy align-top w-2/5">{row.label}</td>
-                      <td className="px-5 py-4 text-gray-600 align-top">{row.value}</td>
+                    <tr key={row.label} className={i % 2 === 0 ? "bg-gray-50 dark:bg-navy-dark" : "bg-white dark:bg-navy"}>
+                      <td className="px-5 py-4 font-semibold text-navy dark:text-white align-top w-2/5">{row.label}</td>
+                      <td className="px-5 py-4 text-gray-600 dark:text-gray-300 align-top">{row.value}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -118,18 +118,18 @@ const Pricing = () => {
           {/* Cost + payment */}
           <div className="lg:col-span-2 space-y-8">
             <div className="glass-card !bg-gray-50 p-7">
-              <h3 className="font-display font-semibold text-xl text-navy mb-4">Cost Breakdown</h3>
+              <h3 className="font-display font-semibold text-xl text-navy dark:text-white mb-4">Cost Breakdown</h3>
               <ul className="space-y-3">
                 {content.costBreakdown.map((row) => (
-                  <li key={row.label} className="flex justify-between gap-4 text-base sm:text-sm border-b border-gray-200 pb-3">
-                    <span className="text-gray-500">{row.label}</span>
-                    <span className="font-semibold text-navy text-right">{row.value}</span>
+                  <li key={row.label} className="flex justify-between gap-4 text-base sm:text-sm border-b border-gray-200 dark:border-white/15 pb-3">
+                    <span className="text-gray-500 dark:text-gray-300">{row.label}</span>
+                    <span className="font-semibold text-navy dark:text-white text-right">{row.value}</span>
                   </li>
                 ))}
               </ul>
 
               {content.priceNote && (
-                <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 p-4 flex gap-3">
+                <div className="mt-5 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-4 flex gap-3">
                   <FaExclamationTriangle className="text-amber-500 mt-0.5 shrink-0" />
                   <p className="text-xs text-amber-800 leading-relaxed">{content.priceNote}</p>
                 </div>
@@ -141,13 +141,13 @@ const Pricing = () => {
             </div>
 
             <div className="glass-card !bg-gray-50 p-7">
-              <h3 className="font-display font-semibold text-xl text-navy mb-4">Payment Schedule</h3>
+              <h3 className="font-display font-semibold text-xl text-navy dark:text-white mb-4">Payment Schedule</h3>
               <ul className="space-y-3">
                 {content.paymentSchedule.map((row) => (
                   <li key={row.stage} className="flex items-start gap-3 text-base sm:text-sm">
                     <FaCheckCircle className="text-solar-orange mt-1 shrink-0" />
-                    <span className="text-gray-600 flex-1">{row.stage}</span>
-                    <span className="font-semibold text-navy shrink-0">{row.pct}</span>
+                    <span className="text-gray-600 dark:text-gray-300 flex-1">{row.stage}</span>
+                    <span className="font-semibold text-navy dark:text-white shrink-0">{row.pct}</span>
                   </li>
                 ))}
               </ul>
@@ -156,12 +156,12 @@ const Pricing = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50 dark:bg-navy-dark">
         <div className="container-custom max-w-3xl">
           <h2 className="section-heading !text-2xl mb-6">Terms & Conditions</h2>
           <ul className="space-y-3">
             {content.terms.map((t) => (
-              <li key={t} className="flex items-start gap-3 terms-text text-gray-600">
+              <li key={t} className="flex items-start gap-3 terms-text text-gray-600 dark:text-gray-300">
                 <FaCheckCircle className="text-solar-orange mt-1 shrink-0" /> {t}
               </li>
             ))}

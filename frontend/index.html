@@ -43,6 +43,28 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
+    <!--
+      Applies the theme before first paint. React mounts too late for this: a
+      visitor who chose dark would get a white flash on every page load while
+      the bundle downloads and hydrates. Inline and synchronous on purpose —
+      it must run before the browser paints anything.
+
+      Kept in sync with getInitialTheme() in src/context/ThemeContext.jsx.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("sk-theme");
+          var dark =
+            stored === "dark" ||
+            (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (dark) document.documentElement.classList.add("dark");
+          document.documentElement.style.colorScheme = dark ? "dark" : "light";
+        } catch (e) {
+          /* localStorage blocked — light theme is a fine default. */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -24,7 +24,7 @@ const ContactSection = () => {
   };
 
   return (
-    <section className="py-24 bg-gray-50">
+    <section className="py-24 bg-gray-50 dark:bg-navy-dark">
       <div className="container-custom">
         <SectionHeading eyebrow="Get In Touch" title="Let's Talk About Your Solar Project" />
 
@@ -33,8 +33,8 @@ const ContactSection = () => {
             {/* Fills the same frame as the map, so nothing shifts on swap.
                 LazyVisible holds the chunk back until the section is near the
                 viewport — lazy() alone would fetch Leaflet on page load. */}
-            <LazyVisible className="h-full w-full" placeholder={<div className="h-full w-full bg-gray-100" />}>
-              <Suspense fallback={<div className="h-full w-full bg-gray-100" />}>
+            <LazyVisible className="h-full w-full" placeholder={<div className="h-full w-full bg-gray-100 dark:bg-navy-light" />}>
+              <Suspense fallback={<div className="h-full w-full bg-gray-100 dark:bg-navy-light" />}>
                 <OfficeMap />
               </Suspense>
             </LazyVisible>
@@ -78,21 +78,21 @@ const ContactSection = () => {
             </form>
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-base sm:text-sm">
-              <a href={`tel:${COMPANY.phoneRaw}`} className="flex items-center gap-2 min-w-0 text-navy font-medium">
+              <a href={`tel:${COMPANY.phoneRaw}`} className="flex items-center gap-2 min-w-0 text-navy dark:text-white font-medium">
                 <FaPhoneAlt className="text-solar-orange shrink-0" /> <span className="truncate">{COMPANY.phone}</span>
               </a>
-              <a href={`mailto:${COMPANY.email}`} className="flex items-center gap-2 min-w-0 text-navy font-medium">
+              <a href={`mailto:${COMPANY.email}`} className="flex items-center gap-2 min-w-0 text-navy dark:text-white font-medium">
                 <FaEnvelope className="text-solar-orange shrink-0" /> <span className="truncate">{COMPANY.email}</span>
               </a>
               <a
                 href={`https://wa.me/${COMPANY.whatsapp.replace(/[^\d]/g, "")}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 min-w-0 text-navy font-medium"
+                className="flex items-center gap-2 min-w-0 text-navy dark:text-white font-medium"
               >
                 <FaWhatsapp className="text-[#25D366] shrink-0" /> <span className="truncate">WhatsApp Us</span>
               </a>
             </div>
-            <p className="flex items-start gap-2 text-base sm:text-sm text-gray-500 mt-4">
+            <p className="flex items-start gap-2 text-base sm:text-sm text-gray-500 dark:text-gray-300 mt-4">
               <FaMapMarkerAlt className="text-solar-orange mt-0.5 shrink-0" /> {COMPANY.address}
             </p>
           </div>

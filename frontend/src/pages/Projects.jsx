@@ -34,13 +34,13 @@ const Projects = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-navy">
         <div className="container-custom">
           <div className="flex flex-col sm:flex-row gap-4 justify-between mb-10">
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setCategory("")}
-                className={`px-4 py-2 rounded-full text-sm font-medium ${!category ? "bg-navy text-white" : "bg-gray-100 text-gray-600"}`}
+                className={`px-4 py-2 rounded-full text-sm font-medium ${!category ? "bg-navy text-white" : "bg-gray-100 dark:bg-navy-light text-gray-600 dark:text-gray-300"}`}
               >
                 All
               </button>
@@ -48,7 +48,7 @@ const Projects = () => {
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium ${category === cat ? "bg-navy text-white" : "bg-gray-100 text-gray-600"}`}
+                  className={`px-4 py-2 rounded-full text-sm font-medium ${category === cat ? "bg-navy text-white" : "bg-gray-100 dark:bg-navy-light text-gray-600 dark:text-gray-300"}`}
                 >
                   {cat}
                 </button>
@@ -58,13 +58,13 @@ const Projects = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search projects..."
-              className="rounded-full border border-gray-200 px-4 py-2 text-sm w-full sm:w-64"
+              className="rounded-full border border-gray-200 dark:border-white/15 px-4 py-2 text-sm w-full sm:w-64"
             />
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoading &&
-              Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-72 rounded-2xl bg-gray-100 animate-pulse" />)}
+              Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-72 rounded-2xl bg-gray-100 dark:bg-navy-light animate-pulse" />)}
 
             {!isLoading && !isError &&
               projects?.map((project) => (

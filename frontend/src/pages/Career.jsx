@@ -53,19 +53,19 @@ const Career = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-navy">
         <div className="container-custom grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
             {isLoading &&
               Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-28 rounded-2xl bg-gray-100 animate-pulse" />
+                <div key={i} className="h-28 rounded-2xl bg-gray-100 dark:bg-navy-light animate-pulse" />
               ))}
 
             {!isLoading && openings.map((job) => (
-              <div key={job._id} className={`rounded-2xl border p-6 flex justify-between items-center ${selectedJob === job._id ? "border-solar-orange" : "border-gray-100"}`}>
+              <div key={job._id} className={`rounded-2xl border p-6 flex justify-between items-center ${selectedJob === job._id ? "border-solar-orange" : "border-gray-100 dark:border-white/10"}`}>
                 <div>
-                  <h3 className="font-display font-semibold text-lg text-navy">{job.title}</h3>
-                  <div className="flex gap-4 mt-2 text-sm text-gray-500">
+                  <h3 className="font-display font-semibold text-lg text-navy dark:text-white">{job.title}</h3>
+                  <div className="flex gap-4 mt-2 text-sm text-gray-500 dark:text-gray-300">
                     <span className="flex items-center gap-1"><FaBriefcase /> {job.department}</span>
                     <span className="flex items-center gap-1"><FaMapMarkerAlt /> {job.location}</span>
                   </div>
@@ -85,7 +85,7 @@ const Career = () => {
           </div>
 
           <div className="glass-card !bg-gray-50 p-6 h-fit">
-            <h3 className="font-display font-semibold text-lg text-navy mb-4">
+            <h3 className="font-display font-semibold text-lg text-navy dark:text-white mb-4">
               {selectedJob ? "Apply Now" : "Select a role to apply"}
             </h3>
             {selectedJob && (

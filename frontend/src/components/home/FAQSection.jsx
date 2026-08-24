@@ -43,16 +43,16 @@ const FAQSection = () => {
     : null;
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-white dark:bg-navy">
       <JsonLd id="faq-schema" data={faqSchema} />
       <div className="container-custom max-w-3xl">
         <SectionHeading eyebrow="Frequently Asked Questions" title="Have Questions? We've Got Answers" />
         <div className="mt-12 space-y-4">
           {items.map((faq, i) => (
-            <div key={i} className="border border-gray-200 rounded-xl overflow-hidden">
+            <div key={i} className="border border-gray-200 dark:border-white/15 rounded-xl overflow-hidden">
               <button
                 onClick={() => setOpenIndex(openIndex === i ? -1 : i)}
-                className="w-full flex items-center justify-between p-5 text-left font-display font-semibold text-navy"
+                className="w-full flex items-center justify-between p-5 text-left font-display font-semibold text-navy dark:text-white"
               >
                 {faq.question}
                 <FaChevronDown className={`transition-transform ${openIndex === i ? "rotate-180" : ""}`} />
@@ -65,7 +65,7 @@ const FAQSection = () => {
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden"
                   >
-                    <p className="px-5 pb-5 text-gray-600 leading-relaxed">{faq.answer}</p>
+                    <p className="px-5 pb-5 text-gray-600 dark:text-gray-300 leading-relaxed">{faq.answer}</p>
                   </motion.div>
                 )}
               </AnimatePresence>

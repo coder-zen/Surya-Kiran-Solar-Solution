@@ -19,7 +19,7 @@ const BlogDetail = () => {
   if (isError || !blog) {
     return (
       <div className="pt-40 pb-20 text-center">
-        <p className="text-gray-500">Article not found.</p>
+        <p className="text-gray-500 dark:text-gray-300">Article not found.</p>
         <Link to="/blog" className="btn-navy inline-flex mt-6">Back to Blog</Link>
       </div>
     );
@@ -34,7 +34,7 @@ const BlogDetail = () => {
         image={cdnImage(blog.coverImage, IMG.hero) || undefined}
         type="article"
       />
-      <article className="pt-32 pb-20 bg-white">
+      <article className="pt-32 pb-20 bg-white dark:bg-navy">
         <div className="container-custom max-w-3xl">
           <span className="text-xs uppercase text-solar-orange font-semibold">{blog.category}</span>
           <h1 className="section-heading mt-2">{blog.title}</h1>
@@ -42,7 +42,7 @@ const BlogDetail = () => {
           {blog.coverImage && <img src={cdnImage(blog.coverImage, IMG.hero)} alt={blog.title} className="w-full h-80 object-cover rounded-2xl my-8" />}
           {/* Markdown, not HTML — react-markdown does not render raw HTML by
               default, so admin-authored content can't inject scripts. */}
-          <div className="prose prose-headings:font-display prose-headings:text-navy prose-a:text-solar-orange max-w-none text-gray-600 leading-relaxed">
+          <div className="prose prose-headings:font-display prose-headings:text-navy dark:text-white prose-a:text-solar-orange max-w-none text-gray-600 dark:text-gray-300 leading-relaxed">
             <ReactMarkdown>{blog.contentMarkdown}</ReactMarkdown>
           </div>
         </div>

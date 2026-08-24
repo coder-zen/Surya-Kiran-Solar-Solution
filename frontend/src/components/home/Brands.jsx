@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Assets } from "../../config/images";
 
 const Brands = () => (
-  <section className="py-14 bg-white border-y border-gray-100 overflow-hidden">
+  <section className="py-14 bg-white dark:bg-navy border-y border-gray-100 dark:border-white/10 overflow-hidden">
     <div className="container-custom">
       <p className="text-center text-sm uppercase tracking-widest text-gray-400 mb-8">
         Trusted Component Brands We Work With

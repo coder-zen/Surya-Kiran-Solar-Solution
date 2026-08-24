@@ -22,7 +22,7 @@ const ExternalRedirect = ({ to }) => {
   return (
     <div className="min-h-[60vh] grid place-items-center px-6 text-center">
       <div>
-        <p className="text-gray-500">Taking you to the official PM Surya Ghar portal…</p>
+        <p className="text-gray-500 dark:text-gray-300">Taking you to the official PM Surya Ghar portal…</p>
         <a href={to} className="btn-navy inline-flex mt-5">
           Continue
         </a>

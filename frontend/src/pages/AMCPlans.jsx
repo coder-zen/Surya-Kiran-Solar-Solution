@@ -21,19 +21,19 @@ const AMCPlans = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-navy">
         <div className="container-custom grid md:grid-cols-3 gap-8">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`rounded-2xl p-8 border ${plan.popular ? "border-solar-orange shadow-premium scale-105" : "border-gray-100 shadow-sm"}`}
+              className={`rounded-2xl p-8 border ${plan.popular ? "border-solar-orange shadow-premium scale-105" : "border-gray-100 dark:border-white/10 shadow-sm"}`}
             >
               {plan.popular && <span className="badge-text text-solar-orange">Most Popular</span>}
-              <h3 className="font-display font-bold text-2xl text-navy mt-2">{plan.name}</h3>
-              <p className="text-3xl font-display font-bold text-navy mt-3">{plan.price}</p>
+              <h3 className="font-display font-bold text-2xl text-navy dark:text-white mt-2">{plan.name}</h3>
+              <p className="text-3xl font-display font-bold text-navy dark:text-white mt-3">{plan.price}</p>
               <ul className="mt-6 space-y-3">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-base sm:text-sm text-gray-600">
+                  <li key={f} className="flex items-start gap-2 text-base sm:text-sm text-gray-600 dark:text-gray-300">
                     <FaCheck className="text-solar-orange mt-1 shrink-0" /> {f}
                   </li>
                 ))}

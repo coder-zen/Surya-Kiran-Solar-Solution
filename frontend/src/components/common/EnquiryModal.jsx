@@ -45,7 +45,7 @@ const EnquiryModal = ({ isOpen, onClose, source = "other", contextMessage = "" }
           onClick={onClose}
         >
           <motion.div
-            className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-premium"
+            className="relative w-full max-w-md rounded-2xl bg-white dark:bg-navy p-8 shadow-premium"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -55,7 +55,7 @@ const EnquiryModal = ({ isOpen, onClose, source = "other", contextMessage = "" }
             <button
               onClick={onClose}
               aria-label="Close"
-              className="absolute right-4 top-4 text-gray-400 hover:text-navy"
+              className="absolute right-4 top-4 text-gray-400 hover:text-navy dark:text-white"
             >
               <FaTimes size={18} />
             </button>
@@ -113,7 +113,7 @@ const EnquiryModal = ({ isOpen, onClose, source = "other", contextMessage = "" }
               <select
                 {...register("propertyType")}
                 defaultValue=""
-                className="input-field text-gray-600"
+                className="input-field text-gray-600 dark:text-gray-300"
               >
                 <option value="" disabled>Property Type</option>
                 <option value="Residential">Residential</option>

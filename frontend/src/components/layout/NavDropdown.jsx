@@ -77,7 +77,7 @@ const NavDropdown = ({ label, items, scrolled }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="absolute left-0 top-full mt-3 min-w-[180px] rounded-xl bg-white p-2 shadow-premium"
+            className="absolute left-0 top-full mt-3 min-w-[180px] rounded-xl bg-white dark:bg-navy p-2 shadow-premium"
           >
             {items.map((item) => (
               <NavLink

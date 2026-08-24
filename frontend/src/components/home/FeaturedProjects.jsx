@@ -22,7 +22,7 @@ const FeaturedProjects = () => {
   });
 
   return (
-    <section className="py-24 bg-gray-50">
+    <section className="py-24 bg-gray-50 dark:bg-navy-dark">
       <div className="container-custom">
         <SectionHeading
           eyebrow="Our Work"
@@ -33,7 +33,7 @@ const FeaturedProjects = () => {
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading &&
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-80 rounded-2xl bg-gray-200 animate-pulse" />
+              <div key={i} className="h-80 rounded-2xl bg-gray-200 dark:bg-navy-light animate-pulse" />
             ))}
 
           {!isLoading && !isError &&

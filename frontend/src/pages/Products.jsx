@@ -21,7 +21,7 @@ const Products = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-navy">
         <div className="container-custom">
           {!products?.length && (
             <p className="text-center text-gray-400 py-12">
@@ -31,16 +31,16 @@ const Products = () => {
           )}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products?.map((p) => (
-              <div key={p._id} className="rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div key={p._id} className="rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm p-6">
                 <img
                   src={p.images?.[0]}
                   alt={p.name}
-                  className="h-40 w-full object-cover rounded-xl mb-4 bg-gray-100"
+                  className="h-40 w-full object-cover rounded-xl mb-4 bg-gray-100 dark:bg-navy-light"
                   onError={(e) => (e.target.style.background = "#f3f4f6")}
                 />
                 <span className="text-xs uppercase text-solar-orange font-semibold">{p.brand}</span>
-                <h3 className="font-display font-semibold text-lg text-navy mt-1">{p.name}</h3>
-                <p className="text-sm text-gray-500 mt-1">{p.warranty}</p>
+                <h3 className="font-display font-semibold text-lg text-navy dark:text-white mt-1">{p.name}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">{p.warranty}</p>
                 {p.brochureUrl && (
                   <a href={p.brochureUrl} className="inline-flex items-center gap-2 text-sm font-semibold text-solar-orange mt-3">
                     <FaDownload /> Download Brochure

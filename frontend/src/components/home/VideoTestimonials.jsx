@@ -150,7 +150,7 @@ const VideoTestimonials = () => {
   if (isLoading || (!featured && !reviews.length)) return null;
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-white dark:bg-navy">
       <div className="container-custom">
         <SectionHeading
           eyebrow={content.videoSectionEyebrow || "Video Reviews"}
@@ -173,7 +173,7 @@ const VideoTestimonials = () => {
         {reviews.length > 0 && (
           <>
             <div className="flex items-center justify-between mt-16 mb-8">
-              <h3 className="font-display font-semibold text-xl lg:text-2xl text-navy">More Customer Stories</h3>
+              <h3 className="font-display font-semibold text-xl lg:text-2xl text-navy dark:text-white">More Customer Stories</h3>
 
               {pageCount > 1 && (
                 <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ const VideoTestimonials = () => {
                     onClick={() => setPage((p) => Math.max(p - 1, 0))}
                     disabled={safePage === 0}
                     aria-label="Previous page of video reviews"
-                    className="h-9 w-9 grid place-items-center rounded-full border border-gray-200 text-navy hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent"
+                    className="h-9 w-9 grid place-items-center rounded-full border border-gray-200 dark:border-white/15 text-navy dark:text-white hover:bg-gray-50 dark:bg-navy-dark disabled:opacity-40 disabled:hover:bg-transparent"
                   >
                     <FaChevronLeft className="text-xs" />
                   </button>
@@ -194,7 +194,7 @@ const VideoTestimonials = () => {
                     onClick={() => setPage((p) => Math.min(p + 1, pageCount - 1))}
                     disabled={safePage >= pageCount - 1}
                     aria-label="Next page of video reviews"
-                    className="h-9 w-9 grid place-items-center rounded-full border border-gray-200 text-navy hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent"
+                    className="h-9 w-9 grid place-items-center rounded-full border border-gray-200 dark:border-white/15 text-navy dark:text-white hover:bg-gray-50 dark:bg-navy-dark disabled:opacity-40 disabled:hover:bg-transparent"
                   >
                     <FaChevronRight className="text-xs" />
                   </button>
@@ -224,7 +224,7 @@ const VideoTestimonials = () => {
               href={channelUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 rounded-full border border-gray-200 bg-white px-6 py-3.5 text-sm font-semibold text-navy shadow-sm hover:shadow-premium transition-shadow"
+              className="inline-flex items-center gap-2.5 rounded-full border border-gray-200 dark:border-white/15 bg-white dark:bg-navy px-6 py-3.5 text-sm font-semibold text-navy dark:text-white shadow-sm hover:shadow-premium transition-shadow"
             >
               <FaYoutube className="text-red-600 text-lg" />
               Watch All Reviews on YouTube

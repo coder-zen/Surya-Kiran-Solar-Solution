@@ -28,15 +28,15 @@ const ProjectMap = lazy(() => import("../components/home/ProjectMap"));
  * swap from placeholder to real map is invisible and shifts nothing.
  */
 const ProjectMapFallback = () => (
-  <section className="py-24 bg-white">
+  <section className="py-24 bg-white dark:bg-navy">
     <div className="container-custom">
       <SectionHeading
         eyebrow="Our Reach"
         title="Explore Our Projects Across Maharashtra"
         subtitle="Serving all 36 districts of Maharashtra — zoom in and click a marker to see project details."
       />
-      <div className="mt-14 rounded-3xl overflow-hidden shadow-premium border border-gray-100 h-[550px] relative">
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+      <div className="mt-14 rounded-3xl overflow-hidden shadow-premium border border-gray-100 dark:border-white/10 h-[550px] relative">
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-navy-light">
           <p className="text-gray-400">Loading project map…</p>
         </div>
       </div>

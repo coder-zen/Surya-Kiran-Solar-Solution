@@ -50,15 +50,15 @@ const sections = [
 const Terms = () => (
   <>
     <SeoHead title="Terms & Conditions" path="/terms" />
-    <section className="pt-32 pb-20 bg-white">
+    <section className="pt-32 pb-20 bg-white dark:bg-navy">
       <div className="container-custom max-w-3xl">
         <h1 className="section-heading !text-3xl">Terms &amp; Conditions</h1>
-        <p className="text-gray-500 mt-2">Last updated: {new Date().toLocaleDateString()}</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-2">Last updated: {new Date().toLocaleDateString()}</p>
         <div className="mt-8 space-y-6">
           {sections.map((s) => (
             <div key={s.title}>
-              <h2 className="font-display font-semibold text-lg text-navy">{s.title}</h2>
-              <p className="text-gray-600 mt-2 leading-relaxed">{s.body}</p>
+              <h2 className="font-display font-semibold text-lg text-navy dark:text-white">{s.title}</h2>
+              <p className="text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">{s.body}</p>
             </div>
           ))}
         </div>

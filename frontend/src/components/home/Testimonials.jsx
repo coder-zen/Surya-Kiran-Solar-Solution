@@ -27,17 +27,17 @@ const MARQUEE_MIN = 4;
 const TestimonialCard = ({ t }) => (
   <div className="glass-card !bg-white p-7 h-full w-[320px] shrink-0 flex flex-col">
     <FaQuoteLeft className="text-solar-orange text-2xl mb-4" />
-    <p className="text-gray-600 leading-relaxed flex-1">{t.message}</p>
+    <p className="text-gray-600 dark:text-gray-300 leading-relaxed flex-1">{t.message}</p>
     <div className="flex items-center gap-3 mt-6">
       {/* TODO: replace with real customer photo (consent required) */}
       <img
         src={cdnImage(t.image || Assets.testimonialPlaceholder, IMG.avatar)}
         alt={t.customerName}
-        className="h-11 w-11 rounded-full object-cover bg-gray-200"
+        className="h-11 w-11 rounded-full object-cover bg-gray-200 dark:bg-navy-light"
         onError={(e) => (e.target.style.visibility = "hidden")}
       />
       <div>
-        <p className="font-semibold text-navy flex items-center gap-1.5">
+        <p className="font-semibold text-navy dark:text-white flex items-center gap-1.5">
           {t.customerName} {t.isVerified && <FaCheckCircle className="text-blue-500 text-xs" />}
         </p>
         <p className="text-xs text-gray-400">{t.location}</p>
@@ -64,7 +64,7 @@ const Testimonials = () => {
   const track = isMarquee ? [...testimonials, ...testimonials] : testimonials;
 
   return (
-    <section className="py-24 bg-gray-50 overflow-hidden">
+    <section className="py-24 bg-gray-50 dark:bg-navy-dark overflow-hidden">
       <div className="container-custom">
         <SectionHeading eyebrow="Customer Stories" title="What Our Customers Say" />
 

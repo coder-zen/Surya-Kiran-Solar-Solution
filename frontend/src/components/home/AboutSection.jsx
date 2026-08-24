@@ -38,7 +38,7 @@ const AboutSection = () => {
   const points = content.aboutBulletPoints?.length ? content.aboutBulletPoints : FALLBACK.aboutBulletPoints;
 
   return (
-    <section className="py-24 bg-white overflow-hidden">
+    <section className="py-24 bg-white dark:bg-navy overflow-hidden">
       <div className="container-custom grid lg:grid-cols-2 gap-16 items-center">
         <motion.div
           initial={{ opacity: 0, x: -40 }}
@@ -54,8 +54,8 @@ const AboutSection = () => {
             onError={(e) => (e.target.style.background = "linear-gradient(135deg,#19376D,#0B2447)")}
           />
           <div className="absolute -bottom-8 -right-6 glass-card p-6 hidden sm:block">
-            <p className="text-3xl font-display font-bold text-navy">{content.aboutStatValue}</p>
-            <p className="text-sm text-gray-500">{content.aboutStatLabel}</p>
+            <p className="text-3xl font-display font-bold text-navy dark:text-white">{content.aboutStatValue}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-300">{content.aboutStatLabel}</p>
           </div>
         </motion.div>
 
@@ -65,13 +65,13 @@ const AboutSection = () => {
             eyebrow={content.aboutEyebrow}
             title={content.aboutHeadline}
           />
-          <p className="mt-6 text-gray-600 leading-relaxed">{content.aboutBodyText}</p>
+          <p className="mt-6 text-gray-600 dark:text-gray-300 leading-relaxed">{content.aboutBodyText}</p>
 
           <ul className="mt-8 space-y-3">
             {points.map((point) => (
               <li key={point} className="flex items-start gap-3">
                 <FaCheckCircle className="text-solar-orange mt-1 shrink-0" />
-                <span className="text-gray-700">{point}</span>
+                <span className="text-gray-700 dark:text-gray-200">{point}</span>
               </li>
             ))}
           </ul>

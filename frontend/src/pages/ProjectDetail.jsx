@@ -23,7 +23,7 @@ const ProjectDetail = () => {
   if (isError || !project) {
     return (
       <div className="pt-40 pb-20 text-center">
-        <p className="text-gray-500">Project not found.</p>
+        <p className="text-gray-500 dark:text-gray-300">Project not found.</p>
         <Link to="/projects" className="btn-navy inline-flex mt-6">Back to Projects</Link>
       </div>
     );
@@ -51,7 +51,7 @@ const ProjectDetail = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-navy">
         <div className="container-custom grid lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-6">
             {/* Brand gradient rather than a stock photo when a project has no
@@ -66,12 +66,12 @@ const ProjectDetail = () => {
             ) : (
               <div className="rounded-2xl w-full h-96 bg-navy-gradient" />
             )}
-            <p className="text-gray-600 leading-relaxed">{project.description || "Project details coming soon."}</p>
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{project.description || "Project details coming soon."}</p>
 
             {project.technologiesUsed?.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {project.technologiesUsed.map((tech) => (
-                  <span key={tech} className="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-600">{tech}</span>
+                  <span key={tech} className="px-3 py-1 bg-gray-100 dark:bg-navy-light rounded-full text-xs text-gray-600 dark:text-gray-300">{tech}</span>
                 ))}
               </div>
             )}
@@ -81,18 +81,18 @@ const ProjectDetail = () => {
                 <div className="flex gap-1 text-solar-yellow mb-2">
                   {Array.from({ length: project.customerFeedback.rating || 5 }).map((_, i) => <FaStar key={i} />)}
                 </div>
-                <p className="text-gray-600 italic">"{project.customerFeedback.text}"</p>
+                <p className="text-gray-600 dark:text-gray-300 italic">"{project.customerFeedback.text}"</p>
                 {project.customerName && <p className="text-sm text-gray-400 mt-2">— {project.customerName}</p>}
               </div>
             )}
           </div>
 
           <div className="glass-card !bg-gray-50 p-6 h-fit">
-            <h3 className="font-display font-semibold text-lg text-navy mb-4">Project Summary</h3>
-            <ul className="space-y-3 text-sm text-gray-600">
-              <li><strong className="text-navy">Category:</strong> {project.category}</li>
-              <li><strong className="text-navy">Capacity:</strong> {project.capacityKW} kW</li>
-              <li><strong className="text-navy">Location:</strong> {project.district}, Maharashtra</li>
+            <h3 className="font-display font-semibold text-lg text-navy dark:text-white mb-4">Project Summary</h3>
+            <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+              <li><strong className="text-navy dark:text-white">Category:</strong> {project.category}</li>
+              <li><strong className="text-navy dark:text-white">Capacity:</strong> {project.capacityKW} kW</li>
+              <li><strong className="text-navy dark:text-white">Location:</strong> {project.district}, Maharashtra</li>
             </ul>
           </div>
         </div>

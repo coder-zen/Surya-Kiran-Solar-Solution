@@ -55,7 +55,7 @@ const OptionCard = ({ option, selected, onSelect, capacityKW }) => {
       className={`relative text-left rounded-xl border p-4 flex flex-col gap-2 transition-all ${
         selected
           ? "border-solar-orange bg-solar-orange/5 ring-1 ring-solar-orange/30"
-          : "border-gray-200 hover:border-gray-300 hover:shadow-sm bg-white"
+          : "border-gray-200 dark:border-white/15 hover:border-gray-300 hover:shadow-sm bg-white dark:bg-navy"
       }`}
     >
       {option.isRecommended && (
@@ -77,7 +77,7 @@ const OptionCard = ({ option, selected, onSelect, capacityKW }) => {
       )}
 
       <div className="flex items-start justify-between gap-2">
-        <span className="font-display font-semibold text-navy text-[15px] leading-tight">
+        <span className="font-display font-semibold text-navy dark:text-white text-[15px] leading-tight">
           {option.name}
         </span>
         {selected && (
@@ -87,7 +87,7 @@ const OptionCard = ({ option, selected, onSelect, capacityKW }) => {
         )}
       </div>
 
-      {option.note && <p className="text-xs text-gray-500 leading-relaxed">{option.note}</p>}
+      {option.note && <p className="text-xs text-gray-500 dark:text-gray-300 leading-relaxed">{option.note}</p>}
 
       {/* Pushed to the bottom so prices align across cards of differing height. */}
       {price && (
@@ -95,9 +95,9 @@ const OptionCard = ({ option, selected, onSelect, capacityKW }) => {
           {price.amount === 0 ? (
             <span className="text-sm font-semibold text-green-600">Included</span>
           ) : price.amount === null ? (
-            <span className="text-sm font-semibold text-navy">{price.label}</span>
+            <span className="text-sm font-semibold text-navy dark:text-white">{price.label}</span>
           ) : (
-            <span className="text-sm font-semibold text-navy">
+            <span className="text-sm font-semibold text-navy dark:text-white">
               {price.isEstimate && <span className="text-gray-400 font-normal">from </span>}
               +{formatINR(price.amount)}
               {price.label && <span className="text-xs text-gray-400 font-normal"> {price.label}</span>}
@@ -115,14 +115,14 @@ const QuantityInput = ({ unit, value, onChange }) => {
   if (!spec) return null;
   return (
     <div className="mt-3 flex items-center gap-2">
-      <label className="text-xs text-gray-500">{spec.label}</label>
+      <label className="text-xs text-gray-500 dark:text-gray-300">{spec.label}</label>
       <input
         type="number"
         min={spec.min}
         step={spec.step}
         value={value}
         onChange={(e) => onChange(Math.max(spec.min, Number(e.target.value) || spec.min))}
-        className="w-24 rounded-lg border border-gray-200 px-3 py-1.5 text-sm"
+        className="w-24 rounded-lg border border-gray-200 dark:border-white/15 px-3 py-1.5 text-sm"
       />
       <span className="text-xs text-gray-400">{spec.suffix}</span>
     </div>
@@ -224,9 +224,9 @@ const QuoteConfigurator = () => {
 
   if (isLoading) {
     return (
-      <section className="py-24 bg-gray-50">
+      <section className="py-24 bg-gray-50 dark:bg-navy-dark">
         <div className="container-custom">
-          <div className="h-96 rounded-3xl bg-gray-100 animate-pulse" />
+          <div className="h-96 rounded-3xl bg-gray-100 dark:bg-navy-light animate-pulse" />
         </div>
       </section>
     );
@@ -241,7 +241,7 @@ const QuoteConfigurator = () => {
   const cap = config.capacity || {};
 
   return (
-    <section className="py-24 bg-gray-50">
+    <section className="py-24 bg-gray-50 dark:bg-navy-dark">
       <div className="container-custom">
         <SectionHeading
           eyebrow="Build Your System"
@@ -253,8 +253,8 @@ const QuoteConfigurator = () => {
           {/* ---------------- configuration ---------------- */}
           <div className="lg:col-span-2 space-y-6">
             {/* property type — drives subsidy eligibility */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="font-display font-semibold text-navy">Property Type</h3>
+            <div className="bg-white dark:bg-navy rounded-2xl p-6 shadow-sm">
+              <h3 className="font-display font-semibold text-navy dark:text-white">Property Type</h3>
               <p className="text-xs text-gray-400 mt-0.5">
                 Government subsidy applies to residential rooftops only.
               </p>
@@ -266,8 +266,8 @@ const QuoteConfigurator = () => {
                     onClick={() => setPropertyType(type)}
                     className={`rounded-xl border p-3 text-sm font-semibold transition-all ${
                       propertyType === type
-                        ? "border-solar-orange bg-solar-orange/5 text-navy"
-                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                        ? "border-solar-orange bg-solar-orange/5 text-navy dark:text-white"
+                        : "border-gray-200 dark:border-white/15 text-gray-500 dark:text-gray-300 hover:border-gray-300"
                     }`}
                   >
                     {type}
@@ -277,13 +277,13 @@ const QuoteConfigurator = () => {
             </div>
 
             {/* capacity */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="font-display font-semibold text-navy">System Capacity</h3>
+            <div className="bg-white dark:bg-navy rounded-2xl p-6 shadow-sm">
+              <h3 className="font-display font-semibold text-navy dark:text-white">System Capacity</h3>
               <p className="text-xs text-gray-400 mt-0.5">Everything else scales from this.</p>
 
               {config.billEstimator?.isEnabled !== false && (
-                <div className="mt-4 rounded-xl bg-gray-50 border border-gray-100 p-4">
-                  <label className="text-sm font-medium text-navy">
+                <div className="mt-4 rounded-xl bg-gray-50 dark:bg-navy-dark border border-gray-100 dark:border-white/10 p-4">
+                  <label className="text-sm font-medium text-navy dark:text-white">
                     Not sure what size you need?
                   </label>
                   <p className="text-xs text-gray-400 mt-0.5">
@@ -298,9 +298,9 @@ const QuoteConfigurator = () => {
                       value={annualUnits}
                       onChange={(e) => applyAnnualUnits(e.target.value)}
                       placeholder="4958"
-                      className="w-32 rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                      className="w-32 rounded-lg border border-gray-200 dark:border-white/15 px-3 py-2 text-sm"
                     />
-                    <span className="text-sm text-gray-500">units per year</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-300">units per year</span>
                   </div>
                   {sizedFromUsage && (
                     <p className="text-xs text-solar-orange font-medium mt-2">
@@ -335,9 +335,9 @@ const QuoteConfigurator = () => {
                       setCapacityKW(Number(e.target.value) || cap.minKW || 1);
                       setSizedFromBill(false);
                     }}
-                    className="w-24 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-navy"
+                    className="w-24 rounded-lg border border-gray-200 dark:border-white/15 px-3 py-2 text-sm font-semibold text-navy dark:text-white"
                   />
-                  <span className="text-sm text-gray-500">kW</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-300">kW</span>
                 </div>
               </div>
             </div>
@@ -354,10 +354,10 @@ const QuoteConfigurator = () => {
               const chosen = selections[step.key];
 
               return (
-                <div key={step.key} className="bg-white rounded-2xl p-6 shadow-sm">
+                <div key={step.key} className="bg-white dark:bg-navy rounded-2xl p-6 shadow-sm">
                   <div className="flex items-baseline gap-2">
                     <span className="text-xs font-semibold text-solar-orange">{String(i + 1).padStart(2, "0")}</span>
-                    <h3 className="font-display font-semibold text-navy">{step.title}</h3>
+                    <h3 className="font-display font-semibold text-navy dark:text-white">{step.title}</h3>
                     {step.required && <span className="text-xs text-gray-400">· required</span>}
                   </div>
 
@@ -394,14 +394,14 @@ const QuoteConfigurator = () => {
 
             {/* add-ons */}
             {(config.addOns || []).length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-navy rounded-2xl shadow-sm overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setAddOnsOpen((o) => !o)}
                   className="w-full flex items-center justify-between p-6 text-left"
                 >
                   <div>
-                    <h3 className="font-display font-semibold text-navy">Add Extra Services</h3>
+                    <h3 className="font-display font-semibold text-navy dark:text-white">Add Extra Services</h3>
                     <p className="text-xs text-gray-400 mt-0.5">
                       {Object.keys(addOnState).length
                         ? `${Object.keys(addOnState).length} selected`
@@ -418,7 +418,7 @@ const QuoteConfigurator = () => {
                       return (
                         <div
                           key={option._id}
-                          className={`rounded-xl border p-4 ${active ? "border-solar-orange bg-solar-orange/5" : "border-gray-200"}`}
+                          className={`rounded-xl border p-4 ${active ? "border-solar-orange bg-solar-orange/5" : "border-gray-200 dark:border-white/15"}`}
                         >
                           <label className="flex items-start gap-3 cursor-pointer">
                             <input
@@ -427,7 +427,7 @@ const QuoteConfigurator = () => {
                               onChange={() => toggleAddOn(option)}
                               className="h-4 w-4 accent-solar-orange mt-0.5 shrink-0"
                             />
-                            <span className="text-sm font-medium text-navy">{option.name}</span>
+                            <span className="text-sm font-medium text-navy dark:text-white">{option.name}</span>
                           </label>
                           {active && (
                             <QuantityInput
@@ -452,18 +452,18 @@ const QuoteConfigurator = () => {
 
           {/* ---------------- live cart ---------------- */}
           <div className="lg:sticky lg:top-28">
-            <div className="bg-white rounded-2xl p-6 shadow-premium border border-gray-100">
-              <h3 className="font-display font-semibold text-navy">Your Estimate</h3>
+            <div className="bg-white dark:bg-navy rounded-2xl p-6 shadow-premium border border-gray-100 dark:border-white/10">
+              <h3 className="font-display font-semibold text-navy dark:text-white">Your Estimate</h3>
               <p className="text-xs text-gray-400 mt-0.5">{capacity} kW system</p>
 
               <div className="mt-5 space-y-2 text-sm">
                 {quote.lines.map((l) => (
                   <div key={l.label} className="flex justify-between gap-3">
-                    <span className="text-gray-500 min-w-0">
+                    <span className="text-gray-500 dark:text-gray-300 min-w-0">
                       {l.label}
                       <span className="block text-xs text-gray-400 truncate">{l.name}</span>
                     </span>
-                    <span className="text-navy font-medium shrink-0">{formatINR(l.amount)}</span>
+                    <span className="text-navy dark:text-white font-medium shrink-0">{formatINR(l.amount)}</span>
                   </div>
                 ))}
 
@@ -473,11 +473,11 @@ const QuoteConfigurator = () => {
 
                 {quote.addOnLines.length > 0 && (
                   <>
-                    <div className="border-t border-gray-100 pt-2 mt-2" />
+                    <div className="border-t border-gray-100 dark:border-white/10 pt-2 mt-2" />
                     {quote.addOnLines.map((l) => (
                       <div key={l.name} className="flex justify-between gap-3">
-                        <span className="text-gray-500 min-w-0 truncate">{l.name}</span>
-                        <span className="text-navy font-medium shrink-0">{formatINR(l.amount)}</span>
+                        <span className="text-gray-500 dark:text-gray-300 min-w-0 truncate">{l.name}</span>
+                        <span className="text-navy dark:text-white font-medium shrink-0">{formatINR(l.amount)}</span>
                       </div>
                     ))}
                   </>
@@ -485,8 +485,8 @@ const QuoteConfigurator = () => {
 
                 {quote.extraCharges.map((l) => (
                   <div key={l.name} className="flex justify-between gap-3">
-                    <span className="text-gray-500">{l.name}</span>
-                    <span className="text-navy font-medium">{formatINR(l.amount)}</span>
+                    <span className="text-gray-500 dark:text-gray-300">{l.name}</span>
+                    <span className="text-navy dark:text-white font-medium">{formatINR(l.amount)}</span>
                   </div>
                 ))}
 
@@ -500,14 +500,14 @@ const QuoteConfigurator = () => {
                 {/* No tax line: quotes are GST-exclusive and GST is not shown
                     on the site. The subtotal below is the quoted price. */}
                 {quote.total > 0 && (
-                  <div className="border-t border-gray-100 pt-3 mt-3 flex justify-between">
-                    <span className="text-gray-500">Subtotal (excl. GST)</span>
-                    <span className="text-navy font-medium">{formatINR(quote.total)}</span>
+                  <div className="border-t border-gray-100 dark:border-white/10 pt-3 mt-3 flex justify-between">
+                    <span className="text-gray-500 dark:text-gray-300">Subtotal (excl. GST)</span>
+                    <span className="text-navy dark:text-white font-medium">{formatINR(quote.total)}</span>
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-gray-200 mt-4 pt-4">
+              <div className="border-t border-gray-200 dark:border-white/15 mt-4 pt-4">
                 {quote.subsidy > 0 ? (
                   <>
                     {/*
@@ -519,22 +519,22 @@ const QuoteConfigurator = () => {
                       any gain from the smaller figure looking friendlier.
                     */}
                     <p className="text-xs text-gray-400">Amount Payable <span className="text-gray-300">(excluding GST)</span></p>
-                    <p className="text-3xl font-display font-bold text-navy mt-1">{formatINR(quote.total)}</p>
+                    <p className="text-3xl font-display font-bold text-navy dark:text-white mt-1">{formatINR(quote.total)}</p>
 
-                    <div className="mt-4 rounded-xl bg-green-50 border border-green-100 p-3">
+                    <div className="mt-4 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/25 p-3">
                       <div className="flex justify-between text-sm">
-                        <span className="text-green-700 font-medium">
+                        <span className="text-green-700 dark:text-green-300 font-medium">
                           {config.subsidy?.label || "Government Subsidy"}
                         </span>
-                        <span className="text-green-700 font-semibold">−{formatINR(quote.subsidy)}</span>
+                        <span className="text-green-700 dark:text-green-300 font-semibold">−{formatINR(quote.subsidy)}</span>
                       </div>
-                      <p className="text-[11px] text-green-800/70 mt-1.5 leading-relaxed">
+                      <p className="text-[11px] text-green-800/70 dark:text-green-200/70 mt-1.5 leading-relaxed">
                         Credited to your bank account after commissioning — not deducted from the
                         amount payable above.
                       </p>
                       <div className="flex justify-between text-sm mt-2.5 pt-2.5 border-t border-green-200">
-                        <span className="text-gray-600">Effective cost</span>
-                        <span className="text-navy font-semibold">{formatINR(quote.netPayable)}</span>
+                        <span className="text-gray-600 dark:text-gray-300">Effective cost</span>
+                        <span className="text-navy dark:text-white font-semibold">{formatINR(quote.netPayable)}</span>
                       </div>
                     </div>
 
@@ -545,7 +545,7 @@ const QuoteConfigurator = () => {
                 ) : (
                   <>
                     <p className="text-xs text-gray-400">Estimated Final Amount <span className="text-gray-300">(excluding GST)</span></p>
-                    <p className="text-3xl font-display font-bold text-navy mt-1">{formatINR(quote.total)}</p>
+                    <p className="text-3xl font-display font-bold text-navy dark:text-white mt-1">{formatINR(quote.total)}</p>
                   </>
                 )}
               </div>
@@ -553,17 +553,17 @@ const QuoteConfigurator = () => {
               {/* Reframes the price as an investment with a return date. */}
               {quote.savings?.paybackYears && (
                 <div className="mt-4 rounded-xl bg-navy/5 border border-navy/10 p-4">
-                  <p className="text-sm font-semibold text-navy">
+                  <p className="text-sm font-semibold text-navy dark:text-white">
                     Pays for itself in {quote.savings.paybackYears.toFixed(1)} years
                   </p>
-                  <p className="text-xs text-gray-500 mt-1.5">
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mt-1.5">
                     Then about{" "}
-                    <span className="font-semibold text-navy">{formatINR(quote.savings.monthlySavings)}</span>{" "}
+                    <span className="font-semibold text-navy dark:text-white">{formatINR(quote.savings.monthlySavings)}</span>{" "}
                     saved every month, for a system built to last{" "}
                     {quote.savings.systemLifeYears} years.
                   </p>
                   <div className="flex justify-between text-xs mt-3 pt-3 border-t border-navy/10">
-                    <span className="text-gray-500">Lifetime savings</span>
+                    <span className="text-gray-500 dark:text-gray-300">Lifetime savings</span>
                     <span className="font-semibold text-green-600">{formatINR(quote.savings.lifetimeSavings)}</span>
                   </div>
                 </div>
@@ -588,13 +588,13 @@ const QuoteConfigurator = () => {
 
       {/* Sticky total on mobile, where the cart sits far below the options. */}
       {quote.total > 0 && (
-        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-premium px-5 py-3 flex items-center justify-between gap-4">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-navy border-t border-gray-200 dark:border-white/15 shadow-premium px-5 py-3 flex items-center justify-between gap-4">
           <div className="min-w-0">
             {/* Payable, not net — matches the cart for the same reason. */}
             <p className="text-xs text-gray-400">
               {quote.subsidy > 0 ? `Payable · ${formatINR(quote.subsidy)} back` : "Estimated total (excl. GST)"}
             </p>
-            <p className="text-xl font-display font-bold text-navy truncate">
+            <p className="text-xl font-display font-bold text-navy dark:text-white truncate">
               {formatINR(quote.total)}
             </p>
           </div>

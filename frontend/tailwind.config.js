@@ -1,6 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
+  /*
+   * Class-based rather than media-based, so the navbar toggle can override the
+   * operating system. A visitor on a dark-themed laptop who wants the site
+   * light should be able to say so and have it stick.
+   */
+  darkMode: "class",
   theme: {
     extend: {
       colors: {

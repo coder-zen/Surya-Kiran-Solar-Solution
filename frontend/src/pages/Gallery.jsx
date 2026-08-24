@@ -34,14 +34,14 @@ const Gallery = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-navy">
         <div className="container-custom">
           <div className="flex flex-wrap gap-2 justify-center mb-10">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium ${filter === cat ? "bg-navy text-white" : "bg-gray-100 text-gray-600"}`}
+                className={`px-4 py-2 rounded-full text-sm font-medium ${filter === cat ? "bg-navy text-white" : "bg-gray-100 dark:bg-navy-light text-gray-600 dark:text-gray-300"}`}
               >
                 {cat}
               </button>

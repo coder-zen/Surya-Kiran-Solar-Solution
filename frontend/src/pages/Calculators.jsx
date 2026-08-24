@@ -104,13 +104,13 @@ const SolarSavingsCalculator = () => {
         {result && (
           <>
             <div className="grid grid-cols-2 gap-4 mb-6 text-center">
-              <div><p className="text-2xl font-display font-bold text-navy">{result.systemSizeKW}kW</p><p className="text-xs text-gray-500">Recommended Size</p></div>
-              <div><p className="text-2xl font-display font-bold text-navy">₹{result.monthlySavings.toLocaleString()}</p><p className="text-xs text-gray-500">Monthly Savings</p></div>
-              <div><p className="text-2xl font-display font-bold text-navy">{result.paybackYears} yrs</p><p className="text-xs text-gray-500">Payback Period</p></div>
-              <div><p className="text-2xl font-display font-bold text-navy">{result.carbonOffsetKg.toLocaleString()} kg</p><p className="text-xs text-gray-500">Annual CO₂ Offset</p></div>
+              <div><p className="text-2xl font-display font-bold text-navy dark:text-white">{result.systemSizeKW}kW</p><p className="text-xs text-gray-500 dark:text-gray-300">Recommended Size</p></div>
+              <div><p className="text-2xl font-display font-bold text-navy dark:text-white">₹{result.monthlySavings.toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-300">Monthly Savings</p></div>
+              <div><p className="text-2xl font-display font-bold text-navy dark:text-white">{result.paybackYears} yrs</p><p className="text-xs text-gray-500 dark:text-gray-300">Payback Period</p></div>
+              <div><p className="text-2xl font-display font-bold text-navy dark:text-white">{result.carbonOffsetKg.toLocaleString()} kg</p><p className="text-xs text-gray-500 dark:text-gray-300">Annual CO₂ Offset</p></div>
               <div className="col-span-2">
-                <p className="text-2xl font-display font-bold text-navy">{result.areaNeededSqFt.toLocaleString()} sq ft</p>
-                <p className="text-xs text-gray-500">Shadow-Free Roof Space Needed</p>
+                <p className="text-2xl font-display font-bold text-navy dark:text-white">{result.areaNeededSqFt.toLocaleString()} sq ft</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Shadow-Free Roof Space Needed</p>
               </div>
             </div>
 
@@ -137,9 +137,9 @@ const SolarSavingsCalculator = () => {
                 in one row. Email is here for the same reason as the quote
                 modal — without it the customer gets no written follow-up. */}
             <form onSubmit={handleSubmit2(onRequestQuote)} className="mt-6 flex flex-wrap gap-2">
-              <input {...register2("name", { required: true })} placeholder="Your Name" className="flex-1 min-w-[140px] rounded-lg border border-gray-200 px-3 py-2 text-sm" />
-              <input {...register2("phone", { required: true })} placeholder="Phone" className="flex-1 min-w-[140px] rounded-lg border border-gray-200 px-3 py-2 text-sm" />
-              <input type="email" {...register2("email", { required: true })} placeholder="Email" className="flex-1 min-w-[180px] rounded-lg border border-gray-200 px-3 py-2 text-sm" />
+              <input {...register2("name", { required: true })} placeholder="Your Name" className="flex-1 min-w-[140px] rounded-lg border border-gray-200 dark:border-white/15 px-3 py-2 text-sm" />
+              <input {...register2("phone", { required: true })} placeholder="Phone" className="flex-1 min-w-[140px] rounded-lg border border-gray-200 dark:border-white/15 px-3 py-2 text-sm" />
+              <input type="email" {...register2("email", { required: true })} placeholder="Email" className="flex-1 min-w-[180px] rounded-lg border border-gray-200 dark:border-white/15 px-3 py-2 text-sm" />
               <button disabled={isSubmitting} className="btn-primary !px-4 !py-2 text-sm shrink-0">Get Quote</button>
             </form>
           </>
@@ -189,9 +189,9 @@ const EMICalculator = () => {
 
       <div className="glass-card !bg-white p-8">
         <div className="grid grid-cols-3 gap-4 text-center mb-6">
-          <div><p className="text-xl font-display font-bold text-navy">₹{emi.toLocaleString()}</p><p className="text-xs text-gray-500">Monthly EMI</p></div>
-          <div><p className="text-xl font-display font-bold text-navy">₹{totalInterest.toLocaleString()}</p><p className="text-xs text-gray-500">Total Interest</p></div>
-          <div><p className="text-xl font-display font-bold text-navy">₹{totalPayment.toLocaleString()}</p><p className="text-xs text-gray-500">Total Payment</p></div>
+          <div><p className="text-xl font-display font-bold text-navy dark:text-white">₹{emi.toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-300">Monthly EMI</p></div>
+          <div><p className="text-xl font-display font-bold text-navy dark:text-white">₹{totalInterest.toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Interest</p></div>
+          <div><p className="text-xl font-display font-bold text-navy dark:text-white">₹{totalPayment.toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Payment</p></div>
         </div>
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={chartData}>
@@ -220,11 +220,11 @@ const Calculators = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-navy">
         <div className="container-custom">
           <div className="flex justify-center gap-2 mb-10">
-            <button onClick={() => setTab("savings")} className={`option-btn ${tab === "savings" ? "bg-navy text-white" : "bg-gray-100 text-gray-600"}`}>Solar Savings</button>
-            <button onClick={() => setTab("emi")} className={`option-btn ${tab === "emi" ? "bg-navy text-white" : "bg-gray-100 text-gray-600"}`}>EMI Calculator</button>
+            <button onClick={() => setTab("savings")} className={`option-btn ${tab === "savings" ? "bg-navy text-white" : "bg-gray-100 dark:bg-navy-light text-gray-600 dark:text-gray-300"}`}>Solar Savings</button>
+            <button onClick={() => setTab("emi")} className={`option-btn ${tab === "emi" ? "bg-navy text-white" : "bg-gray-100 dark:bg-navy-light text-gray-600 dark:text-gray-300"}`}>EMI Calculator</button>
           </div>
           {tab === "savings" ? <SolarSavingsCalculator /> : <EMICalculator />}
           <p className="terms-text text-center mt-8 max-w-xl mx-auto">

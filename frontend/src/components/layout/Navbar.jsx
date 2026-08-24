@@ -5,6 +5,7 @@ import { FaBars, FaTimes, FaPhoneAlt } from "react-icons/fa";
 import { NAVBAR_GROUPS, COMPANY } from "../../config/constants";
 import { Assets } from "../../config/images";
 import EnquiryModal from "../common/EnquiryModal";
+import ThemeToggle from "../common/ThemeToggle";
 import NavDropdown from "./NavDropdown";
 import MobileNavAccordion from "./MobileNavAccordion";
 
@@ -37,7 +38,7 @@ const Navbar = () => {
               className="h-14 w-14 object-contain rounded-xl shadow-sm shrink-0"
               onError={(e) => (e.target.style.display = "none")}
             />
-            <span className={`font-display font-bold text-lg leading-tight ${scrolled ? "text-navy" : "text-white"}`}>
+            <span className={`font-display font-bold text-lg leading-tight ${scrolled ? "text-navy dark:text-white" : "text-white"}`}>
               {COMPANY.name}
             </span>
           </NavLink>
@@ -76,9 +77,10 @@ const Navbar = () => {
           </div>
 
           <div className="hidden xl:flex items-center gap-4 shrink-0">
+            <ThemeToggle scrolled={scrolled} />
             <a
               href={`tel:${COMPANY.phoneRaw}`}
-              className={`flex items-center gap-2 whitespace-nowrap text-sm font-semibold ${scrolled ? "text-navy" : "text-white"}`}
+              className={`flex items-center gap-2 whitespace-nowrap text-sm font-semibold ${scrolled ? "text-navy dark:text-white" : "text-white"}`}
             >
               <FaPhoneAlt /> {COMPANY.phone}
             </a>
@@ -91,13 +93,19 @@ const Navbar = () => {
               it was, but the tap target grows from 24x24 to 48x48. At 24px it
               was well under the ~44px minimum for a reliable touch, which is
               why the menu appeared to need several taps to open. */}
-          <button
-            className={`xl:hidden text-2xl p-3 -mr-3 ${scrolled ? "text-navy" : "text-white"}`}
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-          >
-            <FaBars />
-          </button>
+          {/* Sits outside the drawer on mobile: switching theme shouldn't cost
+              a menu open, and it's the kind of control people reach for at a
+              glance. */}
+          <div className="xl:hidden flex items-center gap-1 shrink-0">
+            <ThemeToggle scrolled={scrolled} />
+            <button
+              className={`text-2xl p-3 -mr-3 ${scrolled ? "text-navy dark:text-white" : "text-white"}`}
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+            >
+              <FaBars />
+            </button>
+          </div>
         </nav>
       </header>
 
