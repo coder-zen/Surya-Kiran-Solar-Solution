@@ -94,9 +94,16 @@ const Navbar = () => {
                 "radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgba(255,122,0,0.18), transparent 65%)",
             }}
           />
+          {/*
+            min-w-0 instead of shrink-0. Held rigid, the logo plus wordmark
+            needed 229px of a 319px content width on a 375px screen, leaving too
+            little for the theme switch and burger — they were pushed 48px
+            outside the bar. Allowed to give way, the wordmark truncates and
+            everything stays inside.
+          */}
           <NavLink
             to="/"
-            className="group/logo flex items-center gap-2 shrink-0"
+            className="group/logo flex items-center gap-2 min-w-0"
             style={{ perspective: "600px" }}
           >
             {/* TODO: Replace with real logo — see src/config/images.js -> companyLogo */}
@@ -109,15 +116,25 @@ const Navbar = () => {
               className={`object-contain rounded-xl shrink-0 transition-all duration-500 ease-out
                           shadow-[0_6px_18px_-6px_rgba(0,0,0,0.5)]
                           group-hover/logo:[transform:rotateY(-14deg)_translateZ(14px)]
-                          ${scrolled ? "h-11 w-11" : "h-14 w-14"}`}
+                          shrink-0
+                          ${scrolled ? "h-10 w-10 sm:h-11 sm:w-11" : "h-11 w-11 sm:h-14 sm:w-14"}`}
               onError={(e) => (e.target.style.display = "none")}
             />
-            <span className={`font-display font-bold text-lg leading-tight ${scrolled ? "text-navy dark:text-white" : "text-white"}`}>
+            {/* truncate needs the min-w-0 above to have any effect — without a
+                shrinkable parent a flex child refuses to go below its content
+                width and overflows instead. */}
+            <span className={`font-display font-bold text-base sm:text-lg leading-tight truncate ${scrolled ? "text-navy dark:text-white" : "text-white"}`}>
               {COMPANY.name}
             </span>
           </NavLink>
 
-          <div className="hidden xl:flex items-center gap-5 2xl:gap-7">
+          {/*
+            Tight gap because the links now carry their own px-3 padding for the
+            hover pill. Keeping the original gap-5 on top of that padding made
+            the row wider than the bar, which pushed the Get Free Quote button
+            out past the rounded edge.
+          */}
+          <div className="hidden xl:flex items-center gap-0.5 2xl:gap-1.5 min-w-0">
             {NAVBAR_GROUPS.map((entry) =>
               entry.type === "dropdown" ? (
                 <NavDropdown key={entry.key} label={entry.label} items={entry.items} scrolled={scrolled} />
@@ -195,8 +212,15 @@ const Navbar = () => {
               glance. */}
           <div className="xl:hidden flex items-center gap-1 shrink-0">
             <ThemeToggle scrolled={scrolled} />
+            {/*
+              -mr-3 removed. It pulled the icon back toward the old full-width
+              bar's content edge, but this bar has its own padding, so the
+              negative margin pushed the button past the rounded edge — 48px
+              outside it on a 375px screen, and outside the viewport too.
+              -mr-1 keeps the optical alignment without leaving the bar.
+            */}
             <button
-              className={`text-2xl p-3 -mr-3 ${scrolled ? "text-navy dark:text-white" : "text-white"}`}
+              className={`text-2xl p-3 -mr-1 ${scrolled ? "text-navy dark:text-white" : "text-white"}`}
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >

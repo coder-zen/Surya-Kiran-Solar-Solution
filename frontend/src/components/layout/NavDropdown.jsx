@@ -23,9 +23,19 @@ const NavDropdown = ({ label, items, scrolled }) => {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    // pointerdown rather than mousedown: mousedown never fires on a touch
+    // screen, so on a phone or tablet tapping elsewhere left the menu open.
+    document.addEventListener("pointerdown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
   }, [open]);
+
+  /*
+   * Shut on navigation. Clicking an item inside the menu closes it directly,
+   * but the browser back button and any link elsewhere on the bar change the
+   * route without touching this component, which used to leave a menu hanging
+   * open over the new page.
+   */
+  useEffect(() => setOpen(false), [location.pathname]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Escape") {
@@ -58,9 +68,18 @@ const NavDropdown = ({ label, items, scrolled }) => {
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls={menuId}
-        onClick={() => setOpen(true)}
-        className={`flex items-center gap-1.5 whitespace-nowrap text-sm font-medium transition-colors ${
-          scrolled ? "text-ink" : "text-white"
+        /*
+         * Toggle, not open. This forced open to true, so the trigger was a
+         * one-way switch: click-outside deliberately ignores clicks inside the
+         * container, and the trigger is inside it, so once a menu was opened by
+         * clicking there was no way to shut it again from the keyboard or on a
+         * touch screen — where mouseleave never fires either.
+         */
+        onClick={() => setOpen((isOpen) => !isOpen)}
+        // px-3 py-1.5 matches the plain nav links, so triggers and links sit on
+        // the same rhythm now that the row's gap has been tightened.
+        className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+          scrolled ? "text-ink dark:text-gray-200" : "text-white"
         } ${isGroupActive ? "text-solar-orange" : "hover:text-solar-orange"}`}
       >
         {label}
