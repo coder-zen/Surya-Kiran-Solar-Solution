@@ -72,15 +72,30 @@ const Navbar = () => {
                       transition-[padding,background-color,box-shadow] duration-500 ease-out
                       ${
                         scrolled
-                          ? "py-2 bg-white/75 dark:bg-navy/75 backdrop-blur-xl ring-1 ring-navy/10 dark:ring-white/10 shadow-[0_10px_40px_-12px_rgba(11,36,71,0.45)]"
-                          : "py-3 bg-white/10 backdrop-blur-md ring-1 ring-white/20 shadow-[0_12px_45px_-15px_rgba(0,0,0,0.6)]"
+                          ? "py-2 bg-white/75 dark:bg-navy/75 backdrop-blur-xl ring-1 ring-navy/[0.06] dark:ring-white/[0.08] shadow-[0_10px_40px_-14px_rgba(11,36,71,0.35)]"
+                          /* Over the hero the ring was white/20 — an outline
+                             bright enough to read as a drawn border on top of
+                             the highlight above it. Halved, so the bar is
+                             defined by its blur and shadow rather than a line
+                             around it. */
+                          : "py-3 bg-white/10 backdrop-blur-md ring-1 ring-white/[0.10] shadow-[0_14px_50px_-18px_rgba(0,0,0,0.55)]"
                       }`}
         >
-          {/* Glass edge. A real pane catches light along its top rim; without
-              this the blur reads as a flat grey wash. */}
+          {/*
+            Glass edge, kept faint. At white/70 this was a hard bright line
+            drawn across the top rather than a rim catching light — the eye read
+            it as a stray border. It also only earns its place once the bar has
+            a solid background to sit against; over the hero there is nothing
+            for it to define, so it fades out there entirely.
+
+            Inset from the sides so it ends before the curve begins, instead of
+            running toward corners it can't follow.
+          */}
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"
+            className={`pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r
+                        from-transparent to-transparent transition-opacity duration-500
+                        ${scrolled ? "via-white/30 dark:via-white/20 opacity-100" : "via-white/20 opacity-0"}`}
           />
 
           {/* Cursor spotlight, driven entirely by the CSS variables above. */}
