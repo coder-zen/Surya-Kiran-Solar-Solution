@@ -60,8 +60,15 @@ const Navbar = () => {
           onPointerMove={handlePointer}
           onPointerLeave={clearPointer}
           style={{ perspective: "1200px" }}
+          /*
+           * No overflow-hidden here. Clipping the decorative layers to the
+           * rounded corners that way also clipped the dropdown panels, which
+           * are children of this element — they opened into a 1px sliver under
+           * the bar. Each decorative layer rounds its own corners instead, so
+           * nothing needs to clip its children.
+           */
           className={`pointer-events-auto group relative mx-auto flex max-w-7xl items-center justify-between
-                      gap-4 rounded-2xl px-4 sm:px-6 overflow-hidden
+                      gap-4 rounded-2xl px-4 sm:px-6
                       transition-[padding,background-color,box-shadow] duration-500 ease-out
                       ${
                         scrolled
@@ -77,9 +84,11 @@ const Navbar = () => {
           />
 
           {/* Cursor spotlight, driven entirely by the CSS variables above. */}
+          {/* rounded-2xl matches the bar, so the glow stays inside the corners
+              without the parent having to clip anything. */}
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[var(--glow,0)] transition-opacity duration-300"
+            className="pointer-events-none absolute inset-0 rounded-2xl opacity-[var(--glow,0)] transition-opacity duration-300"
             style={{
               background:
                 "radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgba(255,122,0,0.18), transparent 65%)",
