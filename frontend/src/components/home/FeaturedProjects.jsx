@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import api from "../../config/api";
 import { cdnImage, IMG } from "../../utils/cloudinaryImage";
 import SectionHeading from "../common/SectionHeading";
+import Tilt3D from "../common/Tilt3D";
 
 const fetchFeatured = async () => {
   const { data } = await api.get("/projects", { params: { featured: true } });
@@ -38,14 +39,14 @@ const FeaturedProjects = () => {
 
           {!isLoading && !isError &&
             (projects?.length ? projects : []).slice(0, 4).map((project, i) => (
+              <Tilt3D key={project._id} className="h-80">
               <motion.div
-                key={project._id}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 whileHover={{ y: -6 }}
-                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-premium h-80"
+                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-premium h-full"
               >
                 {/* No stock-photo fallback: a project without its own photo
                     shows the brand gradient rather than borrowing an unrelated
@@ -76,6 +77,7 @@ const FeaturedProjects = () => {
                   </Link>
                 </div>
               </motion.div>
+              </Tilt3D>
             ))}
 
           {!isLoading && isError && (

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import api from "../../config/api";
 import SectionHeading from "../common/SectionHeading";
+import Tilt3D from "../common/Tilt3D";
 import { getServiceIcon } from "../../config/serviceIcons";
 
 const fetchServices = async () => (await api.get("/services")).data.data;
@@ -37,14 +38,16 @@ const ServicesGrid = () => {
           {services.map((service, i) => {
             const Icon = getServiceIcon(service);
             return (
+              /* Tilt wraps from outside so its rotation and the card's own
+                 scroll/hover `y` don't both try to own `transform`. */
+              <Tilt3D key={service._id || service.slug} className="h-full">
               <motion.div
-                key={service._id || service.slug}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.5, delay: (i % 4) * 0.08 }}
                 whileHover={{ y: -6 }}
-                className="group rounded-2xl bg-white dark:bg-navy p-7 shadow-sm hover:shadow-premium border border-gray-100 dark:border-white/10 transition-shadow"
+                className="group h-full rounded-2xl bg-white dark:bg-navy p-7 shadow-sm hover:shadow-premium border border-gray-100 dark:border-white/10 transition-shadow"
               >
                 <div className="h-14 w-14 rounded-xl bg-solar-gradient flex items-center justify-center text-navy-dark text-2xl mb-5 group-hover:scale-110 transition-transform">
                   <Icon />
@@ -55,6 +58,7 @@ const ServicesGrid = () => {
                   Learn More →
                 </Link>
               </motion.div>
+              </Tilt3D>
             );
           })}
         </div>
