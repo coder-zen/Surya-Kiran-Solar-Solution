@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaBars, FaTimes, FaPhoneAlt } from "react-icons/fa";
 import { NAVBAR_GROUPS, COMPANY } from "../../config/constants";
@@ -14,6 +14,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
   const barRef = useRef(null);
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -23,6 +24,30 @@ const Navbar = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  /*
+   * Hold the page still while the drawer is open. The drawer covers the
+   * viewport but the document behind it still scrolls, so dragging anywhere on
+   * the menu scrolled the page underneath — the menu appeared to stick while
+   * the content slid, which is most of why the interaction felt broken on a
+   * phone. Restores whatever inline value was there rather than assuming none.
+   */
+  useEffect(() => {
+    if (!mobileOpen) return undefined;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobileOpen]);
+
+  /*
+   * Belt and braces: shut the drawer whenever the route changes. Every link
+   * inside it already closes it on click, but that relies on each one
+   * remembering to — and a menu left open over the new page is exactly the
+   * failure that looks like the tap did nothing.
+   */
+  useEffect(() => setMobileOpen(false), [location.pathname]);
 
   /*
    * Cursor spotlight. Writing the pointer position straight to CSS custom

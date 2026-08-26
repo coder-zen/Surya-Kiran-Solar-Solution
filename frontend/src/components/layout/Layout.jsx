@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ScrollProgress from "../common/ScrollProgress";
+import ScrollToTop from "./ScrollToTop";
 import WhatsAppButton from "../common/WhatsAppButton";
 import CallButton from "../common/CallButton";
 import api from "../../config/api";
@@ -84,6 +85,7 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ScrollToTop />
       <ScrollProgress />
       <Navbar />
       <main className="flex-1">
