@@ -280,7 +280,15 @@ const Navbar = () => {
             transition={{ type: "tween", duration: 0.3 }}
           >
             <div className="flex justify-end">
-              <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="text-2xl">
+              {/* Was 24px — the smallest target in the menu, and the one a
+                  visitor reaches for when they want out of it. p-3 with a
+                  matching negative margin keeps the icon where it looks right
+                  while giving it a 48px box. */}
+              <button
+                onClick={() => setMobileOpen(false)}
+                aria-label="Close menu"
+                className="text-2xl p-3 -m-3"
+              >
                 <FaTimes />
               </button>
             </div>
