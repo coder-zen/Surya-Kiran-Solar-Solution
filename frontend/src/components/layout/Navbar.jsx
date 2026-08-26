@@ -59,6 +59,12 @@ const Navbar = () => {
   const handlePointer = (event) => {
     const bar = barRef.current;
     if (!bar) return;
+    /*
+     * Mouse only. getBoundingClientRect below forces a synchronous layout, and
+     * a finger dragging past the bar while scrolling would trigger that on
+     * every move event — for a glow that a touch device can never show anyway.
+     */
+    if (event.pointerType !== "mouse") return;
     const rect = bar.getBoundingClientRect();
     bar.style.setProperty("--mx", `${event.clientX - rect.left}px`);
     bar.style.setProperty("--my", `${event.clientY - rect.top}px`);
@@ -96,14 +102,18 @@ const Navbar = () => {
                       gap-4 rounded-2xl px-4 sm:px-6
                       transition-[padding,background-color,box-shadow] duration-500 ease-out
                       ${
+                        /* Blur only from sm up — see .glass-card in index.css.
+                           This bar is fixed, so on a phone its blur is
+                           recomputed against moving content every frame of
+                           every scroll, which is the worst case for it. */
                         scrolled
-                          ? "py-2 bg-white/75 dark:bg-navy/75 backdrop-blur-xl ring-1 ring-navy/[0.06] dark:ring-white/[0.08] shadow-[0_10px_40px_-14px_rgba(11,36,71,0.35)]"
+                          ? "py-2 bg-white/95 dark:bg-navy/95 sm:bg-white/75 sm:dark:bg-navy/75 sm:backdrop-blur-xl ring-1 ring-navy/[0.06] dark:ring-white/[0.08] shadow-[0_10px_40px_-14px_rgba(11,36,71,0.35)]"
                           /* Over the hero the ring was white/20 — an outline
                              bright enough to read as a drawn border on top of
                              the highlight above it. Halved, so the bar is
                              defined by its blur and shadow rather than a line
                              around it. */
-                          : "py-3 bg-white/10 backdrop-blur-md ring-1 ring-white/[0.10] shadow-[0_14px_50px_-18px_rgba(0,0,0,0.55)]"
+                          : "py-3 bg-black/20 sm:bg-white/10 sm:backdrop-blur-md ring-1 ring-white/[0.10] shadow-[0_14px_50px_-18px_rgba(0,0,0,0.55)]"
                       }`}
         >
           {/*
@@ -273,7 +283,14 @@ const Navbar = () => {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            className="fixed inset-0 z-50 bg-navy-dark/95 backdrop-blur-md text-white p-6 xl:hidden"
+            /*
+             * Blur dropped. This panel is xl:hidden — it exists only on the
+             * devices least able to afford a full-viewport backdrop-filter, and
+             * at 95% opacity there was almost nothing showing through for it to
+             * blur. Made fully opaque instead: same appearance, no per-frame
+             * compositing work while the menu animates in and out.
+             */
+            className="fixed inset-0 z-50 bg-navy-dark text-white p-6 xl:hidden"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}

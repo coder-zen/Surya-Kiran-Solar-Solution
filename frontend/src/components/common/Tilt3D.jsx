@@ -53,7 +53,19 @@ const Tilt3D = ({
     el.style.setProperty("--sheen", "0");
   };
 
-  if (reduceMotion) return <div className={className}>{children}</div>;
+  /*
+   * Nothing at all on a touch device — not an attached handler that returns
+   * early, which is what this did first. A finger dragging to scroll emits a
+   * stream of pointermove events, and React dispatches every one of them
+   * through its synthetic event system before the guard inside can decline.
+   * Across eighteen cards on the homepage that is real main-thread work during
+   * exactly the interaction that must stay smooth. A device with no hover has
+   * nothing to gain from the effect anyway.
+   */
+  const canHover =
+    typeof window !== "undefined" && window.matchMedia?.("(hover: hover) and (pointer: fine)").matches;
+
+  if (reduceMotion || !canHover) return <div className={className}>{children}</div>;
 
   return (
     <div

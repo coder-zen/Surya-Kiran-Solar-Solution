@@ -41,9 +41,23 @@
    * has to be !important too or the light override wins in both themes. That is
    * also why these couldn't be handled by the component-level migration.
    */
+  /*
+   * No backdrop blur on phones.
+   *
+   * backdrop-filter forces the compositor to re-blur everything behind the
+   * element on every frame. The homepage carries thirteen of these, several
+   * covering most of the viewport — around 790,000 square pixels of live blur
+   * per frame, which a mid-range Android GPU cannot sustain while scrolling.
+   * That was the lag.
+   *
+   * Below sm the fill is simply more opaque instead, which reads almost
+   * identically over a photograph at phone size and costs nothing. Tablets and
+   * desktops keep the real thing.
+   */
   .glass-card {
-    @apply bg-white/70 backdrop-blur-md border border-white/40 rounded-2xl shadow-glass
-           dark:bg-navy/70 dark:border-white/10;
+    @apply bg-white/90 border border-white/40 rounded-2xl shadow-glass
+           sm:bg-white/70 sm:backdrop-blur-md
+           dark:bg-navy/90 dark:border-white/10 sm:dark:bg-navy/70;
   }
   .dark .glass-card.\!bg-white {
     background-color: theme("colors.navy.DEFAULT") !important;
