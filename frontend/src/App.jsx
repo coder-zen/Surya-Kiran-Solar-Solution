@@ -47,12 +47,16 @@ const ForgotPassword = lazy(() => import("./pages/admin/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
 
 import ProtectedRoute from "./pages/admin/ProtectedRoute";
+import ChunkErrorBoundary from "./components/common/ChunkErrorBoundary";
 import ExternalRedirect from "./components/common/ExternalRedirect";
 import { PM_SURYA_GHAR_URL } from "./config/constants";
 
 function App() {
   return (
     <AuthProvider>
+      {/* Outside Suspense: it has to catch the import rejecting, which happens
+          while Suspense is still waiting on that same import. */}
+      <ChunkErrorBoundary>
       <Suspense
         fallback={<div className="min-h-screen grid place-items-center text-gray-400">Loading…</div>}
       >
@@ -187,6 +191,7 @@ function App() {
         />
       </Routes>
       </Suspense>
+      </ChunkErrorBoundary>
     </AuthProvider>
   );
 }
