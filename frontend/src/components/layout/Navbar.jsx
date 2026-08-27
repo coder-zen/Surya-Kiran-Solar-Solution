@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+// AnimatePresence is gone with the drawer's exit animation; motion is still
+// used for the desktop active-tab indicator.
+import { motion } from "framer-motion";
 import { FaBars, FaTimes, FaPhoneAlt } from "react-icons/fa";
 import { NAVBAR_GROUPS, COMPANY } from "../../config/constants";
 import { Assets } from "../../config/images";
@@ -280,21 +282,29 @@ const Navbar = () => {
         </nav>
       </header>
 
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            /*
-             * Blur dropped. This panel is xl:hidden — it exists only on the
-             * devices least able to afford a full-viewport backdrop-filter, and
-             * at 95% opacity there was almost nothing showing through for it to
-             * blur. Made fully opaque instead: same appearance, no per-frame
-             * compositing work while the menu animates in and out.
-             */
-            className="fixed inset-0 z-50 bg-navy-dark text-white p-6 xl:hidden"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "tween", duration: 0.3 }}
+      {/*
+        Rendered on state alone — no AnimatePresence, no exit animation.
+
+        This is the bug customers were hitting. The drawer used to stay mounted
+        until framer-motion finished animating it out, which made "is the menu
+        on screen" depend on an animation completing. When that stalls — a
+        dropped frame budget on a mid-range phone, a backgrounded tab, a
+        low-power mode — the panel never unmounts. The route changes underneath
+        and the tap really did work, but the customer still sees the menu, so it
+        reads as the page never opening. Reloading clears it because state
+        resets, which is exactly the "only works after refresh" report.
+
+        Now `mobileOpen` false means the element is gone from the DOM in the
+        same commit. Nothing can leave it behind. The slide-in is a CSS
+        animation on mount, so it is still animated, but the animation is
+        decoration rather than a step navigation has to wait on.
+
+        Blur dropped too: this panel is xl:hidden, so it only ever existed on
+        the devices least able to afford a full-viewport backdrop-filter.
+      */}
+      {mobileOpen && (
+          <div
+            className="fixed inset-0 z-50 bg-navy-dark text-white p-6 xl:hidden animate-drawer-in"
           >
             <div className="flex justify-end">
               {/* Was 24px — the smallest target in the menu, and the one a
@@ -354,9 +364,8 @@ const Navbar = () => {
                 Get Free Quote
               </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+      )}
 
       <EnquiryModal isOpen={quoteOpen} onClose={() => setQuoteOpen(false)} source="hero_cta" />
     </>
